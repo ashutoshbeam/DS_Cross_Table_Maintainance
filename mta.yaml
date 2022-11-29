@@ -1,0 +1,44 @@
+_schema-version: '3.1'
+ID: FarmTankCAPProxy
+version: 1.0.0
+description: "A simple CAP project."
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npx -p @sap/cds-dk cds build --production
+modules:
+  - name: FarmTankCAPProxy-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm-ci
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: FarmTankCAPProxy-db
+
+  - name: FarmTankCAPProxy-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: FarmTankCAPProxy-db
+
+resources:
+  - name: FarmTankCAPProxy-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+      config:
+        database_id: a8e9680e-6176-4f93-984d-cc778766babe
+    properties:
+      hdi-container-name: '${service-name}'
