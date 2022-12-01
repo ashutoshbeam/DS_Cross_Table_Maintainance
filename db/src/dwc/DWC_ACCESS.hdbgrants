@@ -1,0 +1,17 @@
+{
+	"ups_btp_dwc": {
+		"object_owner": {
+			"roles": [],
+			"container_roles": [],
+			"object_privileges": [
+                {
+				  "type": "VIEW",
+				  "name": "vTANKS",
+				  "privileges_with_grant_option": [
+				    "SELECT"
+				  ]
+				}
+			]
+		}
+	}
+}

@@ -1,7 +1,8 @@
 namespace dwcmission.farm;
 
+@cds.persistence.exists 
 entity Tanks {
-  key TANK_ID : String;
+  key ID : String;
   Latitude  : String;
   Longitude  : String;
   InspectionDate : String;
