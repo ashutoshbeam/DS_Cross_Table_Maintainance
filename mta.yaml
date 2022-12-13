@@ -12,7 +12,7 @@ build-parameters:
 modules:
   # --------------------- SERVER MODULE ------------------------
   - name: FarmTankCAPProxy-srv
-  # --------------------- --------------------------------------
+    # --------------------- --------------------------------------
     type: nodejs
     path: gen/srv
     parameters:
@@ -28,14 +28,14 @@ modules:
       - name: ups-btp-dwc-service
   # --------------------- DB MODULE ------------------------
   - name: FarmTankCAPProxy-db-deployer
-  # --------------------------------------------------------
+    # --------------------------------------------------------
     type: hdb
     path: gen/db
     parameters:
       buildpack: nodejs_buildpack
     requires:
       - name: FarmTankCAPProxy-db
-      - name: ups-btp-dwc-service      
+      - name: ups-btp-dwc-service
 resources:
   - name: FarmTankCAPProxy-db
     type: com.sap.xs.hdi-container

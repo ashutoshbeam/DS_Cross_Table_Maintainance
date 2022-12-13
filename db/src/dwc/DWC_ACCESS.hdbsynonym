@@ -1,8 +1,8 @@
 {
-  "DWCMISSION_FARM_TANKS": {
+  "buildapps_schema_Tanks": {
     "target": {
         "schema": "TANK_FARM",        
-        "object": "vTANKS"
+        "object": "vTanks"
     }
   }
 }

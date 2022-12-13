@@ -6,7 +6,7 @@
 			"object_privileges": [
                 {
 				  "type": "VIEW",
-				  "name": "vTANKS",
+				  "name": "vTanks",
 				  "privileges_with_grant_option": [
 				    "SELECT"
 				  ]
