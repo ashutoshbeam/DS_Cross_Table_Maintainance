@@ -1,0 +1,18 @@
+{
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.FieldTechnician",
+      "description": "Field Technician"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "FieldTechnician",
+      "description": "Field Technician",
+      "scope-references": [
+        "$XSAPPNAME.FieldTechnician"
+      ],
+      "attribute-references": []
+    }
+  ]
+}

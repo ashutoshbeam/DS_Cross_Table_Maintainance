@@ -1,5 +1,5 @@
 {
-  "buildapps_schema_Tanks": {
+  "DWCMISSION_FARM_TANKS": {
     "target": {
         "schema": "TANK_FARM",        
         "object": "vTanks"

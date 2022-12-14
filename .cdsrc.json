@@ -1,1 +1,18 @@
-{}
+{
+    "[production]": {
+        "auth": {
+            "passport": {
+                "strategy": "mock",
+                "users": {
+                    "risk.viewer@tester.sap.com": {
+                        "password": "initial",
+                        "ID": "field.technician@tester.sap.com",
+                        "roles": [
+                            "FieldTechnician"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

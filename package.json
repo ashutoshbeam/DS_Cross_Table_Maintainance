@@ -8,10 +8,12 @@
   "dependencies": {
     "@sap/cds": "^6",
     "express": "^4",
-    "hdb": "^0.19.5"
+    "hdb": "^0.19.5",
+    "@sap/xssec": "^3",
+    "passport": "^0"
   },
   "devDependencies": {
-    "sqlite3": "^5.1.2"
+    "sqlite3": "^5.1.4"
   },
   "scripts": {
     "start": "cds run"
@@ -48,10 +50,15 @@
     "requires": {
       "db": {
         "kind": "hana-cloud"
+      },
+      "[production]": {
+        "auth": {
+          "kind": "xsuaa"
+        }
       }
     },
     "hana": {
-        "deploy-format": "hdbtable"
+      "deploy-format": "hdbtable"
     }
   }
 }
