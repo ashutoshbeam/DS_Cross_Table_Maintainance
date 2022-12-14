@@ -12,7 +12,6 @@ entity Tanks {
   UOM : String;
 }
 
-@cds.persistence.exists 
 entity TankVolumes_M {
   TANK_ID : String(30);
   VOLUME  : Decimal;
