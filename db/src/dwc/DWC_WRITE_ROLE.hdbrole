@@ -3,7 +3,7 @@
     "name": "DWC_WRITE_ROLE",
     "schema_privileges": [
       {
-        "privileges":[ "SELECT", "INSERT", "UPDATE", "DELETE", "RESOURCE ADMIN", "SAVEPOINT ADMIN","OPTIMIZER ADMIN" ]
+        "privileges":[ "SELECT", "INSERT", "UPDATE", "DELETE"]
       }
     ]
  }
