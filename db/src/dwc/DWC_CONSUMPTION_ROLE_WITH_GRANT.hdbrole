@@ -3,9 +3,9 @@
     "name": "DWC_CONSUMPTION_ROLE#",
     "schema_privileges": [
       {
-        "privileges":[ "SELECT",
-                        "SELECT METADATA",
-                        "EXECUTE" ]
+        "privileges_with_grant_option":[ "SELECT",
+                                      "SELECT METADATA",
+                                      "EXECUTE" ]
       }
     ]
  }
