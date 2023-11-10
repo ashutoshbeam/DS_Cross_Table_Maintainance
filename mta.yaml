@@ -26,7 +26,6 @@ modules:
     requires:
       - name: FarmTankCAPProxy-db
       - name: ups-btp-dwc-service
-      - name: FarmTankCAPProxy-auth
   # --------------------- DB MODULE ------------------------
   - name: FarmTankCAPProxy-db-deployer
     # --------------------------------------------------------
@@ -54,18 +53,3 @@ resources:
       service-name: ups_btp_dwc
     properties:
       the-service-name: '${service-name}'
-      #"schema.configure" : "ups_btp_dwc/schema",
-  - name: FarmTankCAPProxy-auth
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: xsuaa
-      service-plan: application
-      path: ./xs-security.json
-      config:
-        xsappname: FarmTankCAPProxy-${space}
-        tenant-mode: dedicated
-        role-collections:
-         - name: 'FieldTechnician-${space}'
-           description: Record Tank Volumes
-           role-template-references:
-             - $XSAPPNAME.DWC_CONSUMPTION_ROLE

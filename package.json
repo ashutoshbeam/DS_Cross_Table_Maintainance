@@ -6,10 +6,11 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@sap/cds": "^6",
-    "express": "^4",
-    "hdb": "^0.19.5",
+    "@sap/cds": "^7",
+    "@sap/cds-dk": "^7.3.2",
     "@sap/xssec": "^3",
+    "express": "^4",
+    "hdb": "^0.19.6",
     "passport": "^0"
   },
   "devDependencies": {
@@ -51,9 +52,16 @@
       "db": {
         "kind": "hana-cloud"
       },
-      "[production]": {
-        "auth": {
-          "kind": "xsuaa"
+      "auth": {
+        "kind": "basic",
+        "users": {
+          "field.technician@tester.sap.com": {
+            "password": "initial",
+            "roles": [
+              "FieldTechnician"
+            ]
+          },
+          "*": false
         }
       }
     },
