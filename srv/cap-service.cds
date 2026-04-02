@@ -8,4 +8,6 @@ service FarmTankService {
                 to : [ 'FieldTechnician' ]
             }
              ]) as projection on db.TankVolumes_M;
+
+             entity PlantLocation   as projection on db.ZPLANT_LOCATION;
 }

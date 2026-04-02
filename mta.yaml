@@ -24,32 +24,32 @@ modules:
         properties:
           srv-url: ${default-url}
     requires:
-      - name: FarmTankCAPProxy-db
+      - name: training-hdi
       - name: ups-btp-dwc-service
   # --------------------- DB MODULE ------------------------
-  - name: FarmTankCAPProxy-db-deployer
+  - name: training-hdi-deployer
     # --------------------------------------------------------
     type: hdb
     path: gen/db
     parameters:
       buildpack: nodejs_buildpack
     requires:
-      - name: FarmTankCAPProxy-db
+      - name: training-hdi
       - name: ups-btp-dwc-service
 resources:
-  - name: FarmTankCAPProxy-db
-    type: com.sap.xs.hdi-container
+  - name: training-hdi
+    type:  org.cloudfoundry.existing-service
     parameters:
       service: hana
       service-plan: hdi-shared
       config:
-        database_id: a8e9680e-6176-4f93-984d-cc778766babe
-        schema: dwc_hdi
+        database_id: 116a3240-595d-4460-a2f9-f3ac166852f0
+        schema: Training
     properties:
       hdi-container-name: '${service-name}'
   - name: ups-btp-dwc-service
     type: org.cloudfoundry.existing-service
     parameters:
-      service-name: ups_btp_dwc
+      service-name: DS_INTEGRATION
     properties:
       the-service-name: '${service-name}'

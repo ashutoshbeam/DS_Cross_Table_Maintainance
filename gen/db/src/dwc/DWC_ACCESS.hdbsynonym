@@ -1,0 +1,8 @@
+{
+  "DWCMISSION_FARM_TANKS": {
+    "target": {
+      "object": "...",
+      "schema": "..."
+    }
+  }
+}

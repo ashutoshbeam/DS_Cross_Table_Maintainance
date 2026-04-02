@@ -1,5 +1,5 @@
 {
-	"ups_btp_dwc": {
+	"DS_INTEGRATION": {
 		"object_owner": {
 			"roles": [],
 			"container_roles": [],
@@ -7,6 +7,13 @@
                 {
 				  "type": "VIEW",
 				  "name": "vTanks",
+				  "privileges_with_grant_option": [
+				    "SELECT"
+				  ]
+				},
+				  {
+				  "type": "VIEW",
+				  "name": "vZPLANT_LOCATION",
 				  "privileges_with_grant_option": [
 				    "SELECT"
 				  ]

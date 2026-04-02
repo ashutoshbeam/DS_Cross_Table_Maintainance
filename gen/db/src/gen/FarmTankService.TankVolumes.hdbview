@@ -1,0 +1,8 @@
+VIEW FarmTankService_TankVolumes AS SELECT
+  TankVolumes_M_0.TANK_ID,
+  TankVolumes_M_0.VOLUME,
+  TankVolumes_M_0.UOM,
+  TankVolumes_M_0.TIME_STAMP,
+  TankVolumes_M_0.COMMENT,
+  TankVolumes_M_0.SOURCE
+FROM dwcmission_farm_TankVolumes_M AS TankVolumes_M_0
