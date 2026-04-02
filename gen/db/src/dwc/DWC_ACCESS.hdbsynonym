@@ -1,8 +1,14 @@
 {
   "DWCMISSION_FARM_TANKS": {
     "target": {
-      "object": "...",
-      "schema": "..."
+      "object": "vTanks",
+      "schema": "TRAINING"
+    }
+  },
+  "DWCMISSION_FARM_ZPLANT_LOCATION": {
+    "target": {
+      "object": "vZPLANT_LOCATION",
+      "schema": "TRAINING"
     }
   }
 }

@@ -18,7 +18,7 @@
     "sqlite3": "^5.1.6"
   },
   "scripts": {
-    "start": "cds run"
+    "start": "npx cds-serve"
   },
   "engines": {
     "node": "^20.00"
