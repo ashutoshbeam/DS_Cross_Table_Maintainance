@@ -1,0 +1,427 @@
+{
+  "namespace": "dwcmission.farm",
+  "definitions": {
+    "dwcmission.farm.Tanks": {
+      "kind": "entity",
+      "@cds.persistence.exists": true,
+      "elements": {
+        "TANK_ID": {
+          "key": true,
+          "type": "cds.String"
+        },
+        "Latitude": {
+          "type": "cds.Integer"
+        },
+        "Longitude": {
+          "type": "cds.Integer"
+        },
+        "InspectionDate": {
+          "type": "cds.Date"
+        },
+        "Size": {
+          "type": "cds.String"
+        },
+        "MeasureTechnique": {
+          "type": "cds.String"
+        },
+        "max_capacity": {
+          "type": "cds.Integer"
+        },
+        "UOM": {
+          "type": "cds.String"
+        }
+      }
+    },
+    "dwcmission.farm.TankVolumes_M": {
+      "kind": "entity",
+      "elements": {
+        "TANK_ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 30
+        },
+        "VOLUME": {
+          "type": "cds.Decimal"
+        },
+        "UOM": {
+          "type": "cds.String",
+          "length": 3
+        },
+        "TIME_STAMP": {
+          "type": "cds.Timestamp"
+        },
+        "COMMENT": {
+          "type": "cds.String",
+          "length": 50
+        },
+        "SOURCE": {
+          "type": "cds.String",
+          "length": 1,
+          "default": {
+            "val": "M"
+          }
+        }
+      }
+    },
+    "dwcmission.farm.ZPLANT_LOCATION": {
+      "kind": "entity",
+      "@cds.persistence.exists": true,
+      "elements": {
+        "PLANT": {
+          "key": true,
+          "type": "cds.String",
+          "length": 4
+        },
+        "COMPANY_CODE": {
+          "type": "cds.String",
+          "length": 4
+        },
+        "LOCATION": {
+          "type": "cds.String",
+          "length": 10
+        },
+        "LOCATION_TYPE": {
+          "type": "cds.String",
+          "length": 10
+        },
+        "REGION": {
+          "type": "cds.String",
+          "length": 10
+        }
+      }
+    },
+    "FarmTankService": {
+      "@source": "srv/cap-service.cds",
+      "kind": "service"
+    },
+    "FarmTankService.Tanks": {
+      "kind": "entity",
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "dwcmission.farm.Tanks"
+            ]
+          },
+          "columns": [
+            "*"
+          ]
+        }
+      },
+      "elements": {
+        "TANK_ID": {
+          "key": true,
+          "type": "cds.String"
+        },
+        "Latitude": {
+          "type": "cds.Integer"
+        },
+        "Longitude": {
+          "type": "cds.Integer"
+        },
+        "InspectionDate": {
+          "type": "cds.Date"
+        },
+        "Size": {
+          "type": "cds.String"
+        },
+        "MeasureTechnique": {
+          "type": "cds.String"
+        },
+        "max_capacity": {
+          "type": "cds.Integer"
+        },
+        "UOM": {
+          "type": "cds.String"
+        }
+      }
+    },
+    "FarmTankService.TankVolumes": {
+      "kind": "entity",
+      "@restrict": [
+        {
+          "grant": [
+            "*"
+          ],
+          "to": [
+            "FieldTechnician"
+          ]
+        }
+      ],
+      "projection": {
+        "from": {
+          "ref": [
+            "dwcmission.farm.TankVolumes_M"
+          ]
+        }
+      },
+      "elements": {
+        "TANK_ID": {
+          "key": true,
+          "type": "cds.String",
+          "length": 30
+        },
+        "VOLUME": {
+          "type": "cds.Decimal"
+        },
+        "UOM": {
+          "type": "cds.String",
+          "length": 3
+        },
+        "TIME_STAMP": {
+          "type": "cds.Timestamp"
+        },
+        "COMMENT": {
+          "type": "cds.String",
+          "length": 50
+        },
+        "SOURCE": {
+          "type": "cds.String",
+          "length": 1,
+          "default": {
+            "val": "M"
+          }
+        }
+      }
+    },
+    "FarmTankService.PlantLocation": {
+      "kind": "entity",
+      "@Common.SemanticKey": [
+        {
+          "=": "PLANT"
+        }
+      ],
+      "@UI.HeaderInfo.TypeName": "{i18n>PlantLocationTypeName}",
+      "@UI.HeaderInfo.TypeNamePlural": "{i18n>PlantLocationTypeNamePlural}",
+      "@UI.HeaderInfo.Title.$Type": "UI.DataField",
+      "@UI.HeaderInfo.Title.Value": {
+        "=": "PLANT"
+      },
+      "@UI.HeaderInfo.Description.$Type": "UI.DataField",
+      "@UI.HeaderInfo.Description.Value": {
+        "=": "LOCATION"
+      },
+      "@UI.SelectionFields": [
+        {
+          "=": "PLANT"
+        },
+        {
+          "=": "COMPANY_CODE"
+        },
+        {
+          "=": "LOCATION_TYPE"
+        },
+        {
+          "=": "REGION"
+        }
+      ],
+      "@UI.Identification": [
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Plant}",
+          "Value": {
+            "=": "PLANT"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Companycode}",
+          "Value": {
+            "=": "COMPANY_CODE"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Location}",
+          "Value": {
+            "=": "LOCATION"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Locationtype}",
+          "Value": {
+            "=": "LOCATION_TYPE"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Region}",
+          "Value": {
+            "=": "REGION"
+          }
+        }
+      ],
+      "@UI.FieldGroup#GeneratedGroup.$Type": "UI.FieldGroupType",
+      "@UI.FieldGroup#GeneratedGroup.Data": [
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Plant}",
+          "Value": {
+            "=": "PLANT"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Companycode}",
+          "Value": {
+            "=": "COMPANY_CODE"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Location}",
+          "Value": {
+            "=": "LOCATION"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Locationtype}",
+          "Value": {
+            "=": "LOCATION_TYPE"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Region}",
+          "Value": {
+            "=": "REGION"
+          }
+        }
+      ],
+      "@UI.Facets": [
+        {
+          "$Type": "UI.ReferenceFacet",
+          "ID": "GeneratedFacet1",
+          "Label": "{i18n>GeneralInformation}",
+          "Target": "@UI.FieldGroup#GeneratedGroup"
+        }
+      ],
+      "@UI.LineItem": [
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Plant}",
+          "Value": {
+            "=": "PLANT"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Companycode}",
+          "Value": {
+            "=": "COMPANY_CODE"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Location}",
+          "Value": {
+            "=": "LOCATION"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Locationtype}",
+          "Value": {
+            "=": "LOCATION_TYPE"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Label": "{i18n>Region}",
+          "Value": {
+            "=": "REGION"
+          }
+        }
+      ],
+      "@Capabilities.InsertRestrictions.Insertable": true,
+      "@Capabilities.UpdateRestrictions.Updatable": true,
+      "@Capabilities.DeleteRestrictions.Deletable": true,
+      "projection": {
+        "from": {
+          "ref": [
+            "dwcmission.farm.ZPLANT_LOCATION"
+          ]
+        }
+      },
+      "elements": {
+        "PLANT": {
+          "key": true,
+          "type": "cds.String",
+          "length": 4
+        },
+        "COMPANY_CODE": {
+          "type": "cds.String",
+          "length": 4
+        },
+        "LOCATION": {
+          "type": "cds.String",
+          "length": 10
+        },
+        "LOCATION_TYPE": {
+          "type": "cds.String",
+          "length": 10
+        },
+        "REGION": {
+          "type": "cds.String",
+          "length": 10
+        }
+      }
+    },
+    "cds.outbox.Messages": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "timestamp": {
+          "type": "cds.Timestamp"
+        },
+        "target": {
+          "type": "cds.String"
+        },
+        "msg": {
+          "type": "cds.LargeString"
+        },
+        "attempts": {
+          "type": "cds.Integer",
+          "default": {
+            "val": 0
+          }
+        },
+        "partition": {
+          "type": "cds.Integer",
+          "default": {
+            "val": 0
+          }
+        },
+        "lastError": {
+          "type": "cds.LargeString"
+        },
+        "lastAttemptTimestamp": {
+          "type": "cds.Timestamp"
+        },
+        "status": {
+          "type": "cds.String",
+          "length": 23
+        },
+        "task": {
+          "type": "cds.String",
+          "length": 255
+        },
+        "appid": {
+          "type": "cds.String",
+          "length": 255
+        }
+      }
+    }
+  },
+  "meta": {
+    "creator": "CDS Compiler v6.8.0",
+    "compilerCsnFlavor": "inferred",
+    "flavor": "inferred"
+  },
+  "$version": "2.0"
+}

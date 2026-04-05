@@ -126,7 +126,8 @@
 							"controlConfiguration": {
 								"@com.sap.vocabularies.UI.v1.LineItem": {
 									"tableSettings": {
-										"type": "ResponsiveTable"
+										"type": "ResponsiveTable",
+										"selectionMode": "Multi"
 									}
 								}
 							}
@@ -151,6 +152,10 @@
 	"sap.fiori": {
 		"registrationIds": [],
 		"archeType": "transactional"
+	},
+	"sap.cloud": {
+		"public": true,
+		"service": "farmtankcapproxy.service"
 	},
 	"sap.fe": {
 		"app": {

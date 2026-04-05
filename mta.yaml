@@ -9,6 +9,7 @@ modules:
   requires:
   - name: training-hdi
   - name: ups-btp-dwc-service
+  - name: FarmTankCAPProxy-auth
   provides:
   - name: srv-api
     properties:
@@ -31,6 +32,8 @@ modules:
   requires:
   - name: FarmTankCAPProxy-repo-host
     parameters:
+      service-key:
+        name: FarmTankCAPProxy-repo-host-key
       content-target: true
   build-parameters:
     build-result: resources
@@ -39,6 +42,27 @@ modules:
       - plantlocationpage.zip
       name: plantlocationpage
       target-path: resources/
+- name: FarmTankCAPProxy-destination-content
+  type: com.sap.application.content
+  build-parameters:
+    no-source: true
+  requires:
+  - name: FarmTankCAPProxy-destination-service
+    parameters:
+      content-target: true
+  - name: FarmTankCAPProxy-repo-runtime
+    parameters:
+      service-key:
+        name: FarmTankCAPProxy-repo-runtime-key
+  parameters:
+    content:
+      instance:
+        existing_destinations_policy: update
+        destinations:
+        - Name: FarmTankCAPProxy-html5-runtime
+          ServiceInstanceName: FarmTankCAPProxy-html5-runtime-service
+          ServiceKeyName: FarmTankCAPProxy-repo-runtime-key
+          sap.cloud.service: farmtankcapproxy.service
 - name: plantlocationpage
   type: html5
   path: app/plantlocationpage
@@ -72,11 +96,17 @@ resources:
     service: html5-apps-repo
     service-name: FarmTankCAPProxy-html5-service
     service-plan: app-host
+- name: FarmTankCAPProxy-repo-runtime
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: FarmTankCAPProxy-html5-runtime-service
+    service-plan: app-runtime
 - name: FarmTankCAPProxy-destination-service
   type: org.cloudfoundry.managed-service
   parameters:
     config:
-      HTML5Runtime_enabled: false
+      HTML5Runtime_enabled: true
       init_data:
         instance:
           destinations:
@@ -90,6 +120,13 @@ resources:
     service: destination
     service-name: FarmTankCAPProxy-destination-service
     service-plan: lite
+- name: FarmTankCAPProxy-auth
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: FarmTankCAPProxy-auth
+    service-plan: application
 parameters:
   deploy_mode: html5-repo
   enable-parallel-deployments: true

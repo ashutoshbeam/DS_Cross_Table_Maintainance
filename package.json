@@ -9,17 +9,18 @@
 		"@cap-js/hana": "^2.7.0",
 		"@sap/cds": "^9.8.4",
 		"@sap/xssec": "^3",
+		"cf": "^0.0.3",
 		"express": "^4",
 		"hdb": "^0.19.6",
 		"passport": "^0"
 	},
 	"devDependencies": {
 		"@sap/cds-dk": "^9.8.2",
-		"sqlite3": "^5.1.6",
+		"@sap/dev-cap-tools": "^1.31.0",
 		"cds-plugin-ui5": "^0.13.0",
-		"rimraf": "^5.0.5",
 		"mbt": "^1.2.29",
-		"@sap/dev-cap-tools": "^1.31.0"
+		"rimraf": "^5.0.5",
+		"sqlite3": "^5.1.6"
 	},
 	"scripts": {
 		"start": "npx cds-serve",

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Capabilities.V1.xml">
+    <edmx:Include Alias="Capabilities" Namespace="Org.OData.Capabilities.V1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+    <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+    <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+    <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+  </edmx:Reference>
+  <edmx:DataServices>
+    <Schema Namespace="FarmTankService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <Annotation Term="Core.Links">
+        <Collection>
+          <Record>
+            <PropertyValue Property="rel" String="author"/>
+            <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+          </Record>
+        </Collection>
+      </Annotation>
+      <EntityContainer Name="EntityContainer">
+        <EntitySet Name="Tanks" EntityType="FarmTankService.Tanks"/>
+        <EntitySet Name="TankVolumes" EntityType="FarmTankService.TankVolumes"/>
+        <EntitySet Name="PlantLocation" EntityType="FarmTankService.PlantLocation"/>
+      </EntityContainer>
+      <EntityType Name="Tanks">
+        <Key>
+          <PropertyRef Name="TANK_ID"/>
+        </Key>
+        <Property Name="TANK_ID" Type="Edm.String" Nullable="false"/>
+        <Property Name="Latitude" Type="Edm.Int32"/>
+        <Property Name="Longitude" Type="Edm.Int32"/>
+        <Property Name="InspectionDate" Type="Edm.Date"/>
+        <Property Name="Size" Type="Edm.String"/>
+        <Property Name="MeasureTechnique" Type="Edm.String"/>
+        <Property Name="max_capacity" Type="Edm.Int32"/>
+        <Property Name="UOM" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="TankVolumes">
+        <Key>
+          <PropertyRef Name="TANK_ID"/>
+        </Key>
+        <Property Name="TANK_ID" Type="Edm.String" MaxLength="30" Nullable="false"/>
+        <Property Name="VOLUME" Type="Edm.Decimal" Scale="variable"/>
+        <Property Name="UOM" Type="Edm.String" MaxLength="3"/>
+        <Property Name="TIME_STAMP" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="COMMENT" Type="Edm.String" MaxLength="50"/>
+        <Property Name="SOURCE" Type="Edm.String" MaxLength="1" DefaultValue="M"/>
+      </EntityType>
+      <EntityType Name="PlantLocation">
+        <Key>
+          <PropertyRef Name="PLANT"/>
+        </Key>
+        <Property Name="PLANT" Type="Edm.String" MaxLength="4" Nullable="false"/>
+        <Property Name="COMPANY_CODE" Type="Edm.String" MaxLength="4"/>
+        <Property Name="LOCATION" Type="Edm.String" MaxLength="10"/>
+        <Property Name="LOCATION_TYPE" Type="Edm.String" MaxLength="10"/>
+        <Property Name="REGION" Type="Edm.String" MaxLength="10"/>
+      </EntityType>
+      <Annotations Target="FarmTankService.PlantLocation">
+        <Annotation Term="Common.SemanticKey">
+          <Collection>
+            <PropertyPath>PLANT</PropertyPath>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.HeaderInfo">
+          <Record Type="UI.HeaderInfoType">
+            <PropertyValue Property="TypeName" String="{i18n>PlantLocationTypeName}"/>
+            <PropertyValue Property="TypeNamePlural" String="{i18n>PlantLocationTypeNamePlural}"/>
+            <PropertyValue Property="Title">
+              <Record Type="UI.DataField">
+                <PropertyValue Property="Value" Path="PLANT"/>
+              </Record>
+            </PropertyValue>
+            <PropertyValue Property="Description">
+              <Record Type="UI.DataField">
+                <PropertyValue Property="Value" Path="LOCATION"/>
+              </Record>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.SelectionFields">
+          <Collection>
+            <PropertyPath>PLANT</PropertyPath>
+            <PropertyPath>COMPANY_CODE</PropertyPath>
+            <PropertyPath>LOCATION_TYPE</PropertyPath>
+            <PropertyPath>REGION</PropertyPath>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="{i18n>Plant}"/>
+              <PropertyValue Property="Value" Path="PLANT"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="{i18n>Companycode}"/>
+              <PropertyValue Property="Value" Path="COMPANY_CODE"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="{i18n>Location}"/>
+              <PropertyValue Property="Value" Path="LOCATION"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="{i18n>Locationtype}"/>
+              <PropertyValue Property="Value" Path="LOCATION_TYPE"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="{i18n>Region}"/>
+              <PropertyValue Property="Value" Path="REGION"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="GeneratedGroup">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Label" String="{i18n>Plant}"/>
+                  <PropertyValue Property="Value" Path="PLANT"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Label" String="{i18n>Companycode}"/>
+                  <PropertyValue Property="Value" Path="COMPANY_CODE"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Label" String="{i18n>Location}"/>
+                  <PropertyValue Property="Value" Path="LOCATION"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Label" String="{i18n>Locationtype}"/>
+                  <PropertyValue Property="Value" Path="LOCATION_TYPE"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Label" String="{i18n>Region}"/>
+                  <PropertyValue Property="Value" Path="REGION"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.Facets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="GeneratedFacet1"/>
+              <PropertyValue Property="Label" String="{i18n>GeneralInformation}"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#GeneratedGroup"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="{i18n>Plant}"/>
+              <PropertyValue Property="Value" Path="PLANT"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="{i18n>Companycode}"/>
+              <PropertyValue Property="Value" Path="COMPANY_CODE"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="{i18n>Location}"/>
+              <PropertyValue Property="Value" Path="LOCATION"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="{i18n>Locationtype}"/>
+              <PropertyValue Property="Value" Path="LOCATION_TYPE"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="{i18n>Region}"/>
+              <PropertyValue Property="Value" Path="REGION"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="FarmTankService.EntityContainer/PlantLocation">
+        <Annotation Term="Capabilities.InsertRestrictions">
+          <Record Type="Capabilities.InsertRestrictionsType">
+            <PropertyValue Property="Insertable" Bool="true"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Capabilities.UpdateRestrictions">
+          <Record Type="Capabilities.UpdateRestrictionsType">
+            <PropertyValue Property="Updatable" Bool="true"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Capabilities.DeleteRestrictions">
+          <Record Type="Capabilities.DeleteRestrictionsType">
+            <PropertyValue Property="Deletable" Bool="true"/>
+          </Record>
+        </Annotation>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

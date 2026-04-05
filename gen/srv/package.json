@@ -1,0 +1,84 @@
+{
+  "name": "FarmTankCAPProxy",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@cap-js/hana": "^2.7.0",
+    "@sap/cds": "^9.8.4",
+    "@sap/xssec": "^3",
+    "cf": "^0.0.3",
+    "express": "^4",
+    "hdb": "^0.19.6",
+    "passport": "^0"
+  },
+  "devDependencies": {
+    "@sap/cds-dk": "^9.8.2",
+    "@sap/dev-cap-tools": "^1.31.0",
+    "mbt": "^1.2.29",
+    "rimraf": "^5.0.5",
+    "sqlite3": "^5.1.6"
+  },
+  "scripts": {
+    "start": "npx cds-serve",
+    "watch-plantlocationpage": "cds watch --open plantlocationpage/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "undeploy": "cf undeploy FarmTankCAPProxy --delete-services --delete-service-keys --delete-service-brokers",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+  },
+  "engines": {
+    "node": "^20.00"
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "env": {
+      "es2020": true,
+      "node": true,
+      "jest": true,
+      "mocha": true
+    },
+    "globals": {
+      "SELECT": true,
+      "INSERT": true,
+      "UPDATE": true,
+      "DELETE": true,
+      "CREATE": true,
+      "DROP": true,
+      "CDL": true,
+      "CQL": true,
+      "CXL": true,
+      "cds": true
+    },
+    "rules": {
+      "no-console": "off",
+      "require-atomic-updates": "off"
+    }
+  },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "hana-cloud"
+      },
+      "auth": {
+        "kind": "basic",
+        "users": {
+          "field.technician@tester.sap.com": {
+            "password": "initial",
+            "roles": [
+              "FieldTechnician"
+            ]
+          },
+          "*": false
+        }
+      }
+    },
+    "hana": {
+      "deploy-format": "hdbtable"
+    }
+  },
+  "sapux": [
+    "app/plantlocationpage"
+  ]
+}

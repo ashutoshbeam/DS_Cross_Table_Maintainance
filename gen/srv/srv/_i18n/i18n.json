@@ -1,0 +1,10 @@
+{
+  "": {
+    "Plant": "PLANT",
+    "Companycode": "COMPANY_CODE",
+    "Location": "LOCATION",
+    "Locationtype": "LOCATION_TYPE",
+    "Region": "REGION",
+    "GeneralInformation": "General Information"
+  }
+}
