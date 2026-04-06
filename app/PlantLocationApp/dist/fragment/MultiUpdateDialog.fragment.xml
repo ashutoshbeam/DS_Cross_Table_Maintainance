@@ -1,0 +1,49 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Dialog
+        id="multiUpdateDialog"
+        title="{i18n>multiUpdateDialogTitle}"
+        class="sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer">
+        <content>
+            <VBox class="sapUiSmallMarginTopBottom" width="24rem">
+                <MessageStrip
+                    text="{i18n>multiUpdateHint}"
+                    type="Information"
+                    showIcon="true"
+                    class="sapUiSmallMarginBottom" />
+
+                <Label text="{i18n>CompanyCode}" labelFor="bulkCompanyCodeInput" />
+                <Input
+                    id="bulkCompanyCodeInput"
+                    value="{view>/multiUpdate/companyCode}" />
+
+                <Label text="{i18n>Location}" labelFor="bulkLocationInput" class="sapUiSmallMarginTop" />
+                <Input
+                    id="bulkLocationInput"
+                    value="{view>/multiUpdate/location}" />
+
+                <Label text="{i18n>LocationType}" labelFor="bulkLocationTypeInput" class="sapUiSmallMarginTop" />
+                <Input
+                    id="bulkLocationTypeInput"
+                    value="{view>/multiUpdate/locationType}" />
+
+                <Label text="{i18n>Region}" labelFor="bulkRegionInput" class="sapUiSmallMarginTop" />
+                <Input
+                    id="bulkRegionInput"
+                    value="{view>/multiUpdate/region}" />
+            </VBox>
+        </content>
+        <beginButton>
+            <Button
+                type="Emphasized"
+                text="{i18n>apply}"
+                press=".onApplyMultiUpdate" />
+        </beginButton>
+        <endButton>
+            <Button
+                text="{i18n>cancel}"
+                press=".onCancelMultiUpdate" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

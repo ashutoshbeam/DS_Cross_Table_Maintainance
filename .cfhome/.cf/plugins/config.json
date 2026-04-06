@@ -1,0 +1,315 @@
+{
+  "Plugins": {
+    "html5-plugin": {
+      "Name": "html5-plugin",
+      "Location": "C:\\Users\\user\\.cf\\plugins\\html5-plugin.exe",
+      "Version": {
+        "Major": 1,
+        "Minor": 4,
+        "Build": 9
+      },
+      "LibraryVersion": {
+        "Major": 0,
+        "Minor": 0,
+        "Build": 0
+      },
+      "Commands": [
+        {
+          "Name": "html5-list",
+          "Alias": "",
+          "HelpText": "Display list of HTML5 applications or file paths of specified application",
+          "UsageDetails": {
+            "Usage": "cf html5-list [APP_NAME] [APP_VERSION] [APP_HOST_ID|-n APP_HOST_NAME] [-d|-di DESTINATION_SERVICE_INSTANCE_NAME|-a CF_APP_NAME [-rt RUNTIME] [-u]]",
+            "Options": {
+              "-app, -a": "Cloud Foundry application name, which is bound to services that expose UI via html5-apps-repo",
+              "-destination, -d": "List HTML5 applications exposed via subaccount destinations with sap.cloud.service and html5-apps-repo.app_host_id properties",
+              "-destination-instance, -di": "List HTML5 applications exposed via service instance destinations with sap.cloud.service and html5-apps-repo.app_host_id properties",
+              "-name, -n": "Use html5-apps-repo app-host service instance name instead of APP_HOST_ID",
+              "-runtime, -rt": "Runtime service for which conventional URLs of applications will be shown. Default value is 'cpp'",
+              "-url, -u": "Show conventional URLs of applications, when accessed via Cloud Foundry application specified with --app flag or when --destination or --destination-instance flag is used",
+              "APP_HOST_ID": "GUID of html5-apps-repo app-host service instance that contains application with specified name and version",
+              "APP_HOST_NAME": "Name of html5-apps-repo app-host service instance that contains application with specified name and version",
+              "APP_NAME": "Application name, which file paths should be listed. If not provided, list of applications will be printed",
+              "APP_VERSION": "Application version, which file paths should be listed. If not provided, current active version will be used",
+              "DESTINATION_SERVICE_INSTANCE_NAME": "Name of destination service intance"
+            }
+          }
+        },
+        {
+          "Name": "html5-get",
+          "Alias": "",
+          "HelpText": "Fetch content of single HTML5 application file by path, or whole application by name and version",
+          "UsageDetails": {
+            "Usage": "cf html5-get PATH|APPKEY|--all [APP_HOST_ID|-n APP_HOST_NAME] [--out OUTPUT]",
+            "Options": {
+              "-all": "Flag that indicates that all applications of specified APP_HOST_ID or APP_HOST_NAME should be fetched",
+              "-name, -n": "Use html5-apps-repo app-host service instance name instead of APP_HOST_ID",
+              "-out, -o": "Output file (for single file) or output directory (for application). By default, standard output and current working directory",
+              "APPKEY": "Application name and version",
+              "APP_HOST_ID": "GUID of html5-apps-repo app-host service instance that contains application with specified name and version",
+              "APP_HOST_NAME": "Name of html5-apps-repo app-host service instance that contains application with specified name and version",
+              "PATH": "Application file path, starting from /\u003cappName-appVersion\u003e"
+            }
+          }
+        },
+        {
+          "Name": "html5-push",
+          "Alias": "",
+          "HelpText": "Push HTML5 applications to html5-apps-repo service",
+          "UsageDetails": {
+            "Usage": "cf html5-push [-d|-di DESTINATION_SERVICE_INSTANCE_NAME|-s SERVICE_INSTANCE_NAME] [-rt RUNTIME] [-r|-n APP_HOST_NAME] [PATH_TO_APP_FOLDER ...] [APP_HOST_ID]",
+            "Options": {
+              "-destination,-d": "Create subaccount level destination with credentials to access HTML5 applications",
+              "-destination-instance, -di": "Create service instance level destination with credentials to access HTML5 applications",
+              "-name,-n": "Use app-host service instance with specified name",
+              "-redeploy,-r": "Redeploy HTML5 applications. All applications should be previously deployed to same service instance",
+              "-runtime, -rt": "Runtime service for which conventional URLs of applications will be shown. Default value is 'cpp'",
+              "-service,-s": "Create subaccount level destination with credentials of the service instance",
+              "APP_HOST_ID": "GUID of html5-apps-repo app-host service instance that contains application with specified name and version",
+              "APP_HOST_NAME": "Name of app-host service instance to which applications should be deployed",
+              "DESTINATION_SERVICE_INSTANCE_NAME": "Name of destination service intance",
+              "PATH_TO_APP_FOLDER": "One or multiple paths to folders containing manifest.json and xs-app.json files"
+            }
+          }
+        },
+        {
+          "Name": "html5-delete",
+          "Alias": "",
+          "HelpText": "Delete one or multiple app-host service instances or content uploaded with these instances",
+          "UsageDetails": {
+            "Usage": "cf html5-delete [--content|-d|-di DESTINATION_SERVICE_INSTANCE_NAME] APP_HOST_ID|-n APP_HOST_NAME [...]",
+            "Options": {
+              "-content": "delete content only",
+              "-destination,-d": "delete subaccount level destinations that point to service instances to be deleted",
+              "-destination-instance, -di": "delete destinations that point to service instances to be deleted from specific destination service instance",
+              "-name,-n": "Use app-host service instance with specified name",
+              "APP_HOST_ID": "GUID of html5-apps-repo app-host service instance",
+              "APP_HOST_NAME": "Name of html5-apps-repo app-host service instance",
+              "DESTINATION_SERVICE_INSTANCE_NAME": "Name of destination service intance"
+            }
+          }
+        },
+        {
+          "Name": "html5-info",
+          "Alias": "",
+          "HelpText": "Get size limit and status of app-host service instances",
+          "UsageDetails": {
+            "Usage": "cf html5-info [APP_HOST_ID|-n APP_HOST_NAME ...]",
+            "Options": {
+              "-name,-n": "Use app-host service instance with specified name",
+              "APP_HOST_ID": "GUID of html5-apps-repo app-host service instance",
+              "APP_HOST_NAME": "Name of html5-apps-repo app-host service instance"
+            }
+          }
+        }
+      ]
+    },
+    "multiapps": {
+      "Name": "multiapps",
+      "Location": "C:\\Users\\user\\.cf\\plugins\\multiapps.exe",
+      "Version": {
+        "Major": 3,
+        "Minor": 11,
+        "Build": 1
+      },
+      "LibraryVersion": {
+        "Major": 0,
+        "Minor": 0,
+        "Build": 0
+      },
+      "Commands": [
+        {
+          "Name": "deploy",
+          "Alias": "",
+          "HelpText": "Deploy a new multi-target app or sync changes to an existing one",
+          "UsageDetails": {
+            "Usage": "Deploy a multi-target app archive\n\n   cf deploy MTA [-e EXT_DESCRIPTOR[,...]] [-t TIMEOUT] [--version-rule VERSION_RULE] [-u URL] [-f] [--retries RETRIES] [--no-start] [--namespace NAMESPACE] [--apply-namespace-app-names true/false] [--apply-namespace-service-names true/false] [--apply-namespace-app-routes true/false] [--apply-namespace-as-suffix true/false ] [--delete-services] [--delete-service-keys] [--delete-service-brokers] [--keep-files] [--no-restart-subscribed-apps] [--do-not-fail-on-missing-permissions] [--abort-on-error] [--strategy STRATEGY] [--skip-testing-phase] [--skip-idle-start] [--require-secure-parameters] [--disposable-user-provided-service] [--apps-start-timeout TIMEOUT] [--apps-stage-timeout TIMEOUT] [--apps-upload-timeout TIMEOUT] [--apps-task-execution-timeout TIMEOUT]\n\n   Perform action on an active deploy operation\n   cf deploy -i OPERATION_ID -a ACTION [-u URL]\n\n   Deploy a multi-target app archive referenced by a remote URL\n   \u003cwrite MTA archive URL to STDOUT\u003e | cf deploy [-e EXT_DESCRIPTOR[,...]] [-t TIMEOUT] [--version-rule VERSION_RULE] [-u MTA_CONTROLLER_URL] [--retries RETRIES] [--no-start] [--namespace NAMESPACE] [--apply-namespace-app-names true/false] [--apply-namespace-service-names true/false] [--apply-namespace-app-routes true/false] [--apply-namespace-as-suffix true/false ] [--delete-services] [--delete-service-keys] [--delete-service-brokers] [--keep-files] [--no-restart-subscribed-apps] [--do-not-fail-on-missing-permissions] [--abort-on-error] [--strategy STRATEGY] [--skip-testing-phase] [--skip-idle-start] [require-secure-parameters] [--disposable-user-provided-service] [--apps-start-timeout TIMEOUT] [--apps-stage-timeout TIMEOUT] [--apps-upload-timeout TIMEOUT] [--apps-task-execution-timeout TIMEOUT]\n\nENVIRONMENT:\n   DEBUG=1                                         Enables the logging of HTTP requests in STDOUT and STDERR.\n   MULTIAPPS_CONTROLLER_URL=\u003cURL\u003e                  Overrides the default deploy-service.\u003csystem-domain\u003e with a custom URL.\n   MULTIAPPS_USER_AGENT_SUFFIX=\u003cSTRING\u003e            Appends custom text to User-Agent header. Only alphanumeric, spaces, hyphens, dots, underscores allowed. Max 128 chars, excess truncated.\n\n   MULTIAPPS_UPLOAD_CHUNK_SIZE=\u003cPOSITIVE_INTEGER\u003e  Configures chunk size (in MB) for MTAR upload.\n   MULTIAPPS_UPLOAD_CHUNKS_SEQUENTIALLY=\u003cBOOLEAN\u003e  Upload chunks sequentially instead of in parallel. By default is false.\n   MULTIAPPS_DISABLE_UPLOAD_PROGRESS_BAR=\u003cBOOLEAN\u003e Disable upload progress bar (useful in CI/CD). By default is false.\n",
+            "Options": {
+              "-abort-on-error": "Auto-abort the process on any errors",
+              "-all-modules": "Deploy all modules which are contained in the deployment descriptor, in the current location",
+              "-all-resources": "Deploy all resources which are contained in the deployment descriptor, in the current location",
+              "-apply-namespace-app-names": "Apply namespace to application names: (true, false)",
+              "-apply-namespace-app-routes": "Apply namespace to application routes: (true, false)",
+              "-apply-namespace-as-suffix": "Apply namespace as a suffix rather than a prefix: (true, false)",
+              "-apply-namespace-service-names": "Apply namespace to service names: (true, false)",
+              "-apps-stage-timeout": "Stage app timeout in seconds",
+              "-apps-start-timeout, -t": "Start app timeout in seconds",
+              "-apps-task-execution-timeout": "Task execution timeout in seconds",
+              "-apps-upload-timeout": "Upload app timeout in seconds",
+              "-backup-previous-version": "(EXPERIMENTAL) (STRATEGY: BLUE-GREEN, INCREMENTAL-BLUE-GREEN) Backup previous version of applications, use new cli command \"rollback-mta\" to rollback to the previous version",
+              "-delete-service-brokers": "Delete discontinued service brokers",
+              "-delete-service-keys": "Delete existing service keys and apply the new ones",
+              "-delete-services": "Recreate changed services / delete discontinued services",
+              "-dependency-aware-stop-order": "(EXPERIMENTAL) (STRATEGY: BLUE-GREEN, INCREMENTAL-BLUE-GREEN) Stop apps in a dependency-aware order during the resume phase of a blue-green deployment",
+              "-disposable-user-provided-service": "Deploy when --require-secure-parameters flag is active for disposable UPS to be created and then deleted at the of the operation",
+              "-do-not-fail-on-missing-permissions": "Do not fail on missing permissions for admin operations",
+              "-keep-files": "Keep files used for deployment",
+              "-namespace": "Namespace for the MTA, applied on app names, app routes and service names",
+              "-no-restart-subscribed-apps": "Do not restart subscribed apps, updated during the deployment",
+              "-no-start": "Do not start apps",
+              "-require-secure-parameters": "(EXPERIMENTAL) Pass secrets to the deploy service in a secure way",
+              "-retries": "Retry the operation N times in case a non-content error occurs (default 3)",
+              "-skip-idle-start": "(STRATEGY: BLUE-GREEN, INCREMENTAL-BLUE-GREEN) Directly start the new MTA version as 'live', skipping the 'idle' phase of the resources. Do not require further confirmation or testing before deleting the old version",
+              "-skip-testing-phase": "(STRATEGY: BLUE-GREEN, INCREMENTAL-BLUE-GREEN) Do not require confirmation for deleting the previously deployed MTA app",
+              "-strategy": "Specify the deployment strategy when updating an mta (default, blue-green, incremental-blue-green)",
+              "a": "Action to perform on active deploy operation (abort, retry, resume, monitor)",
+              "e": "Extension descriptors",
+              "f": "Force deploy without confirmation for aborting conflicting processes",
+              "i": "Active deploy operation ID",
+              "m": "Deploy list of modules which are contained in the deployment descriptor, in the current location",
+              "r": "Deploy list of resources which are contained in the deployment descriptor, in the current location",
+              "u": "Deploy service URL, by default 'deploy-service.\u003csystem-domain\u003e'",
+              "version-rule": "Version rule (HIGHER, SAME_HIGHER, ALL)"
+            }
+          }
+        },
+        {
+          "Name": "bg-deploy",
+          "Alias": "",
+          "HelpText": "Deploy a multi-target app using blue-green deployment",
+          "UsageDetails": {
+            "Usage": "Deploy a multi-target app using blue-green deployment\n   cf bg-deploy MTA [-e EXT_DESCRIPTOR[,...]] [-t TIMEOUT] [--version-rule VERSION_RULE] [-u URL] [-f] [--retries RETRIES] [--no-start] [--namespace NAMESPACE] [--apply-namespace-app-names true/false] [--apply-namespace-service-names true/false] [--apply-namespace-app-routes true/false] [--apply-namespace-as-suffix true/false ] [--delete-services] [--delete-service-keys] [--delete-service-brokers] [--keep-files] [--no-restart-subscribed-apps] [--no-confirm] [--skip-idle-start] [--do-not-fail-on-missing-permissions] [--abort-on-error] [--apps-start-timeout TIMEOUT] [--apps-stage-timeout TIMEOUT] [--apps-upload-timeout TIMEOUT] [--apps-task-execution-timeout TIMEOUT]\n\n   Perform action on an active deploy operation\n   cf deploy -i OPERATION_ID -a ACTION [-u URL] \n\nENVIRONMENT:\n   DEBUG=1                                         Enables the logging of HTTP requests in STDOUT and STDERR.\n   MULTIAPPS_CONTROLLER_URL=\u003cURL\u003e                  Overrides the default deploy-service.\u003csystem-domain\u003e with a custom URL.\n   MULTIAPPS_USER_AGENT_SUFFIX=\u003cSTRING\u003e            Appends custom text to User-Agent header. Only alphanumeric, spaces, hyphens, dots, underscores allowed. Max 128 chars, excess truncated.\n\n   MULTIAPPS_UPLOAD_CHUNK_SIZE=\u003cPOSITIVE_INTEGER\u003e  Configures chunk size (in MB) for MTAR upload.\n   MULTIAPPS_UPLOAD_CHUNKS_SEQUENTIALLY=\u003cBOOLEAN\u003e  Upload chunks sequentially instead of in parallel. By default is false.\n   MULTIAPPS_DISABLE_UPLOAD_PROGRESS_BAR=\u003cBOOLEAN\u003e Disable upload progress bar (useful in CI/CD). By default is false.\n",
+            "Options": {
+              "-abort-on-error": "Auto-abort the process on any errors",
+              "-apply-namespace-app-names": "Apply namespace to application names: (true, false)",
+              "-apply-namespace-app-routes": "Apply namespace to application routes: (true, false)",
+              "-apply-namespace-as-suffix": "Apply namespace as a suffix rather than a prefix: (true, false)",
+              "-apply-namespace-service-names": "Apply namespace to service names: (true, false)",
+              "-apps-stage-timeout": "Stage app timeout in seconds",
+              "-apps-start-timeout, -t": "Start app timeout in seconds",
+              "-apps-task-execution-timeout": "Task execution timeout in seconds",
+              "-apps-upload-timeout": "Upload app timeout in seconds",
+              "-backup-previous-version": "(EXPERIMENTAL) Backup previous version of applications, use new cli command \"rollback-mta\" to rollback to the previous version",
+              "-delete-service-brokers": "Delete discontinued service brokers",
+              "-delete-service-keys": "Delete existing service keys and apply the new ones",
+              "-delete-services": "Recreate changed services / delete discontinued services",
+              "-do-not-fail-on-missing-permissions": "Do not fail on missing permissions for admin operations",
+              "-keep-files": "Keep files used for deployment",
+              "-namespace": "Namespace for the MTA, applied on app names, app routes and service names",
+              "-no-confirm": "Do not require confirmation for deleting the previously deployed MTA apps",
+              "-no-restart-subscribed-apps": "Do not restart subscribed apps, updated during the deployment",
+              "-no-start": "Do not start apps",
+              "-retries": "Retry the operation N times in case a non-content error occurs (default 3)",
+              "-skip-idle-start": "Directly start the new MTA version as 'live', skipping the 'idle' phase of the resources. Do not require further confirmation or testing before deleting the old version",
+              "a": "Action to perform on active deploy operation (abort, retry, resume, monitor)",
+              "e": "Extension descriptors",
+              "f": "Force deploy without confirmation for aborting conflicting processes",
+              "i": "Active deploy operation ID",
+              "u": "Deploy service URL, by default 'deploy-service.\u003csystem-domain\u003e'",
+              "version-rule": "Version rule (HIGHER, SAME_HIGHER, ALL)"
+            }
+          }
+        },
+        {
+          "Name": "mtas",
+          "Alias": "",
+          "HelpText": "List all multi-target apps",
+          "UsageDetails": {
+            "Usage": "cf mtas [-u URL]\n\nENVIRONMENT:\n   DEBUG=1                                         Enables the logging of HTTP requests in STDOUT and STDERR.\n   MULTIAPPS_CONTROLLER_URL=\u003cURL\u003e                  Overrides the default deploy-service.\u003csystem-domain\u003e with a custom URL.\n   MULTIAPPS_USER_AGENT_SUFFIX=\u003cSTRING\u003e            Appends custom text to User-Agent header. Only alphanumeric, spaces, hyphens, dots, underscores allowed. Max 128 chars, excess truncated.\n",
+            "Options": {
+              "u": "Deploy service URL, by default 'deploy-service.\u003csystem-domain\u003e'"
+            }
+          }
+        },
+        {
+          "Name": "download-mta-op-logs",
+          "Alias": "dmol",
+          "HelpText": "Download logs of multi-target app operation",
+          "UsageDetails": {
+            "Usage": "cf download-mta-op-logs -i OPERATION_ID [-d DIRECTORY] [-u URL]\n\n   cf download-mta-op-logs --mta MTA [--last NUM] [-d DIRECTORY] [-u URL]\n\nENVIRONMENT:\n   DEBUG=1                                         Enables the logging of HTTP requests in STDOUT and STDERR.\n   MULTIAPPS_CONTROLLER_URL=\u003cURL\u003e                  Overrides the default deploy-service.\u003csystem-domain\u003e with a custom URL.\n   MULTIAPPS_USER_AGENT_SUFFIX=\u003cSTRING\u003e            Appends custom text to User-Agent header. Only alphanumeric, spaces, hyphens, dots, underscores allowed. Max 128 chars, excess truncated.\n",
+            "Options": {
+              "-last": "Downloads last NUM operation logs. If not specified, logs for each process with the specified MTA_ID are downloaded",
+              "-mta": "ID of the deployed MTA",
+              "d": "Root directory to download logs, by default the current working directory",
+              "i": "Operation ID",
+              "u": "Deploy service URL, by default 'deploy-service.\u003csystem-domain\u003e'"
+            }
+          }
+        },
+        {
+          "Name": "undeploy",
+          "Alias": "",
+          "HelpText": "Undeploy a multi-target app",
+          "UsageDetails": {
+            "Usage": "Undeploy a multi-target app\n   cf undeploy MTA_ID [-u URL] [-f] [--retries RETRIES] [--namespace NAMESPACE] [--delete-services] [--delete-service-keys] [--delete-service-brokers] [--no-restart-subscribed-apps] [--do-not-fail-on-missing-permissions] [--abort-on-error]\n\n   Perform action on an active undeploy operation\n   cf undeploy -i OPERATION_ID -a ACTION [-u URL]\n\nENVIRONMENT:\n   DEBUG=1                                         Enables the logging of HTTP requests in STDOUT and STDERR.\n   MULTIAPPS_CONTROLLER_URL=\u003cURL\u003e                  Overrides the default deploy-service.\u003csystem-domain\u003e with a custom URL.\n   MULTIAPPS_USER_AGENT_SUFFIX=\u003cSTRING\u003e            Appends custom text to User-Agent header. Only alphanumeric, spaces, hyphens, dots, underscores allowed. Max 128 chars, excess truncated.\n",
+            "Options": {
+              "-abort-on-error": "Auto-abort the process on any errors",
+              "-delete-service-brokers": "Delete service brokers",
+              "-delete-service-keys": "Delete existing service keys",
+              "-delete-services": "Delete services",
+              "-do-not-fail-on-missing-permissions": "Do not fail on missing permissions for admin operations",
+              "-namespace": "Specify the (optional) namespace the target mta is in",
+              "-no-restart-subscribed-apps": "Do not restart subscribed apps, updated during the undeployment",
+              "-retries": "Retry the operation N times in case a non-content error occurs (default 3)",
+              "a": "Action to perform on the active undeploy operation (abort, retry, monitor)",
+              "f": "Force undeploy without confirmation",
+              "i": "Active undeploy operation ID",
+              "u": "Deploy service URL, by default 'deploy-service.\u003csystem-domain\u003e'"
+            }
+          }
+        },
+        {
+          "Name": "mta",
+          "Alias": "",
+          "HelpText": "Display health and status for a multi-target app",
+          "UsageDetails": {
+            "Usage": "cf mta MTA_ID [--namespace NAMESPACE] [-u URL]\n\nENVIRONMENT:\n   DEBUG=1                                         Enables the logging of HTTP requests in STDOUT and STDERR.\n   MULTIAPPS_CONTROLLER_URL=\u003cURL\u003e                  Overrides the default deploy-service.\u003csystem-domain\u003e with a custom URL.\n   MULTIAPPS_USER_AGENT_SUFFIX=\u003cSTRING\u003e            Appends custom text to User-Agent header. Only alphanumeric, spaces, hyphens, dots, underscores allowed. Max 128 chars, excess truncated.\n",
+            "Options": {
+              "-namespace": "namespace of the requested mta, empty by default",
+              "u": "Deploy service URL, by default 'deploy-service.\u003csystem-domain\u003e'"
+            }
+          }
+        },
+        {
+          "Name": "mta-ops",
+          "Alias": "",
+          "HelpText": "List multi-target app operations",
+          "UsageDetails": {
+            "Usage": "cf mta-ops [--mta MTA] [-u URL] [--last NUM] [--all]\n\nENVIRONMENT:\n   DEBUG=1                                         Enables the logging of HTTP requests in STDOUT and STDERR.\n   MULTIAPPS_CONTROLLER_URL=\u003cURL\u003e                  Overrides the default deploy-service.\u003csystem-domain\u003e with a custom URL.\n   MULTIAPPS_USER_AGENT_SUFFIX=\u003cSTRING\u003e            Appends custom text to User-Agent header. Only alphanumeric, spaces, hyphens, dots, underscores allowed. Max 128 chars, excess truncated.\n",
+            "Options": {
+              "-all": "List all operations, not just the active ones",
+              "-last": "List last NUM operations",
+              "-mta": "ID of the deployed package",
+              "u": "Deploy service URL, by default 'deploy-service.\u003csystem-domain\u003e'"
+            }
+          }
+        },
+        {
+          "Name": "purge-mta-config",
+          "Alias": "",
+          "HelpText": "Purge no longer valid configuration entries",
+          "UsageDetails": {
+            "Usage": "cf purge-mta-config [-u URL]\n\nENVIRONMENT:\n   DEBUG=1                                         Enables the logging of HTTP requests in STDOUT and STDERR.\n   MULTIAPPS_CONTROLLER_URL=\u003cURL\u003e                  Overrides the default deploy-service.\u003csystem-domain\u003e with a custom URL.\n   MULTIAPPS_USER_AGENT_SUFFIX=\u003cSTRING\u003e            Appends custom text to User-Agent header. Only alphanumeric, spaces, hyphens, dots, underscores allowed. Max 128 chars, excess truncated.\n",
+            "Options": {
+              "u": "Deploy service URL, by default 'deploy-service.\u003csystem-domain\u003e'"
+            }
+          }
+        },
+        {
+          "Name": "rollback-mta",
+          "Alias": "",
+          "HelpText": "(EXPERIMENTAL) Rollback of a multi-target app works only if [--backup-previous-version] flag was used during blue-green deployment and backup applications exists in the space",
+          "UsageDetails": {
+            "Usage": "Rollback of a multi-target app\n   cf rollback-mta MTA_ID [-t TIMEOUT] [-f] [--retries RETRIES] [--namespace NAMESPACE] [--do-not-fail-on-missing-permissions] [--abort-on-error] [--apps-start-timeout TIMEOUT] [--apps-stage-timeout TIMEOUT] [--apps-upload-timeout TIMEOUT] [--apps-task-execution-timeout TIMEOUT]\n\n   Perform action on an active deploy operation\n   cf rollback-mta -i OPERATION_ID -a ACTION [-u URL]\n\nENVIRONMENT:\n   DEBUG=1                                         Enables the logging of HTTP requests in STDOUT and STDERR.\n   MULTIAPPS_CONTROLLER_URL=\u003cURL\u003e                  Overrides the default deploy-service.\u003csystem-domain\u003e with a custom URL.\n   MULTIAPPS_USER_AGENT_SUFFIX=\u003cSTRING\u003e            Appends custom text to User-Agent header. Only alphanumeric, spaces, hyphens, dots, underscores allowed. Max 128 chars, excess truncated.\n",
+            "Options": {
+              "-abort-on-error": "Auto-abort the process on any errors",
+              "-apps-stage-timeout": "Stage app timeout in seconds",
+              "-apps-start-timeout, -t": "Start app timeout in seconds",
+              "-apps-task-execution-timeout": "Task execution timeout in seconds",
+              "-apps-upload-timeout": "Upload app timeout in seconds",
+              "-delete-services": "Recreate changed services / delete discontinued services",
+              "-do-not-fail-on-missing-permissions": "Do not fail on missing permissions for admin operations",
+              "-namespace": "Namespace for the MTA, applied on app names, app routes and service names",
+              "-process-user-provided-services": "Enable processing of user provided services during rollback",
+              "-retries": "Retry the operation N times in case a non-content error occurs (default 3)",
+              "a": "Action to perform on active deploy operation (abort, retry, resume, monitor)",
+              "f": "Force deploy without confirmation for aborting conflicting processes",
+              "i": "Active deploy operation ID",
+              "u": "Deploy service URL, by default 'deploy-service.\u003csystem-domain\u003e'"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

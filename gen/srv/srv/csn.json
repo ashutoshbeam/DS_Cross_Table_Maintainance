@@ -92,19 +92,15 @@
     },
     "FarmTankService": {
       "@source": "srv/cap-service.cds",
-      "kind": "service"
+      "kind": "service",
+      "@path": "/odata/v4/farm-tank"
     },
     "FarmTankService.Tanks": {
       "kind": "entity",
-      "query": {
-        "SELECT": {
-          "from": {
-            "ref": [
-              "dwcmission.farm.Tanks"
-            ]
-          },
-          "columns": [
-            "*"
+      "projection": {
+        "from": {
+          "ref": [
+            "dwcmission.farm.Tanks"
           ]
         }
       },
@@ -209,82 +205,124 @@
           "=": "COMPANY_CODE"
         },
         {
+          "=": "LOCATION"
+        },
+        {
           "=": "LOCATION_TYPE"
         },
         {
           "=": "REGION"
         }
       ],
-      "@UI.Identification": [
+      "@UI.PresentationVariant.SortOrder": [
+        {
+          "Property": {
+            "=": "PLANT"
+          },
+          "Descending": false
+        }
+      ],
+      "@UI.PresentationVariant.Visualizations": [
+        "@UI.LineItem"
+      ],
+      "@UI.LineItem": [
         {
           "$Type": "UI.DataField",
-          "Label": "{i18n>Plant}",
           "Value": {
             "=": "PLANT"
+          },
+          "@UI.Importance": {
+            "#": "High"
           }
         },
         {
           "$Type": "UI.DataField",
-          "Label": "{i18n>Companycode}",
-          "Value": {
-            "=": "COMPANY_CODE"
-          }
-        },
-        {
-          "$Type": "UI.DataField",
-          "Label": "{i18n>Location}",
           "Value": {
             "=": "LOCATION"
+          },
+          "@UI.Importance": {
+            "#": "High"
           }
         },
         {
           "$Type": "UI.DataField",
-          "Label": "{i18n>Locationtype}",
+          "Value": {
+            "=": "COMPANY_CODE"
+          },
+          "@UI.Importance": {
+            "#": "Medium"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
           "Value": {
             "=": "LOCATION_TYPE"
+          },
+          "@UI.Importance": {
+            "#": "Medium"
           }
         },
         {
           "$Type": "UI.DataField",
-          "Label": "{i18n>Region}",
           "Value": {
             "=": "REGION"
+          },
+          "@UI.Importance": {
+            "#": "Low"
           }
         }
       ],
-      "@UI.FieldGroup#GeneratedGroup.$Type": "UI.FieldGroupType",
-      "@UI.FieldGroup#GeneratedGroup.Data": [
+      "@UI.Identification": [
         {
           "$Type": "UI.DataField",
-          "Label": "{i18n>Plant}",
           "Value": {
             "=": "PLANT"
           }
         },
         {
           "$Type": "UI.DataField",
-          "Label": "{i18n>Companycode}",
-          "Value": {
-            "=": "COMPANY_CODE"
-          }
-        },
-        {
-          "$Type": "UI.DataField",
-          "Label": "{i18n>Location}",
           "Value": {
             "=": "LOCATION"
           }
         },
         {
           "$Type": "UI.DataField",
-          "Label": "{i18n>Locationtype}",
           "Value": {
-            "=": "LOCATION_TYPE"
+            "=": "COMPANY_CODE"
+          }
+        }
+      ],
+      "@UI.FieldGroup#General.$Type": "UI.FieldGroupType",
+      "@UI.FieldGroup#General.Data": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "PLANT"
           }
         },
         {
           "$Type": "UI.DataField",
-          "Label": "{i18n>Region}",
+          "Value": {
+            "=": "LOCATION"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "LOCATION_TYPE"
+          }
+        }
+      ],
+      "@UI.FieldGroup#Organizational.$Type": "UI.FieldGroupType",
+      "@UI.FieldGroup#Organizational.Data": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "COMPANY_CODE"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
           "Value": {
             "=": "REGION"
           }
@@ -293,46 +331,15 @@
       "@UI.Facets": [
         {
           "$Type": "UI.ReferenceFacet",
-          "ID": "GeneratedFacet1",
+          "ID": "GeneralFacet",
           "Label": "{i18n>GeneralInformation}",
-          "Target": "@UI.FieldGroup#GeneratedGroup"
-        }
-      ],
-      "@UI.LineItem": [
-        {
-          "$Type": "UI.DataField",
-          "Label": "{i18n>Plant}",
-          "Value": {
-            "=": "PLANT"
-          }
+          "Target": "@UI.FieldGroup#General"
         },
         {
-          "$Type": "UI.DataField",
-          "Label": "{i18n>Companycode}",
-          "Value": {
-            "=": "COMPANY_CODE"
-          }
-        },
-        {
-          "$Type": "UI.DataField",
-          "Label": "{i18n>Location}",
-          "Value": {
-            "=": "LOCATION"
-          }
-        },
-        {
-          "$Type": "UI.DataField",
-          "Label": "{i18n>Locationtype}",
-          "Value": {
-            "=": "LOCATION_TYPE"
-          }
-        },
-        {
-          "$Type": "UI.DataField",
-          "Label": "{i18n>Region}",
-          "Value": {
-            "=": "REGION"
-          }
+          "$Type": "UI.ReferenceFacet",
+          "ID": "OrganizationalFacet",
+          "Label": "{i18n>OrganizationalInformation}",
+          "Target": "@UI.FieldGroup#Organizational"
         }
       ],
       "@Capabilities.InsertRestrictions.Insertable": true,
@@ -347,23 +354,28 @@
       },
       "elements": {
         "PLANT": {
+          "@Common.Label": "{i18n>Plant}",
           "key": true,
           "type": "cds.String",
           "length": 4
         },
         "COMPANY_CODE": {
+          "@Common.Label": "{i18n>CompanyCode}",
           "type": "cds.String",
           "length": 4
         },
         "LOCATION": {
+          "@Common.Label": "{i18n>Location}",
           "type": "cds.String",
           "length": 10
         },
         "LOCATION_TYPE": {
+          "@Common.Label": "{i18n>LocationType}",
           "type": "cds.String",
           "length": 10
         },
         "REGION": {
+          "@Common.Label": "{i18n>Region}",
           "type": "cds.String",
           "length": 10
         }

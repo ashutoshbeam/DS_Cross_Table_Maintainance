@@ -87,56 +87,90 @@
           <Collection>
             <PropertyPath>PLANT</PropertyPath>
             <PropertyPath>COMPANY_CODE</PropertyPath>
+            <PropertyPath>LOCATION</PropertyPath>
             <PropertyPath>LOCATION_TYPE</PropertyPath>
             <PropertyPath>REGION</PropertyPath>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.PresentationVariant">
+          <Record Type="UI.PresentationVariantType">
+            <PropertyValue Property="SortOrder">
+              <Collection>
+                <Record Type="Common.SortOrderType">
+                  <PropertyValue Property="Property" PropertyPath="PLANT"/>
+                  <PropertyValue Property="Descending" Bool="false"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="Visualizations">
+              <Collection>
+                <AnnotationPath>@UI.LineItem</AnnotationPath>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="PLANT"/>
+              <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="LOCATION"/>
+              <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="COMPANY_CODE"/>
+              <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/Medium"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="LOCATION_TYPE"/>
+              <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/Medium"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="REGION"/>
+              <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/Low"/>
+            </Record>
           </Collection>
         </Annotation>
         <Annotation Term="UI.Identification">
           <Collection>
             <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="{i18n>Plant}"/>
               <PropertyValue Property="Value" Path="PLANT"/>
             </Record>
             <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="{i18n>Companycode}"/>
-              <PropertyValue Property="Value" Path="COMPANY_CODE"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="{i18n>Location}"/>
               <PropertyValue Property="Value" Path="LOCATION"/>
             </Record>
             <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="{i18n>Locationtype}"/>
-              <PropertyValue Property="Value" Path="LOCATION_TYPE"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="{i18n>Region}"/>
-              <PropertyValue Property="Value" Path="REGION"/>
+              <PropertyValue Property="Value" Path="COMPANY_CODE"/>
             </Record>
           </Collection>
         </Annotation>
-        <Annotation Term="UI.FieldGroup" Qualifier="GeneratedGroup">
+        <Annotation Term="UI.FieldGroup" Qualifier="General">
           <Record Type="UI.FieldGroupType">
             <PropertyValue Property="Data">
               <Collection>
                 <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="{i18n>Plant}"/>
                   <PropertyValue Property="Value" Path="PLANT"/>
                 </Record>
                 <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="{i18n>Companycode}"/>
-                  <PropertyValue Property="Value" Path="COMPANY_CODE"/>
-                </Record>
-                <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="{i18n>Location}"/>
                   <PropertyValue Property="Value" Path="LOCATION"/>
                 </Record>
                 <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="{i18n>Locationtype}"/>
                   <PropertyValue Property="Value" Path="LOCATION_TYPE"/>
                 </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="Organizational">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
                 <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="{i18n>Region}"/>
+                  <PropertyValue Property="Value" Path="COMPANY_CODE"/>
+                </Record>
+                <Record Type="UI.DataField">
                   <PropertyValue Property="Value" Path="REGION"/>
                 </Record>
               </Collection>
@@ -146,38 +180,36 @@
         <Annotation Term="UI.Facets">
           <Collection>
             <Record Type="UI.ReferenceFacet">
-              <PropertyValue Property="ID" String="GeneratedFacet1"/>
+              <PropertyValue Property="ID" String="GeneralFacet"/>
               <PropertyValue Property="Label" String="{i18n>GeneralInformation}"/>
-              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#GeneratedGroup"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#General"/>
             </Record>
-          </Collection>
-        </Annotation>
-        <Annotation Term="UI.LineItem">
-          <Collection>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="{i18n>Plant}"/>
-              <PropertyValue Property="Value" Path="PLANT"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="{i18n>Companycode}"/>
-              <PropertyValue Property="Value" Path="COMPANY_CODE"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="{i18n>Location}"/>
-              <PropertyValue Property="Value" Path="LOCATION"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="{i18n>Locationtype}"/>
-              <PropertyValue Property="Value" Path="LOCATION_TYPE"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="{i18n>Region}"/>
-              <PropertyValue Property="Value" Path="REGION"/>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="OrganizationalFacet"/>
+              <PropertyValue Property="Label" String="{i18n>OrganizationalInformation}"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Organizational"/>
             </Record>
           </Collection>
         </Annotation>
       </Annotations>
       <Annotations Target="FarmTankService.EntityContainer/PlantLocation">
+        <Annotation Term="UI.PresentationVariant">
+          <Record Type="UI.PresentationVariantType">
+            <PropertyValue Property="SortOrder">
+              <Collection>
+                <Record Type="Common.SortOrderType">
+                  <PropertyValue Property="Property" PropertyPath="PLANT"/>
+                  <PropertyValue Property="Descending" Bool="false"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="Visualizations">
+              <Collection>
+                <AnnotationPath>@UI.LineItem</AnnotationPath>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
         <Annotation Term="Capabilities.InsertRestrictions">
           <Record Type="Capabilities.InsertRestrictionsType">
             <PropertyValue Property="Insertable" Bool="true"/>
@@ -193,6 +225,21 @@
             <PropertyValue Property="Deletable" Bool="true"/>
           </Record>
         </Annotation>
+      </Annotations>
+      <Annotations Target="FarmTankService.PlantLocation/PLANT">
+        <Annotation Term="Common.Label" String="{i18n>Plant}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.PlantLocation/COMPANY_CODE">
+        <Annotation Term="Common.Label" String="{i18n>CompanyCode}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.PlantLocation/LOCATION">
+        <Annotation Term="Common.Label" String="{i18n>Location}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.PlantLocation/LOCATION_TYPE">
+        <Annotation Term="Common.Label" String="{i18n>LocationType}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.PlantLocation/REGION">
+        <Annotation Term="Common.Label" String="{i18n>Region}"/>
       </Annotations>
     </Schema>
   </edmx:DataServices>

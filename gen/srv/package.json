@@ -8,11 +8,11 @@
   "dependencies": {
     "@cap-js/hana": "^2.7.0",
     "@sap/cds": "^9.8.4",
-    "@sap/xssec": "^3",
+    "@sap/xssec": "^4.13.0",
     "cf": "^0.0.3",
     "express": "^4",
     "hdb": "^0.19.6",
-    "passport": "^0"
+    "passport": "^0.7.0"
   },
   "devDependencies": {
     "@sap/cds-dk": "^9.8.2",
@@ -23,9 +23,9 @@
   },
   "scripts": {
     "start": "npx cds-serve",
-    "watch-plantlocationpage": "cds watch --open plantlocationpage/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-PlantLocationApp": "cds watch --open PlantLocationApp/webapp/index.html?sap-ui-xx-viewCache=false --livereload false",
     "undeploy": "cf undeploy FarmTankCAPProxy --delete-services --delete-service-keys --delete-service-brokers",
-    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "build": "npx rimraf resources mta_archives && mbt build --mtar archive",
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
   },
   "engines": {
@@ -62,16 +62,7 @@
         "kind": "hana-cloud"
       },
       "auth": {
-        "kind": "basic",
-        "users": {
-          "field.technician@tester.sap.com": {
-            "password": "initial",
-            "roles": [
-              "FieldTechnician"
-            ]
-          },
-          "*": false
-        }
+        "kind": "xsuaa"
       }
     },
     "hana": {
@@ -79,6 +70,6 @@
     }
   },
   "sapux": [
-    "app/plantlocationpage"
+    "app/PlantLocationApp"
   ]
 }

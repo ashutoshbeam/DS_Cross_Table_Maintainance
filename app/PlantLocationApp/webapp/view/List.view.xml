@@ -1,0 +1,141 @@
+<mvc:View
+    controllerName="dwcmission.plantlocationapp.controller.List"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:unified="sap.ui.unified">
+    <Page title="{i18n>appTitle}" busy="{view>/busy}">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                            <Panel
+                    expandable="true"
+                    expanded="true"
+                    headerText="{i18n>filterPanelTitle}"
+                    class="sapUiSmallMarginTop sapUiResponsiveMargin sapUiNoContentPadding">
+                    <content>
+                        <VBox class="sapUiMediumMargin">
+                            <HBox wrap="Wrap" renderType="Bare">
+                                <VBox class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                                    <Label text="{i18n>Plant}" labelFor="plantFilter" />
+                                    <Input id="plantFilter" value="{view>/filters/plant}" width="12rem" />
+                                </VBox>
+                                <VBox class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                                    <Label text="{i18n>CompanyCode}" labelFor="companyCodeFilter" />
+                                    <Input id="companyCodeFilter" value="{view>/filters/companyCode}" width="12rem" />
+                                </VBox>
+                                <VBox class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                                    <Label text="{i18n>Location}" labelFor="locationFilter" />
+                                    <Input id="locationFilter" value="{view>/filters/location}" width="12rem" />
+                                </VBox>
+                                <VBox class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                                    <Label text="{i18n>LocationType}" labelFor="locationTypeFilter" />
+                                    <Input id="locationTypeFilter" value="{view>/filters/locationType}" width="12rem" />
+                                </VBox>
+                                <VBox class="sapUiTinyMarginBottom">
+                                    <Label text="{i18n>Region}" labelFor="regionFilter" />
+                                    <Input id="regionFilter" value="{view>/filters/region}" width="12rem" />
+                                </VBox>
+                            </HBox>
+                            <Toolbar design="Transparent">
+                                <ToolbarSpacer />
+                                <Button text="{i18n>clearFilters}" press=".onClearFilters" />
+                                <Button type="Emphasized" text="{i18n>applyFilters}" press=".onApplyFilters" />
+                            </Toolbar>
+                        </VBox>
+                    </content>
+                </Panel>
+                <OverflowToolbar>
+                    <Title text="{view>/tableTitle}" level="H2" />
+                    <Button
+                        icon="sap-icon://add"
+                        type="Emphasized"
+                        tooltip="{i18n>create}"
+                        press=".onCreate" />
+                    <Button
+                        icon="sap-icon://edit"
+                        tooltip="{i18n>edit}"
+                        enabled="{= ${view>/selectedCount} === 1 }"
+                        press=".onEdit" />
+                    <Button
+                        icon="sap-icon://delete"
+                        text="{i18n>delete}"
+                        enabled="{= ${view>/selectedCount} > 0 }"
+                        press=".onDelete" />
+                    <Button
+                        icon="sap-icon://multi-select"
+                        text="{i18n>multiUpdate}"
+                        enabled="{= ${view>/selectedCount} > 1 }"
+                        press=".onOpenMultiUpdate" />
+                    <Button
+                        icon="sap-icon://upload"
+                        text="{i18n>massUpload}"
+                        press=".onOpenMassUpload" />
+                    <ToolbarSpacer />
+                    <Text text="{i18n>selectedCountLabel}: {view>/selectedCount}" />
+                    <ToolbarSeparator />
+                    <SearchField
+                        width="18rem"
+                        placeholder="{i18n>searchPlaceholder}"
+                        liveChange=".onSearch" />
+                    <Button
+                        icon="sap-icon://refresh"
+                        text="{i18n>refresh}"
+                        press=".onRefresh" />
+                </OverflowToolbar>
+                <Table
+                    id="plantTable"
+                    width="auto"
+                    growing="true"
+                    growingScrollToLoad="true"
+                    mode="MultiSelect"
+                    selectionChange=".onSelectionChange"
+                    updateFinished=".onUpdateFinished"
+                    items="{
+                        path: '/PlantLocation',
+                        parameters: {
+                            $$updateGroupId: 'plantLocationGroup'
+                        },
+                        sorter: {
+                            path: 'PLANT',
+                            descending: false
+                        }
+                    }">
+                    <columns>
+                        <Column>
+                            <Text text="{i18n>Plant}" />
+                        </Column>
+                        <Column>
+                            <Text text="{i18n>Location}" />
+                        </Column>
+                        <Column>
+                            <Text text="{i18n>CompanyCode}" />
+                        </Column>
+                        <Column>
+                            <Text text="{i18n>LocationType}" />
+                        </Column>
+                        <Column>
+                            <Text text="{i18n>Region}" />
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem type="Navigation" press=".onItemPress">
+                            <cells>
+                                <ObjectIdentifier title="{PLANT}" text="{LOCATION}" />
+                                <Text text="{LOCATION}" />
+                                <Text text="{COMPANY_CODE}" />
+                                <Text text="{LOCATION_TYPE}" />
+                                <Text text="{REGION}" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+
+        <dependents>
+            <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.CreateEditDialog" type="XML" />
+            <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.MultiUpdateDialog" type="XML" />
+            <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.MassUploadDialog" type="XML" />
+        </dependents>
+    </Page>
+</mvc:View>

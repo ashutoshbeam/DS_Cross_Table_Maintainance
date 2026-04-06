@@ -15,7 +15,10 @@
 				  "type": "VIEW",
 				  "name": "vZPLANT_LOCATION",
 				  "privileges_with_grant_option": [
-				    "SELECT"
+				    "SELECT",
+                    "INSERT",
+                    "UPDATE",
+                    "DELETE"
 				  ]
 				}
 			]

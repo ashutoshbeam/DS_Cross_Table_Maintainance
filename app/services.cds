@@ -1,2 +1,2 @@
 
-using from './plantlocationpage/annotations';
+using from './plantlocation-annotations';

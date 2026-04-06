@@ -1,7 +1,7 @@
 _schema-version: "3.1"
 ID: FarmTankCAPProxy
 description: A simple CAP project.
-version: 1.1.2
+version: 1.1.5
 modules:
 - name: FarmTankCAPProxy-srv
   type: nodejs
@@ -39,8 +39,8 @@ modules:
     build-result: resources
     requires:
     - artifacts:
-      - plantlocationpage.zip
-      name: plantlocationpage
+      - PlantLocationApp.zip
+      name: PlantLocationApp
       target-path: resources/
 - name: FarmTankCAPProxy-destination-content
   type: com.sap.application.content
@@ -54,25 +54,36 @@ modules:
     parameters:
       service-key:
         name: FarmTankCAPProxy-repo-runtime-key
+  - name: FarmTankCAPProxy-auth
+    parameters:
+      service-key:
+        name: FarmTankCAPProxy-auth-key
+  - name: srv-api
   parameters:
     content:
       instance:
         existing_destinations_policy: update
         destinations:
-        - Name: FarmTankCAPProxy-html5-runtime
+        - Name: srv-api
+          Authentication: OAuth2UserTokenExchange
+          ServiceInstanceName: FarmTankCAPProxy-auth
+          ServiceKeyName: FarmTankCAPProxy-auth-key
+          URL: ~{srv-api/srv-url}
+          HTML5.DynamicDestination: true
+        - Name: farmtankcapproxy
           ServiceInstanceName: FarmTankCAPProxy-html5-runtime-service
           ServiceKeyName: FarmTankCAPProxy-repo-runtime-key
-          sap.cloud.service: farmtankcapproxy.service
-- name: plantlocationpage
-  type: html5
-  path: app/plantlocationpage
+          sap.cloud.service: farmtankcapproxy
+- name: PlantLocationApp
+  type: com.sap.application.content
+  path: app/PlantLocationApp
   build-parameters:
     build-result: dist
     builder: custom
     commands:
     - npm install
     - npm run build:cf
-    supported-platforms: []
+
 resources:
 - name: training-hdi
   type: org.cloudfoundry.existing-service
@@ -130,6 +141,7 @@ resources:
 parameters:
   deploy_mode: html5-repo
   enable-parallel-deployments: true
+  sap.cloud.service: farmtankcapproxy
 build-parameters:
   before-all:
   - builder: custom

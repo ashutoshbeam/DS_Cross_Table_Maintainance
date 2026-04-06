@@ -1,0 +1,128 @@
+{
+	"_version": "1.83.0",
+	"sap.app": {
+		"id": "dwcmission.plantlocationapp",
+		"type": "application",
+		"i18n": {
+			"bundleUrl": "i18n/i18n.properties",
+			"supportedLocales": [
+				"en"
+			],
+			"fallbackLocale": "en"
+		},
+		"applicationVersion": {
+			"version": "1.0.5"
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"dataSources": {
+			"mainService": {
+				"uri": "odata/v4/farm-tank/",
+				"type": "OData",
+				"settings": {
+					"annotations": [],
+					"odataVersion": "4.01"
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+	"sap.ui5": {
+		"rootView": {
+			"viewName": "dwcmission.plantlocationapp.view.App",
+			"type": "XML",
+			"async": true,
+			"id": "app"
+		},
+		"dependencies": {
+			"minUI5Version": "1.146.0",
+			"libs": {
+				"sap.m": {},
+				"sap.ui.core": {},
+				"sap.ui.layout": {},
+				"sap.ui.unified": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "dwcmission.plantlocationapp.i18n.i18n",
+					"supportedLocales": [
+						"",
+						"en"
+					]
+				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true,
+				"settings": {
+					"synchronizationMode": "None",
+					"operationMode": "Server",
+					"autoExpandSelect": true,
+					"earlyRequests": true,
+					"groupId": "$auto",
+					"updateGroupId": "plantLocationGroup"
+				}
+			},
+			"view": {
+				"type": "sap.ui.model.json.JSONModel"
+			}
+		},
+		"resources": {
+			"css": []
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"viewPath": "dwcmission.plantlocationapp.view",
+				"controlId": "app",
+				"controlAggregation": "pages",
+				"async": true
+			},
+			"routes": [
+				{
+					"pattern": ":?query:",
+					"name": "PlantLocationList",
+					"target": "PlantLocationList"
+				},
+				{
+					"pattern": "PlantLocation/{plant}",
+					"name": "PlantLocationObjectPage",
+					"target": "PlantLocationObjectPage"
+				}
+			],
+			"targets": {
+				"PlantLocationList": {
+					"viewName": "List",
+					"viewId": "PlantLocationList"
+				},
+				"PlantLocationObjectPage": {
+					"viewName": "Detail",
+					"viewId": "PlantLocationObjectPage"
+				}
+			}
+		},
+		"flexBundle": false
+	},
+	"sap.fiori": {
+		"archeType": "transactional"
+	},
+	"sap.cloud": {
+		"public": true,
+		"service": "farmtankcapproxy"
+	}
+}
