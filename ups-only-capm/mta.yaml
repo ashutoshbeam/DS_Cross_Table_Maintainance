@@ -1,0 +1,137 @@
+_schema-version: "3.1"
+ID: UPSOnlyPlantLocationCAPM
+description: CAP app for UPS-only CRUD on ZPLANT_LOCATION.
+version: 1.0.0
+
+modules:
+  - name: UPSOnlyPlantLocationCAPM-srv
+    type: nodejs
+    path: .
+    requires:
+      - name: ups-btp-dwc-service
+      - name: UPSOnlyPlantLocationCAPM-auth
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    parameters:
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm-ci
+
+  - name: PlantLocationUPSApp
+    type: com.sap.application.content
+    path: app/PlantLocationUPSApp
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+
+  - name: UPSOnlyPlantLocationCAPM-app-content
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: UPSOnlyPlantLocationCAPM-repo-host
+        parameters:
+          service-key:
+            name: UPSOnlyPlantLocationCAPM-repo-host-key
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - artifacts:
+            - PlantLocationUPSApp.zip
+          name: PlantLocationUPSApp
+          target-path: resources/
+
+  - name: UPSOnlyPlantLocationCAPM-destination-content
+    type: com.sap.application.content
+    build-parameters:
+      no-source: true
+    requires:
+      - name: UPSOnlyPlantLocationCAPM-destination-service
+        parameters:
+          content-target: true
+      - name: UPSOnlyPlantLocationCAPM-repo-runtime
+        parameters:
+          service-key:
+            name: UPSOnlyPlantLocationCAPM-repo-runtime-key
+      - name: UPSOnlyPlantLocationCAPM-auth
+        parameters:
+          service-key:
+            name: UPSOnlyPlantLocationCAPM-auth-key
+      - name: srv-api
+    parameters:
+      content:
+        instance:
+          existing_destinations_policy: update
+          destinations:
+            - Name: ups-plantlocation-srv
+              Authentication: OAuth2UserTokenExchange
+              ServiceInstanceName: UPSOnlyPlantLocationCAPM-auth
+              ServiceKeyName: UPSOnlyPlantLocationCAPM-auth-key
+              URL: ~{srv-api/srv-url}
+              HTML5.DynamicDestination: true
+            - Name: upsonlyplantlocationcapm
+              ServiceInstanceName: UPSOnlyPlantLocationCAPM-html5-runtime-service
+              ServiceKeyName: UPSOnlyPlantLocationCAPM-repo-runtime-key
+              sap.cloud.service: upsonlyplantlocationcapm
+
+resources:
+  - name: ups-btp-dwc-service
+    type: org.cloudfoundry.existing-service
+    parameters:
+      service-name: DS_INTEGRATION
+
+  - name: UPSOnlyPlantLocationCAPM-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+      service-name: UPSOnlyPlantLocationCAPM-html5-service
+
+  - name: UPSOnlyPlantLocationCAPM-repo-runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+      service-name: UPSOnlyPlantLocationCAPM-html5-runtime-service
+
+  - name: UPSOnlyPlantLocationCAPM-destination-service
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+      service-name: UPSOnlyPlantLocationCAPM-destination-service
+      config:
+        HTML5Runtime_enabled: true
+        init_data:
+          instance:
+            existing_destinations_policy: update
+            destinations:
+              - Name: ui5
+                Type: HTTP
+                ProxyType: Internet
+                Authentication: NoAuthentication
+                URL: https://ui5.sap.com
+
+  - name: UPSOnlyPlantLocationCAPM-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      path: ./xs-security.json
+      service: xsuaa
+      service-plan: application
+      service-name: UPSOnlyPlantLocationCAPM-auth
+
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+  sap.cloud.service: upsonlyplantlocationcapm
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm install

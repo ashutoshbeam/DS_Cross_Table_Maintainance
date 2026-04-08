@@ -1,34 +1,59 @@
 sap.ui.define([
     "dwcmission/plantlocationapp/controller/BaseController",
     "sap/ui/model/json/JSONModel",
-    "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator",
-    "sap/m/MessageBox"
-], function (BaseController, JSONModel, Filter, FilterOperator, MessageBox) {
+    "sap/m/MessageBox",
+    "sap/m/Column",
+    "sap/m/ColumnListItem",
+    "sap/m/Input",
+    "sap/m/Label",
+    "sap/m/Text",
+    "sap/ui/layout/form/SimpleForm"
+], function (BaseController, JSONModel, MessageBox, Column, ColumnListItem, Input, Label, Text, SimpleForm) {
     "use strict";
 
     return BaseController.extend("dwcmission.plantlocationapp.controller.List", {
         onInit: function () {
             this.setModel(new JSONModel({
-                filters: {
-                    plant: "",
-                    companyCode: "",
-                    location: "",
-                    locationType: "",
-                    region: ""
-                },
-                search: "",
-                tableTitle: this.getText("tableTitle"),
-                selectedCount: 0,
                 busy: false,
-                createEdit: this._getEmptyFormData(),
-                multiUpdate: this._getEmptyBulkData(),
+                tables: [],
+                selectedTable: "",
+                schemaName: "",
+                tableTitle: this.getText("tableTitle"),
+                search: "",
+                selectedCount: 0,
+                columns: [],
+                keyColumns: [],
+                rows: [],
+                filteredRows: [],
+                createEdit: {
+                    mode: "create",
+                    title: "",
+                    values: {},
+                    originalKeys: {}
+                },
+                multiUpdate: {
+                    title: "",
+                    instructions: "",
+                    values: {}
+                },
                 upload: {
                     fileName: "",
                     rows: [],
-                    previewText: ""
+                    previewText: "",
+                    instructions: ""
                 }
             }), "view");
+
+            this._loadTables();
+        },
+
+        onTableChange: function () {
+            this._setBusy(true);
+            this._loadSelectedTable()
+                .catch(this._handleActionError.bind(this, "tableLoadFailed"))
+                .finally(function () {
+                    this._setBusy(false);
+                }.bind(this));
         },
 
         onSearch: function (oEvent) {
@@ -36,110 +61,96 @@ sap.ui.define([
             this._applyFilters();
         },
 
-        onApplyFilters: function () {
-            this._applyFilters();
-        },
-
-        onClearFilters: function () {
-            var oViewModel = this.getModel("view");
-
-            oViewModel.setProperty("/search", "");
-            oViewModel.setProperty("/filters", {
-                plant: "",
-                companyCode: "",
-                location: "",
-                locationType: "",
-                region: ""
-            });
-            this._applyFilters();
-        },
-
         onRefresh: function () {
-            this._getTableBinding().refresh();
-            this.showToast(this.getText("refreshTriggered"));
+            this._setBusy(true);
+            this._loadSelectedTable()
+                .then(function () {
+                    this.showToast(this.getText("refreshTriggered"));
+                }.bind(this))
+                .catch(this._handleActionError.bind(this, "refreshFailed"))
+                .finally(function () {
+                    this._setBusy(false);
+                }.bind(this));
         },
 
         onSelectionChange: function () {
             this._updateSelectionState();
         },
 
-        onItemPress: function (oEvent) {
-            var oContext = oEvent.getSource().getBindingContext(),
-                sPlant = oContext.getProperty("PLANT");
-
-            this.getRouter().navTo("PlantLocationObjectPage", {
-                plant: encodeURIComponent(sPlant)
-            });
-        },
-
-        onUpdateFinished: function (oEvent) {
-            var iTotal = oEvent.getParameter("total"),
-                sTitle = iTotal ? this.getText("tableTitleCount", [iTotal]) : this.getText("tableTitle");
-
-            this.getModel("view").setProperty("/tableTitle", sTitle);
-            this._updateSelectionState();
-        },
-
         onCreate: function () {
-            var oViewModel = this.getModel("view");
+            var aColumns = this._getColumns(),
+                oValues = {};
 
-            oViewModel.setProperty("/createEdit", this._getEmptyFormData());
-            oViewModel.setProperty("/createEdit/mode", "create");
+            if (!this._ensureTableSelected()) {
+                return;
+            }
+
+            aColumns.forEach(function (column) {
+                oValues[column.name] = "";
+            });
+
+            this.getModel("view").setProperty("/createEdit", {
+                mode: "create",
+                title: this.getText("createDialogTitleGeneric", [this._getSelectedTableName()]),
+                values: oValues,
+                originalKeys: {}
+            });
+
+            this._buildCreateEditForm();
             this.byId("createEditDialog").open();
         },
 
         onEdit: function () {
-            var aContexts = this._getSelectedContexts(),
-                oContext = aContexts[0],
-                oViewModel = this.getModel("view");
+            var aRows = this._getSelectedRows(),
+                oRow;
 
-            if (aContexts.length !== 1) {
+            if (aRows.length !== 1) {
                 this.showToast(this.getText("selectSingleRecord"));
                 return;
             }
 
-            oViewModel.setProperty("/createEdit", {
+            oRow = Object.assign({}, aRows[0]);
+            this.getModel("view").setProperty("/createEdit", {
                 mode: "edit",
-                contextPath: oContext.getPath(),
-                plant: oContext.getProperty("PLANT"),
-                companyCode: oContext.getProperty("COMPANY_CODE"),
-                location: oContext.getProperty("LOCATION"),
-                locationType: oContext.getProperty("LOCATION_TYPE"),
-                region: oContext.getProperty("REGION")
+                title: this.getText("editDialogTitleGeneric", [this._getSelectedTableName()]),
+                values: oRow,
+                originalKeys: this._extractKeys(oRow)
             });
 
+            this._buildCreateEditForm();
             this.byId("createEditDialog").open();
         },
 
         onSaveCreateEdit: function () {
-            var oPayload = this.getModel("view").getProperty("/createEdit"),
-                sMode = oPayload.mode;
+            var oViewModel = this.getModel("view"),
+                oPayload = oViewModel.getProperty("/createEdit"),
+                sTableName = this._getSelectedTableName(),
+                sMethod = oPayload.mode === "create" ? "POST" : "PATCH",
+                sUrl = "api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/rows",
+                oBody;
 
-            if (!this._validateSinglePayload(oPayload, sMode === "create")) {
+            if (!this._validateCreateEdit(oPayload)) {
                 return;
             }
+
+            oBody = oPayload.mode === "create"
+                ? { data: oPayload.values }
+                : { keys: oPayload.originalKeys, data: oPayload.values };
 
             this._setBusy(true);
-
-            if (sMode === "create") {
-                this._createEntry(oPayload)
-                    .then(function () {
-                        this.byId("createEditDialog").close();
-                        this.showToast(this.getText("createSuccess", [oPayload.plant]));
-                    }.bind(this))
-                    .catch(this._handleActionError.bind(this, "createFailed"))
-                    .finally(function () {
-                        this._setBusy(false);
-                    }.bind(this));
-                return;
-            }
-
-            this._updateEntry(this._getSelectedContexts()[0], oPayload)
+            this._request(sUrl, {
+                method: sMethod,
+                body: JSON.stringify(oBody)
+            })
                 .then(function () {
                     this.byId("createEditDialog").close();
-                    this.showToast(this.getText("updateSuccess", [oPayload.plant]));
+                    this.showToast(this.getText(
+                        oPayload.mode === "create" ? "createSuccessGeneric" : "updateSuccessGeneric",
+                        [sTableName]
+                    ));
+                    return this._loadSelectedTable();
                 }.bind(this))
-                .catch(this._handleActionError.bind(this, "updateFailed"))
+                .catch(this._handleActionError.bind(this, oPayload.mode === "create" ? "createFailed" : "updateFailed"))
                 .finally(function () {
                     this._setBusy(false);
                 }.bind(this));
@@ -150,48 +161,70 @@ sap.ui.define([
         },
 
         onDelete: function () {
-            var aContexts = this._getSelectedContexts();
+            var aRows = this._getSelectedRows(),
+                sTableName = this._getSelectedTableName();
 
-            if (!aContexts.length) {
+            if (!aRows.length) {
                 this.showToast(this.getText("selectAtLeastOne"));
                 return;
             }
 
-            MessageBox.confirm(this.getText("deleteConfirm", [aContexts.length]), {
+            MessageBox.confirm(this.getText("deleteConfirmGeneric", [aRows.length, sTableName]), {
                 actions: [MessageBox.Action.DELETE, MessageBox.Action.CANCEL],
                 emphasizedAction: MessageBox.Action.DELETE,
                 onClose: function (sAction) {
                     if (sAction === MessageBox.Action.DELETE) {
-                        this._deleteEntries(aContexts);
+                        this._deleteSelectedRows(aRows);
                     }
                 }.bind(this)
             });
         },
 
         onOpenMultiUpdate: function () {
-            if (this._getSelectedContexts().length < 2) {
+            var aRows = this._getSelectedRows(),
+                oValues = {};
+
+            if (aRows.length < 2) {
                 this.showToast(this.getText("selectMultipleRecords"));
                 return;
             }
 
-            this.getModel("view").setProperty("/multiUpdate", this._getEmptyBulkData());
+            this._getEditableColumns().forEach(function (column) {
+                oValues[column.name] = "";
+            });
+
+            this.getModel("view").setProperty("/multiUpdate", {
+                title: this.getText("multiUpdateDialogTitleGeneric", [this._getSelectedTableName()]),
+                instructions: this.getText("multiUpdateHintGeneric"),
+                values: oValues
+            });
+
+            this._buildMultiUpdateForm();
             this.byId("multiUpdateDialog").open();
         },
 
         onApplyMultiUpdate: function () {
-            var aContexts = this._getSelectedContexts(),
-                oChanges = this.getModel("view").getProperty("/multiUpdate");
+            var oValues = this.getModel("view").getProperty("/multiUpdate/values"),
+                aRows = this._getSelectedRows(),
+                sTableName = this._getSelectedTableName();
 
-            if (!this._hasBulkChanges(oChanges)) {
+            if (!this._hasValues(oValues)) {
                 this.showToast(this.getText("enterBulkChange"));
                 return;
             }
 
             this._setBusy(true);
-            this._multiUpdateEntries(aContexts, oChanges)
+            this._request("api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/mass-update", {
+                method: "POST",
+                body: JSON.stringify({
+                    rows: aRows.map(this._extractKeys.bind(this)),
+                    data: oValues
+                })
+            })
                 .then(function () {
                     this.byId("multiUpdateDialog").close();
-                    this.showToast(this.getText("multiUpdateSuccess", [aContexts.length]));
+                    this.showToast(this.getText("multiUpdateSuccessGeneric", [aRows.length, sTableName]));
+                    return this._loadSelectedTable();
                 }.bind(this))
                 .catch(this._handleActionError.bind(this, "multiUpdateFailed"))
                 .finally(function () {
@@ -207,7 +240,8 @@ sap.ui.define([
             this.getModel("view").setProperty("/upload", {
                 fileName: "",
                 rows: [],
-                previewText: ""
+                previewText: "",
+                instructions: this.getText("uploadInstructionsGeneric")
             });
             this.byId("massUploadDialog").open();
         },
@@ -227,29 +261,36 @@ sap.ui.define([
                     this.getModel("view").setProperty("/upload", {
                         fileName: oFile.name,
                         rows: aRows,
-                        previewText: this.getText("uploadPreviewRows", [aRows.length])
+                        previewText: this.getText("uploadPreviewRowsGeneric", [aRows.length]),
+                        instructions: this.getText("uploadInstructionsGeneric")
                     });
                 }.bind(this))
                 .catch(this._handleActionError.bind(this, "uploadReadFailed"));
         },
 
         onDownloadTemplate: function () {
-            var sTemplate = "PLANT,COMPANY_CODE,LOCATION,LOCATION_TYPE,REGION\n1000,1000,Main Plant,Factory,North\n",
+            var sTemplate = this._getColumns().map(function (column) {
+                return column.name;
+            }).join(",") + "\n",
                 oBlob = new Blob([sTemplate], { type: "text/csv;charset=utf-8" }),
                 sUrl = URL.createObjectURL(oBlob),
                 oLink = document.createElement("a");
 
             oLink.href = sUrl;
-            oLink.download = "plant-location-template.csv";
+            oLink.download = (this._getSelectedTableName() || "table").toLowerCase() + "-template.csv";
             oLink.click();
             URL.revokeObjectURL(sUrl);
         },
 
         onStartMassUpload: function () {
             var aRows = this.getModel("view").getProperty("/upload/rows") || [],
-                aValidRows = aRows.filter(function (oRow) {
-                    return oRow.PLANT && oRow.COMPANY_CODE && oRow.LOCATION;
-                });
+                aKeyColumns = this.getModel("view").getProperty("/keyColumns") || [],
+                aValidRows = aRows.filter(function (row) {
+                    return aKeyColumns.every(function (key) {
+                        return !!row[key];
+                    });
+                }),
+                sTableName = this._getSelectedTableName();
 
             if (!aValidRows.length) {
                 this.showToast(this.getText("uploadNoRows"));
@@ -257,10 +298,14 @@ sap.ui.define([
             }
 
             this._setBusy(true);
-            this._massCreateEntries(aValidRows)
+            this._request("api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/mass-upload", {
+                method: "POST",
+                body: JSON.stringify({ rows: aValidRows })
+            })
                 .then(function () {
                     this.byId("massUploadDialog").close();
-                    this.showToast(this.getText("uploadSuccess", [aValidRows.length]));
+                    this.showToast(this.getText("uploadSuccessGeneric", [aValidRows.length, sTableName]));
+                    return this._loadSelectedTable();
                 }.bind(this))
                 .catch(this._handleActionError.bind(this, "uploadFailed"))
                 .finally(function () {
@@ -272,152 +317,193 @@ sap.ui.define([
             this.byId("massUploadDialog").close();
         },
 
-        _applyFilters: function () {
-            var oViewModel = this.getModel("view"),
-                oFilters = oViewModel.getProperty("/filters"),
-                sSearch = oViewModel.getProperty("/search"),
-                aFieldFilters = [],
-                aSearchFilters = [],
-                oBinding = this._getTableBinding();
-
-            if (oFilters.plant) {
-                aFieldFilters.push(new Filter("PLANT", FilterOperator.Contains, oFilters.plant));
-            }
-            if (oFilters.companyCode) {
-                aFieldFilters.push(new Filter("COMPANY_CODE", FilterOperator.Contains, oFilters.companyCode));
-            }
-            if (oFilters.location) {
-                aFieldFilters.push(new Filter("LOCATION", FilterOperator.Contains, oFilters.location));
-            }
-            if (oFilters.locationType) {
-                aFieldFilters.push(new Filter("LOCATION_TYPE", FilterOperator.Contains, oFilters.locationType));
-            }
-            if (oFilters.region) {
-                aFieldFilters.push(new Filter("REGION", FilterOperator.Contains, oFilters.region));
-            }
-
-            if (sSearch) {
-                aSearchFilters = [
-                    new Filter("PLANT", FilterOperator.Contains, sSearch),
-                    new Filter("COMPANY_CODE", FilterOperator.Contains, sSearch),
-                    new Filter("LOCATION", FilterOperator.Contains, sSearch),
-                    new Filter("LOCATION_TYPE", FilterOperator.Contains, sSearch),
-                    new Filter("REGION", FilterOperator.Contains, sSearch)
-                ];
-            }
-
-            if (aSearchFilters.length) {
-                aFieldFilters.push(new Filter({
-                    filters: aSearchFilters,
-                    and: false
-                }));
-            }
-
-            oBinding.filter(aFieldFilters);
-        },
-
-        _getTableBinding: function () {
-            return this.byId("plantTable").getBinding("items");
-        },
-
-        _getSelectedContexts: function () {
-            return this.byId("plantTable").getSelectedContexts();
-        },
-
-        _updateSelectionState: function () {
-            this.getModel("view").setProperty("/selectedCount", this._getSelectedContexts().length);
-        },
-
-        _setBusy: function (bBusy) {
-            this.getModel("view").setProperty("/busy", bBusy);
-            this.getView().setBusy(bBusy);
-        },
-
-        _getEmptyFormData: function () {
-            return {
-                mode: "create",
-                contextPath: "",
-                plant: "",
-                companyCode: "",
-                location: "",
-                locationType: "",
-                region: ""
-            };
-        },
-
-        _getEmptyBulkData: function () {
-            return {
-                companyCode: "",
-                location: "",
-                locationType: "",
-                region: ""
-            };
-        },
-
-        _validateSinglePayload: function (oPayload, bCheckPlant) {
-            if (bCheckPlant && !oPayload.plant) {
-                this.showToast(this.getText("plantRequired"));
-                return false;
-            }
-            if (!oPayload.companyCode || !oPayload.location) {
-                this.showToast(this.getText("requiredFieldsMissing"));
-                return false;
-            }
-
-            return true;
-        },
-
-        _createEntry: function (oPayload) {
-            var oBinding = this._getTableBinding(),
-                oContext = oBinding.create({
-                    PLANT: oPayload.plant,
-                    COMPANY_CODE: oPayload.companyCode,
-                    LOCATION: oPayload.location,
-                    LOCATION_TYPE: oPayload.locationType,
-                    REGION: oPayload.region
-                }, true);
-
-            return this.submitBatch().then(function () {
-                return oContext.created();
-            }).then(function () {
-                this._afterMutation();
-            }.bind(this));
-        },
-
-        _updateEntry: function (oContext, oPayload) {
-            if (!oContext && oPayload.contextPath) {
-                oContext = this.getOwnerComponent().getModel().bindContext(oPayload.contextPath).getBoundContext();
-            }
-
-            if (!oContext) {
-                return Promise.reject(new Error(this.getText("recordContextMissing")));
-            }
-
-            oContext.setProperty("COMPANY_CODE", oPayload.companyCode);
-            oContext.setProperty("LOCATION", oPayload.location);
-            oContext.setProperty("LOCATION_TYPE", oPayload.locationType);
-            oContext.setProperty("REGION", oPayload.region);
-
-            return this.submitBatch().then(function () {
-                this._afterMutation();
-            }.bind(this));
-        },
-
-        _deleteEntries: function (aContexts) {
-            var aDeletePromises;
-
+        _loadTables: function () {
             this._setBusy(true);
-            aDeletePromises = aContexts.map(function (oContext) {
-                return oContext.delete("plantLocationGroup");
+            return this._request("api/schema-browser/tables")
+                .then(function (oResult) {
+                    var oViewModel = this.getModel("view"),
+                        aTables = oResult.tables || [];
+
+                    oViewModel.setProperty("/tables", aTables);
+                    oViewModel.setProperty("/schemaName", oResult.schemaName || "");
+
+                    this._setTableState({
+                        columns: [],
+                        keyColumns: [],
+                        rows: [],
+                        count: 0
+                    });
+                    return undefined;
+                }.bind(this))
+                .catch(this._handleActionError.bind(this, "tablesLoadFailed"))
+                .finally(function () {
+                    this._setBusy(false);
+                }.bind(this));
+        },
+
+        _loadSelectedTable: function () {
+            var sTableName = this._getSelectedTableName(),
+                sSearch = this.getModel("view").getProperty("/search"),
+                sUrl;
+
+            if (!sTableName) {
+                this._setTableState({
+                    columns: [],
+                    keyColumns: [],
+                    rows: [],
+                    count: 0
+                });
+                return Promise.resolve();
+            }
+
+            sUrl = "api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/rows";
+            if (sSearch) {
+                sUrl += "?search=" + encodeURIComponent(sSearch);
+            }
+
+            return this._request(sUrl).then(function (oResult) {
+                this._setTableState(oResult);
+            }.bind(this));
+        },
+
+        _setTableState: function (oResult) {
+            var oViewModel = this.getModel("view");
+
+            oViewModel.setProperty("/columns", oResult.columns || []);
+            oViewModel.setProperty("/keyColumns", oResult.keyColumns || []);
+            oViewModel.setProperty("/rows", oResult.rows || []);
+            oViewModel.setProperty("/selectedCount", 0);
+            oViewModel.setProperty(
+                "/tableTitle",
+                this.getText("tableTitleGeneric", [
+                    this._getSelectedTableName() || this.getText("tableTitle"),
+                    typeof oResult.count === "number" ? oResult.count : (oResult.rows || []).length
+                ])
+            );
+
+            this._rebuildTable();
+            this._applyFilters();
+        },
+
+        _rebuildTable: function () {
+            var oTable = this.byId("plantTable"),
+                aColumns = this._getColumns(),
+                oTemplate;
+
+            oTable.removeSelections(true);
+            oTable.destroyColumns();
+            oTable.unbindItems();
+
+            aColumns.forEach(function (column) {
+                oTable.addColumn(new Column({
+                    header: new Text({
+                        text: column.name
+                    })
+                }));
             });
 
-            this.submitBatch()
+            oTemplate = new ColumnListItem({
+                type: "Inactive",
+                cells: aColumns.map(function (column) {
+                    return new Text({
+                        text: {
+                            path: "view>" + column.name,
+                            formatter: this._formatCellValue.bind(this)
+                        }
+                    });
+                }.bind(this))
+            });
+
+            oTable.bindItems({
+                path: "view>/filteredRows",
+                template: oTemplate
+            });
+        },
+
+        _applyFilters: function () {
+            var oViewModel = this.getModel("view"),
+                aRows = oViewModel.getProperty("/rows") || [],
+                aColumns = this._getColumns(),
+                sSearch = (oViewModel.getProperty("/search") || "").toLowerCase(),
+                aFilteredRows;
+
+            if (!sSearch) {
+                aFilteredRows = aRows;
+            } else {
+                aFilteredRows = aRows.filter(function (row) {
+                    return aColumns.some(function (column) {
+                        return String(row[column.name] ?? "").toLowerCase().indexOf(sSearch) > -1;
+                    });
+                });
+            }
+
+            oViewModel.setProperty("/filteredRows", aFilteredRows);
+            oViewModel.setProperty(
+                "/tableTitle",
+                this.getText("tableTitleGeneric", [
+                    this._getSelectedTableName() || this.getText("tableTitle"),
+                    aFilteredRows.length
+                ])
+            );
+            this._updateSelectionState();
+        },
+
+        _buildCreateEditForm: function () {
+            var oFormBox = this.byId("createEditFieldsBox"),
+                oData = this.getModel("view").getProperty("/createEdit"),
+                bCreate = oData.mode === "create",
+                oForm = new SimpleForm({
+                    editable: true,
+                    layout: "ResponsiveGridLayout",
+                    columnsM: 1,
+                    columnsL: 1
+                });
+
+            oFormBox.removeAllItems();
+            this._getColumns().forEach(function (column) {
+                oForm.addContent(new Label({ text: column.name }));
+                oForm.addContent(new Input({
+                    value: "{view>/createEdit/values/" + column.name + "}",
+                    editable: bCreate || !column.key
+                }));
+            });
+            oFormBox.addItem(oForm);
+        },
+
+        _buildMultiUpdateForm: function () {
+            var oFormBox = this.byId("multiUpdateFieldsBox"),
+                oForm = new SimpleForm({
+                    editable: true,
+                    layout: "ResponsiveGridLayout",
+                    columnsM: 1,
+                    columnsL: 1
+                });
+
+            oFormBox.removeAllItems();
+            this._getEditableColumns().forEach(function (column) {
+                oForm.addContent(new Label({ text: column.name }));
+                oForm.addContent(new Input({
+                    value: "{view>/multiUpdate/values/" + column.name + "}"
+                }));
+            });
+            oFormBox.addItem(oForm);
+        },
+
+        _deleteSelectedRows: function (aRows) {
+            var sTableName = this._getSelectedTableName();
+
+            this._setBusy(true);
+            Promise.all(aRows.map(function (row) {
+                return this._request("api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/rows", {
+                    method: "DELETE",
+                    body: JSON.stringify({
+                        keys: this._extractKeys(row)
+                    })
+                });
+            }.bind(this)))
                 .then(function () {
-                    return Promise.all(aDeletePromises);
-                })
-                .then(function () {
-                    this._afterMutation();
-                    this.showToast(this.getText("deleteSuccess", [aContexts.length]));
+                    this.showToast(this.getText("deleteSuccessGeneric", [aRows.length, sTableName]));
+                    return this._loadSelectedTable();
                 }.bind(this))
                 .catch(this._handleActionError.bind(this, "deleteFailed"))
                 .finally(function () {
@@ -425,51 +511,70 @@ sap.ui.define([
                 }.bind(this));
         },
 
-        _multiUpdateEntries: function (aContexts, oChanges) {
-            aContexts.forEach(function (oContext) {
-                if (oChanges.companyCode) {
-                    oContext.setProperty("COMPANY_CODE", oChanges.companyCode);
-                }
-                if (oChanges.location) {
-                    oContext.setProperty("LOCATION", oChanges.location);
-                }
-                if (oChanges.locationType) {
-                    oContext.setProperty("LOCATION_TYPE", oChanges.locationType);
-                }
-                if (oChanges.region) {
-                    oContext.setProperty("REGION", oChanges.region);
-                }
+        _validateCreateEdit: function (oPayload) {
+            var aKeyColumns = this.getModel("view").getProperty("/keyColumns") || [];
+
+            if (oPayload.mode === "create" && !aKeyColumns.every(function (key) {
+                return !!oPayload.values[key];
+            })) {
+                this.showToast(this.getText("requiredKeyFieldsMissing"));
+                return false;
+            }
+
+            return true;
+        },
+
+        _extractKeys: function (oRow) {
+            var oKeys = {};
+
+            (this.getModel("view").getProperty("/keyColumns") || []).forEach(function (key) {
+                oKeys[key] = oRow[key];
             });
 
-            return this.submitBatch().then(function () {
-                this._afterMutation();
-            }.bind(this));
+            return oKeys;
         },
 
-        _massCreateEntries: function (aRows) {
-            var oBinding = this._getTableBinding(),
-                aCreatedContexts = aRows.map(function (oRow) {
-                    return oBinding.create(oRow, true);
-                });
-
-            return this.submitBatch().then(function () {
-                return Promise.all(aCreatedContexts.map(function (oContext) {
-                    return oContext.created();
-                }));
-            }).then(function () {
-                this._afterMutation();
-            }.bind(this));
+        _getSelectedRows: function () {
+            return this.byId("plantTable").getSelectedContexts().map(function (context) {
+                return Object.assign({}, context.getObject());
+            });
         },
 
-        _afterMutation: function () {
-            this.byId("plantTable").removeSelections(true);
-            this._updateSelectionState();
-            this._getTableBinding().refresh();
+        _getColumns: function () {
+            return this.getModel("view").getProperty("/columns") || [];
         },
 
-        _hasBulkChanges: function (oChanges) {
-            return Object.keys(oChanges).some(function (sKey) {
-                return !!oChanges[sKey];
+        _getEditableColumns: function () {
+            return this._getColumns().filter(function (column) {
+                return !column.key;
+            });
+        },
+
+        _getSelectedTableName: function () {
+            return this.getModel("view").getProperty("/selectedTable");
+        },
+
+        _setBusy: function (bBusy) {
+            this.getModel("view").setProperty("/busy", bBusy);
+            this.getView().setBusy(bBusy);
+        },
+
+        _updateSelectionState: function () {
+            this.getModel("view").setProperty("/selectedCount", this.byId("plantTable").getSelectedContexts().length);
+        },
+
+        _ensureTableSelected: function () {
+            if (!this._getSelectedTableName()) {
+                this.showToast(this.getText("noTableSelected"));
+                return false;
+            }
+
+            return true;
+        },
+
+        _hasValues: function (oValues) {
+            return Object.keys(oValues || {}).some(function (key) {
+                return oValues[key] !== undefined && oValues[key] !== null && oValues[key] !== "";
             });
         },
 
@@ -494,28 +599,52 @@ sap.ui.define([
                 return [];
             }
 
-            aHeaders = aLines[0].split(",").map(function (sHeader) {
-                return sHeader.trim().toUpperCase();
+            aHeaders = aLines[0].split(",").map(function (header) {
+                return header.trim();
             });
 
-            aRows = aLines.slice(1).map(function (sLine) {
-                var aValues = sLine.split(","),
+            aRows = aLines.slice(1).map(function (line) {
+                var aValues = line.split(","),
                     oRow = {};
 
-                aHeaders.forEach(function (sHeader, iIndex) {
-                    oRow[sHeader] = (aValues[iIndex] || "").trim();
+                aHeaders.forEach(function (header, index) {
+                    oRow[header] = (aValues[index] || "").trim();
                 });
 
-                return {
-                    PLANT: oRow.PLANT || "",
-                    COMPANY_CODE: oRow.COMPANY_CODE || "",
-                    LOCATION: oRow.LOCATION || "",
-                    LOCATION_TYPE: oRow.LOCATION_TYPE || "",
-                    REGION: oRow.REGION || ""
-                };
+                return oRow;
             });
 
             return aRows;
+        },
+
+        _formatCellValue: function (value) {
+            if (value === null || value === undefined) {
+                return "";
+            }
+            return String(value);
+        },
+
+        _request: function (sUrl, oOptions) {
+            var oRequestOptions = Object.assign({
+                headers: {
+                    "Accept": "application/json"
+                }
+            }, oOptions || {});
+
+            if (oRequestOptions.body) {
+                oRequestOptions.headers["Content-Type"] = "application/json";
+            }
+
+            return fetch(sUrl, oRequestOptions).then(function (response) {
+                return response.json().catch(function () {
+                    return {};
+                }).then(function (payload) {
+                    if (!response.ok) {
+                        throw new Error(payload.error || response.statusText);
+                    }
+                    return payload;
+                });
+            });
         },
 
         _handleActionError: function (sMessageKey, oError) {

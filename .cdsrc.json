@@ -1,0 +1,12 @@
+{
+  "[local]": {
+    "requires": {
+      "auth": {
+        "kind": "mocked"
+      },
+      "db": {
+        "kind": "hana-cloud"
+      }
+    }
+  }
+}

@@ -3,35 +3,16 @@
     xmlns:core="sap.ui.core">
     <Dialog
         id="multiUpdateDialog"
-        title="{i18n>multiUpdateDialogTitle}"
+        title="{view>/multiUpdate/title}"
         class="sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer">
         <content>
             <VBox class="sapUiSmallMarginTopBottom" width="24rem">
                 <MessageStrip
-                    text="{i18n>multiUpdateHint}"
+                    text="{view>/multiUpdate/instructions}"
                     type="Information"
                     showIcon="true"
                     class="sapUiSmallMarginBottom" />
-
-                <Label text="{i18n>CompanyCode}" labelFor="bulkCompanyCodeInput" />
-                <Input
-                    id="bulkCompanyCodeInput"
-                    value="{view>/multiUpdate/companyCode}" />
-
-                <Label text="{i18n>Location}" labelFor="bulkLocationInput" class="sapUiSmallMarginTop" />
-                <Input
-                    id="bulkLocationInput"
-                    value="{view>/multiUpdate/location}" />
-
-                <Label text="{i18n>LocationType}" labelFor="bulkLocationTypeInput" class="sapUiSmallMarginTop" />
-                <Input
-                    id="bulkLocationTypeInput"
-                    value="{view>/multiUpdate/locationType}" />
-
-                <Label text="{i18n>Region}" labelFor="bulkRegionInput" class="sapUiSmallMarginTop" />
-                <Input
-                    id="bulkRegionInput"
-                    value="{view>/multiUpdate/region}" />
+                <VBox id="multiUpdateFieldsBox" />
             </VBox>
         </content>
         <beginButton>

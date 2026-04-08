@@ -2,36 +2,50 @@
     controllerName="dwcmission.plantlocationapp.controller.List"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
-    xmlns:core="sap.ui.core"
-    xmlns:unified="sap.ui.unified">
+    xmlns:core="sap.ui.core">
     <Page title="{i18n>appTitle}" busy="{view>/busy}">
         <content>
             <VBox class="sapUiSmallMargin">
                 <OverflowToolbar>
                     <Title text="{view>/tableTitle}" level="H2" />
+                    <ToolbarSpacer />
+                    <Label text="{i18n>tableSelectLabel}" />
+                    <Select
+                        width="16rem"
+                        selectedKey="{view>/selectedTable}"
+                        change=".onTableChange"
+                        items="{
+                            path: 'view>/tables'
+                        }">
+                        <core:Item key="{view>name}" text="{view>label}" />
+                    </Select>
+                </OverflowToolbar>
+                <OverflowToolbar>
                     <Button
                         icon="sap-icon://add"
                         type="Emphasized"
                         tooltip="{i18n>create}"
+                        enabled="{= !!${view>/selectedTable} }"
                         press=".onCreate" />
                     <Button
                         icon="sap-icon://edit"
                         tooltip="{i18n>edit}"
-                        enabled="{= ${view>/selectedCount} === 1 }"
+                        enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
                         press=".onEdit" />
                     <Button
                         icon="sap-icon://delete"
                         text="{i18n>delete}"
-                        enabled="{= ${view>/selectedCount} > 0 }"
+                        enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} > 0 }"
                         press=".onDelete" />
                     <Button
                         icon="sap-icon://multi-select"
                         text="{i18n>multiUpdate}"
-                        enabled="{= ${view>/selectedCount} > 1 }"
+                        enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} > 1 }"
                         press=".onOpenMultiUpdate" />
                     <Button
                         icon="sap-icon://upload"
                         text="{i18n>massUpload}"
+                        enabled="{= !!${view>/selectedTable} }"
                         press=".onOpenMassUpload" />
                     <ToolbarSpacer />
                     <Text text="{i18n>selectedCountLabel}: {view>/selectedCount}" />
@@ -45,45 +59,6 @@
                         text="{i18n>refresh}"
                         press=".onRefresh" />
                 </OverflowToolbar>
-
-                <Panel
-                    expandable="true"
-                    expanded="true"
-                    headerText="{i18n>filterPanelTitle}"
-                    class="sapUiSmallMarginTop sapUiResponsiveMargin sapUiNoContentPadding">
-                    <content>
-                        <VBox class="sapUiMediumMargin">
-                            <HBox wrap="Wrap" renderType="Bare">
-                                <VBox class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
-                                    <Label text="{i18n>Plant}" labelFor="plantFilter" />
-                                    <Input id="plantFilter" value="{view>/filters/plant}" width="12rem" />
-                                </VBox>
-                                <VBox class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
-                                    <Label text="{i18n>CompanyCode}" labelFor="companyCodeFilter" />
-                                    <Input id="companyCodeFilter" value="{view>/filters/companyCode}" width="12rem" />
-                                </VBox>
-                                <VBox class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
-                                    <Label text="{i18n>Location}" labelFor="locationFilter" />
-                                    <Input id="locationFilter" value="{view>/filters/location}" width="12rem" />
-                                </VBox>
-                                <VBox class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
-                                    <Label text="{i18n>LocationType}" labelFor="locationTypeFilter" />
-                                    <Input id="locationTypeFilter" value="{view>/filters/locationType}" width="12rem" />
-                                </VBox>
-                                <VBox class="sapUiTinyMarginBottom">
-                                    <Label text="{i18n>Region}" labelFor="regionFilter" />
-                                    <Input id="regionFilter" value="{view>/filters/region}" width="12rem" />
-                                </VBox>
-                            </HBox>
-                            <Toolbar design="Transparent">
-                                <ToolbarSpacer />
-                                <Button text="{i18n>clearFilters}" press=".onClearFilters" />
-                                <Button type="Emphasized" text="{i18n>applyFilters}" press=".onApplyFilters" />
-                            </Toolbar>
-                        </VBox>
-                    </content>
-                </Panel>
-
                 <Table
                     id="plantTable"
                     width="auto"
@@ -91,46 +66,7 @@
                     growingScrollToLoad="true"
                     mode="MultiSelect"
                     selectionChange=".onSelectionChange"
-                    updateFinished=".onUpdateFinished"
-                    items="{
-                        path: '/PlantLocation',
-                        parameters: {
-                            $$updateGroupId: 'plantLocationGroup'
-                        },
-                        sorter: {
-                            path: 'PLANT',
-                            descending: false
-                        }
-                    }">
-                    <columns>
-                        <Column>
-                            <Text text="{i18n>Plant}" />
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>Location}" />
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>CompanyCode}" />
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>LocationType}" />
-                        </Column>
-                        <Column>
-                            <Text text="{i18n>Region}" />
-                        </Column>
-                    </columns>
-                    <items>
-                        <ColumnListItem type="Navigation" press=".onItemPress">
-                            <cells>
-                                <ObjectIdentifier title="{PLANT}" text="{LOCATION}" />
-                                <Text text="{LOCATION}" />
-                                <Text text="{COMPANY_CODE}" />
-                                <Text text="{LOCATION_TYPE}" />
-                                <Text text="{REGION}" />
-                            </cells>
-                        </ColumnListItem>
-                    </items>
-                </Table>
+                    noDataText="{i18n>noTableData}" />
             </VBox>
         </content>
 

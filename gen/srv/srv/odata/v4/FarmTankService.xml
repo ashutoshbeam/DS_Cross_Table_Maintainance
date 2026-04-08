@@ -23,23 +23,9 @@
         </Collection>
       </Annotation>
       <EntityContainer Name="EntityContainer">
-        <EntitySet Name="Tanks" EntityType="FarmTankService.Tanks"/>
         <EntitySet Name="TankVolumes" EntityType="FarmTankService.TankVolumes"/>
         <EntitySet Name="PlantLocation" EntityType="FarmTankService.PlantLocation"/>
       </EntityContainer>
-      <EntityType Name="Tanks">
-        <Key>
-          <PropertyRef Name="TANK_ID"/>
-        </Key>
-        <Property Name="TANK_ID" Type="Edm.String" Nullable="false"/>
-        <Property Name="Latitude" Type="Edm.Int32"/>
-        <Property Name="Longitude" Type="Edm.Int32"/>
-        <Property Name="InspectionDate" Type="Edm.Date"/>
-        <Property Name="Size" Type="Edm.String"/>
-        <Property Name="MeasureTechnique" Type="Edm.String"/>
-        <Property Name="max_capacity" Type="Edm.Int32"/>
-        <Property Name="UOM" Type="Edm.String"/>
-      </EntityType>
       <EntityType Name="TankVolumes">
         <Key>
           <PropertyRef Name="TANK_ID"/>

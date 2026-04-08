@@ -1,0 +1,19 @@
+{
+  "xsappname": "upsonlyplantlocationcapm",
+  "tenant-mode": "dedicated",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.User",
+      "description": "Access to the UPS-only plant location application"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "User",
+      "description": "Application user",
+      "scope-references": [
+        "$XSAPPNAME.User"
+      ]
+    }
+  ]
+}

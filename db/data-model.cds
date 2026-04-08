@@ -1,17 +1,5 @@
 namespace dwcmission.farm;
 
-@cds.persistence.exists 
-entity Tanks {
-  key TANK_ID : String;
-  Latitude  : Integer;
-  Longitude  : Integer;
-  InspectionDate : Date;
-  Size : String;
-  MeasureTechnique : String;
-  max_capacity : Integer;
-  UOM : String;
-}
-
 entity TankVolumes_M {
  key TANK_ID : String(30);
   VOLUME  : Decimal;
@@ -19,9 +7,9 @@ entity TankVolumes_M {
   TIME_STAMP : Timestamp;
   COMMENT : String(50);
   SOURCE : String(1) default 'M';
-  //Tanks  : Association to one Tanks on Tanks.TANK_ID=TANK_ID;
 }
-@cds.persistence.exists 
+
+
 entity ZPLANT_LOCATION {
   key PLANT : String(4);
   COMPANY_CODE  : String(4);

@@ -49,10 +49,13 @@ sap.ui.define([
             this.getView().setBusy(true);
             this.submitBatch()
                 .then(function () {
+                    return this._refreshDetail();
+                }.bind(this))
+                .then(function () {
                     this.getModel("view").setProperty("/editMode", false);
                     this.showToast(this.getText("detailUpdateSuccess"));
                 }.bind(this))
-                .catch(this._handleError.bind(this, "detailUpdateFailed"))
+                .catch(this._handleMutationError.bind(this, "detailUpdateFailed"))
                 .finally(function () {
                     this.getModel("view").setProperty("/busy", false);
                     this.getView().setBusy(false);
@@ -102,10 +105,46 @@ sap.ui.define([
                     this.showToast(this.getText("detailDeleteSuccess"));
                     this.getRouter().navTo("PlantLocationList");
                 }.bind(this))
-                .catch(this._handleError.bind(this, "detailDeleteFailed"))
+                .catch(this._handleMutationError.bind(this, "detailDeleteFailed"))
                 .finally(function () {
                     this.getModel("view").setProperty("/busy", false);
                     this.getView().setBusy(false);
+                }.bind(this));
+        },
+
+        _refreshDetail: function () {
+            var oBinding = this.getView().getElementBinding();
+
+            if (!oBinding) {
+                return Promise.resolve();
+            }
+
+            oBinding.refresh();
+            return Promise.resolve();
+        },
+
+        _resetPendingChanges: function () {
+            var oModel = this.getOwnerComponent().getModel(),
+                oBinding = this.getView().getElementBinding();
+
+            if (oModel.hasPendingChanges("plantLocationGroup")) {
+                oModel.resetChanges("plantLocationGroup");
+            }
+
+            if (oBinding) {
+                oBinding.refresh();
+            }
+
+            return Promise.resolve();
+        },
+
+        _handleMutationError: function (sMessageKey, oError) {
+            return this._resetPendingChanges()
+                .catch(function () {
+                    return undefined;
+                })
+                .then(function () {
+                    this._handleError(sMessageKey, oError);
                 }.bind(this));
         },
 

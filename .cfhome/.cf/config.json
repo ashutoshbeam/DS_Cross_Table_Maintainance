@@ -1,12 +1,8 @@
 {
-  "AccessToken": "bearer eyJqa3UiOiJodHRwczovL3VhYS5jZi51czIxLmhhbmEub25kZW1hbmQuY29tL3Rva2VuX2tleXMiLCJraWQiOiJrZXktMSIsInR5cCI6IkpXVCIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIzZDE1MjQyNS1kMDRjLTRjMzQtYjIxYi0xZDc5ZWE1OTNhZTciLCJ1c2VyX25hbWUiOiJhbWl0aC52YW5kYW5hLmluY3R1cmVAYmVhbXN1bnRvcnkuY29tIiwib3JpZ2luIjoic2FwLmlkcyIsImlzcyI6Imh0dHBzOi8vdWFhLmNmLnVzMjEuaGFuYS5vbmRlbWFuZC5jb20vb2F1dGgvdG9rZW4iLCJyZXZvY2FibGUiOnRydWUsImNsaWVudF9pZCI6ImNmIiwiYXVkIjpbImNsb3VkX2NvbnRyb2xsZXIiLCJjZiIsInVhYSIsIm9wZW5pZCIsInBhc3N3b3JkIl0sInppZCI6InVhYSIsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInVzZXJfaWQiOiIzZDE1MjQyNS1kMDRjLTRjMzQtYjIxYi0xZDc5ZWE1OTNhZTciLCJhenAiOiJjZiIsInNjb3BlIjpbImNsb3VkX2NvbnRyb2xsZXIucmVhZCIsInBhc3N3b3JkLndyaXRlIiwiY2xvdWRfY29udHJvbGxlci53cml0ZSIsIm9wZW5pZCIsInVhYS51c2VyIl0sImF1dGhfdGltZSI6MTc3NTQxODE4NSwiZXhwIjoxNzc1NDkxMTIyLCJpYXQiOjE3NzU0ODk5MjIsImp0aSI6ImExMmYzMWE2NGNhZjQzYTg4NzY1ZTY0ODA2YjE2ZTViIiwiZW1haWwiOiJhbWl0aC52YW5kYW5hLmluY3R1cmVAYmVhbXN1bnRvcnkuY29tIiwicmV2X3NpZyI6IjZhY2ExYWUiLCJjbGllbnRfYXV0aF9tZXRob2QiOiJub25lIiwiY2lkIjoiY2YifQ.XPYoGT1P8FUmwBaGCUDX6oZTDcXn5isiVTFfDIQvtVK24AZ6D8aLoJ4tdP5ENWwkZoLXdAvq_t0Of7iWHKrQieAQKUpEbBSmlHoH71f3R2FzW2jxIBMkESyVg53IQA2noxNa1UA6F6bTtQH42kRBnsS_ywdJyToHCtOzWR2PWMx41dG9RsLrojfSruRDHVHaaWmu3ptEfQ9yOQfkxaMhCiSZUoPOq8oTOontdlTEw41n8NVcyg4mQdCiHpNfVPYhDfMqCg4czD7zoIIEcsVWtXVOGxwtzkUtcZ-kcCctcib72mLnNB6uovdThdmqxvLszX45xb8ZPhMADtc5R2OgYQ",
+  "AccessToken": "bearer eyJqa3UiOiJodHRwczovL3VhYS5jZi51czIxLmhhbmEub25kZW1hbmQuY29tL3Rva2VuX2tleXMiLCJraWQiOiJrZXktMSIsInR5cCI6IkpXVCIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIzZDE1MjQyNS1kMDRjLTRjMzQtYjIxYi0xZDc5ZWE1OTNhZTciLCJ1c2VyX25hbWUiOiJhbWl0aC52YW5kYW5hLmluY3R1cmVAYmVhbXN1bnRvcnkuY29tIiwib3JpZ2luIjoic2FwLmlkcyIsImlzcyI6Imh0dHBzOi8vdWFhLmNmLnVzMjEuaGFuYS5vbmRlbWFuZC5jb20vb2F1dGgvdG9rZW4iLCJyZXZvY2FibGUiOnRydWUsImNsaWVudF9pZCI6ImNmIiwiYXVkIjpbInBhc3N3b3JkIiwib3BlbmlkIiwidWFhIiwiY2YiLCJjbG91ZF9jb250cm9sbGVyIl0sInppZCI6InVhYSIsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInVzZXJfaWQiOiIzZDE1MjQyNS1kMDRjLTRjMzQtYjIxYi0xZDc5ZWE1OTNhZTciLCJhenAiOiJjZiIsInNjb3BlIjpbImNsb3VkX2NvbnRyb2xsZXIucmVhZCIsInBhc3N3b3JkLndyaXRlIiwiY2xvdWRfY29udHJvbGxlci53cml0ZSIsIm9wZW5pZCIsInVhYS51c2VyIl0sImF1dGhfdGltZSI6MTc3NTU2NDMzOSwiZXhwIjoxNzc1NjQxNDMwLCJpYXQiOjE3NzU2NDAyMzAsImp0aSI6IjQyZTA4ZTM4NDhiMTQxMGM4ZTE0MTEzNzBkNmE4MWZkIiwiZW1haWwiOiJhbWl0aC52YW5kYW5hLmluY3R1cmVAYmVhbXN1bnRvcnkuY29tIiwicmV2X3NpZyI6IjZhY2ExYWUiLCJjbGllbnRfYXV0aF9tZXRob2QiOiJub25lIiwiY2lkIjoiY2YifQ.Fm-BjFJ-Dpr4FZ-M2BmRH_N5fv2eXJti26QDsM2IFMCGQf4vmvP_ourJha1Peyxk6Ar_q1fTVxXkgkZUBKQDG8CWAxKMfir2SXc5uvCBVa0B6yXUlnExgfj4MSWNwjnj70Bb0-yDWMbyHBDjONecmAzPFhoOlE3RuX7CxhJvYFCfy2rpkdJabAzINuYxlfiFynLT3odqyov1DifbFQ_LAzE4TxDR59uBt0vFdp1VvuzDmJw4mXhmta2bdtAtpsU0dkS2n9YbWnBDM8WwnI48kgAK5bL2tc3Rh9LSi8d4elbW2ZW9Z1S6SpYLd6MWPKuzlRBe1ziMezJMEyaDLXqs1w",
   "APIVersion": "3.215.0",
   "AsyncTimeout": 0,
   "AuthorizationEndpoint": "https://login.cf.us21.hana.ondemand.com",
-  "CFOnK8s": {
-    "Enabled": false,
-    "AuthInfo": ""
-  },
   "ColorEnabled": "",
   "ConfigVersion": 4,
   "DopplerEndPoint": "wss://doppler.cf.us21.hana.ondemand.com:443",
@@ -17,7 +13,16 @@
   "NetworkPolicyV1Endpoint": "https://api.cf.us21.hana.ondemand.com/networking/v1/external",
   "OrganizationFields": {
     "GUID": "793daa63-3860-4e61-a0d4-dfc18a648e33",
-    "Name": "sgs-apps-dev"
+    "Name": "sgs-apps-dev",
+    "QuotaDefinition": {
+      "name": "",
+      "memory_limit": 0,
+      "instance_memory_limit": 0,
+      "total_routes": 0,
+      "total_services": 0,
+      "non_basic_services_allowed": false,
+      "app_instance_limit": 0
+    }
   },
   "PluginRepos": [
     {
@@ -25,12 +30,12 @@
       "URL": "https://plugins.cloudfoundry.org"
     }
   ],
-  "RefreshToken": "e0c6e460f061424daac29c60e684e92a-r",
+  "RefreshToken": "e99728e9b4234c25a8217933b09f2789-r",
   "RoutingAPIEndpoint": "",
   "SpaceFields": {
     "GUID": "1f454c3a-df8f-4f3c-a7f4-b9277738cd11",
     "Name": "TRAINING",
-    "AllowSSH": false
+    "AllowSSH": true
   },
   "SSHOAuthClient": "ssh-proxy",
   "SSLDisabled": false,

@@ -1,0 +1,193 @@
+@server = http://localhost:4004
+@service = {{server}}/odata/v4/farm-tank
+@contentType = application/json
+
+###
+# FarmTankService metadata
+GET {{service}}/$metadata
+Accept: application/xml
+
+###
+# Read all PlantLocation records
+GET {{service}}/PlantLocation
+Accept: application/json
+
+###
+# Read one PlantLocation record
+GET {{service}}/PlantLocation('PL01')
+Accept: application/json
+
+###
+# Create one PlantLocation record
+POST {{service}}/PlantLocation
+Content-Type: {{contentType}}
+Accept: application/json
+
+{
+  "PLANT": "PL01",
+  "COMPANY_CODE": "1000",
+  "LOCATION": "MAIN",
+  "LOCATION_TYPE": "FACTORY",
+  "REGION": "NORTH"
+}
+
+###
+# Update one PlantLocation record
+PATCH {{service}}/PlantLocation('PL01')
+Content-Type: {{contentType}}
+Accept: application/json
+
+{
+  "COMPANY_CODE": "1100",
+  "LOCATION": "MAIN-YARD",
+  "LOCATION_TYPE": "DEPOT",
+  "REGION": "WEST"
+}
+
+###
+# Read the updated PlantLocation record
+GET {{service}}/PlantLocation('PL01')
+Accept: application/json
+
+###
+# Create more PlantLocation records for mass update and bulk upload scenarios
+POST {{service}}/PlantLocation
+Content-Type: {{contentType}}
+Accept: application/json
+
+{
+  "PLANT": "PL02",
+  "COMPANY_CODE": "1000",
+  "LOCATION": "SOUTH",
+  "LOCATION_TYPE": "FACTORY",
+  "REGION": "SOUTH"
+}
+
+###
+POST {{service}}/PlantLocation
+Content-Type: {{contentType}}
+Accept: application/json
+
+{
+  "PLANT": "PL03",
+  "COMPANY_CODE": "1000",
+  "LOCATION": "EAST",
+  "LOCATION_TYPE": "FACTORY",
+  "REGION": "EAST"
+}
+
+###
+# Mass update using OData V4 batch
+POST {{service}}/$batch
+Content-Type: multipart/mixed; boundary=batch_mass_update
+Accept: application/json
+
+--batch_mass_update
+Content-Type: multipart/mixed; boundary=changeset_mass_update
+
+--changeset_mass_update
+Content-Type: application/http
+Content-Transfer-Encoding: binary
+Content-ID: 1
+
+PATCH PlantLocation('PL02') HTTP/1.1
+Content-Type: application/json
+
+{
+  "LOCATION_TYPE": "TERMINAL",
+  "REGION": "CENTRAL"
+}
+
+--changeset_mass_update
+Content-Type: application/http
+Content-Transfer-Encoding: binary
+Content-ID: 2
+
+PATCH PlantLocation('PL03') HTTP/1.1
+Content-Type: application/json
+
+{
+  "LOCATION_TYPE": "TERMINAL",
+  "REGION": "CENTRAL"
+}
+
+--changeset_mass_update--
+--batch_mass_update--
+
+###
+# Verify mass update result
+GET {{service}}/PlantLocation?$filter=PLANT eq 'PL02' or PLANT eq 'PL03'
+Accept: application/json
+
+###
+# CSV upload equivalent:
+# The UI upload reads CSV in the browser, then sends normal create requests.
+# This batch simulates uploading multiple CSV rows at once.
+POST {{service}}/$batch
+Content-Type: multipart/mixed; boundary=batch_bulk_create
+Accept: application/json
+
+--batch_bulk_create
+Content-Type: multipart/mixed; boundary=changeset_bulk_create
+
+--changeset_bulk_create
+Content-Type: application/http
+Content-Transfer-Encoding: binary
+Content-ID: 1
+
+POST PlantLocation HTTP/1.1
+Content-Type: application/json
+
+{
+  "PLANT": "PL04",
+  "COMPANY_CODE": "2000",
+  "LOCATION": "BULK1",
+  "LOCATION_TYPE": "WAREHOUSE",
+  "REGION": "NORTH"
+}
+
+--changeset_bulk_create
+Content-Type: application/http
+Content-Transfer-Encoding: binary
+Content-ID: 2
+
+POST PlantLocation HTTP/1.1
+Content-Type: application/json
+
+{
+  "PLANT": "PL05",
+  "COMPANY_CODE": "2000",
+  "LOCATION": "BULK2",
+  "LOCATION_TYPE": "WAREHOUSE",
+  "REGION": "SOUTH"
+}
+
+--changeset_bulk_create--
+--batch_bulk_create--
+
+###
+# Verify uploaded rows
+GET {{service}}/PlantLocation?$filter=PLANT eq 'PL04' or PLANT eq 'PL05'
+Accept: application/json
+
+###
+# Delete one PlantLocation record
+DELETE {{service}}/PlantLocation('PL01')
+Accept: application/json
+
+###
+# Cleanup remaining test data
+DELETE {{service}}/PlantLocation('PL02')
+Accept: application/json
+
+###
+DELETE {{service}}/PlantLocation('PL03')
+Accept: application/json
+
+###
+DELETE {{service}}/PlantLocation('PL04')
+Accept: application/json
+
+###
+DELETE {{service}}/PlantLocation('PL05')
+Accept: application/json

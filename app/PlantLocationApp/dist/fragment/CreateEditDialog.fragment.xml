@@ -3,36 +3,10 @@
     xmlns:core="sap.ui.core">
     <Dialog
         id="createEditDialog"
-        title="{= ${view>/createEdit/mode} === 'create' ? ${i18n>createDialogTitle} : ${i18n>editDialogTitle} }"
+        title="{view>/createEdit/title}"
         class="sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer">
         <content>
-            <VBox class="sapUiSmallMarginTopBottom" width="24rem">
-                <Label text="{i18n>Plant}" labelFor="plantInput" />
-                <Input
-                    id="plantInput"
-                    value="{view>/createEdit/plant}"
-                    editable="{= ${view>/createEdit/mode} === 'create' }" />
-
-                <Label text="{i18n>CompanyCode}" labelFor="companyCodeInput" class="sapUiSmallMarginTop" />
-                <Input
-                    id="companyCodeInput"
-                    value="{view>/createEdit/companyCode}" />
-
-                <Label text="{i18n>Location}" labelFor="locationInput" class="sapUiSmallMarginTop" />
-                <Input
-                    id="locationInput"
-                    value="{view>/createEdit/location}" />
-
-                <Label text="{i18n>LocationType}" labelFor="locationTypeInput" class="sapUiSmallMarginTop" />
-                <Input
-                    id="locationTypeInput"
-                    value="{view>/createEdit/locationType}" />
-
-                <Label text="{i18n>Region}" labelFor="regionInput" class="sapUiSmallMarginTop" />
-                <Input
-                    id="regionInput"
-                    value="{view>/createEdit/region}" />
-            </VBox>
+            <VBox id="createEditFieldsBox" class="sapUiSmallMarginTopBottom" width="24rem" />
         </content>
         <beginButton>
             <Button

@@ -1,0 +1,30 @@
+{
+  "name": "ups-only-capm",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CAP project with UPS-only CRUD for ZPLANT_LOCATION.",
+  "dependencies": {
+    "@sap/cds": "^9.8.4",
+    "@sap/xssec": "^4.13.0",
+    "express": "^4",
+    "hdb": "^0.19.6"
+  },
+  "devDependencies": {
+    "@sap/cds-dk": "^9.8.2",
+    "cds-plugin-ui5": "^0.13.0"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch": "cds watch --open PlantLocationUPSApp/webapp/index.html?sap-ui-xx-viewCache=false --livereload false"
+  },
+  "workspaces": [
+    "app/*"
+  ],
+  "cds": {
+    "requires": {
+      "auth": {
+        "kind": "xsuaa"
+      }
+    }
+  }
+}

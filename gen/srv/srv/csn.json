@@ -1,37 +1,6 @@
 {
   "namespace": "dwcmission.farm",
   "definitions": {
-    "dwcmission.farm.Tanks": {
-      "kind": "entity",
-      "@cds.persistence.exists": true,
-      "elements": {
-        "TANK_ID": {
-          "key": true,
-          "type": "cds.String"
-        },
-        "Latitude": {
-          "type": "cds.Integer"
-        },
-        "Longitude": {
-          "type": "cds.Integer"
-        },
-        "InspectionDate": {
-          "type": "cds.Date"
-        },
-        "Size": {
-          "type": "cds.String"
-        },
-        "MeasureTechnique": {
-          "type": "cds.String"
-        },
-        "max_capacity": {
-          "type": "cds.Integer"
-        },
-        "UOM": {
-          "type": "cds.String"
-        }
-      }
-    },
     "dwcmission.farm.TankVolumes_M": {
       "kind": "entity",
       "elements": {
@@ -65,7 +34,6 @@
     },
     "dwcmission.farm.ZPLANT_LOCATION": {
       "kind": "entity",
-      "@cds.persistence.exists": true,
       "elements": {
         "PLANT": {
           "key": true,
@@ -94,43 +62,6 @@
       "@source": "srv/cap-service.cds",
       "kind": "service",
       "@path": "/odata/v4/farm-tank"
-    },
-    "FarmTankService.Tanks": {
-      "kind": "entity",
-      "projection": {
-        "from": {
-          "ref": [
-            "dwcmission.farm.Tanks"
-          ]
-        }
-      },
-      "elements": {
-        "TANK_ID": {
-          "key": true,
-          "type": "cds.String"
-        },
-        "Latitude": {
-          "type": "cds.Integer"
-        },
-        "Longitude": {
-          "type": "cds.Integer"
-        },
-        "InspectionDate": {
-          "type": "cds.Date"
-        },
-        "Size": {
-          "type": "cds.String"
-        },
-        "MeasureTechnique": {
-          "type": "cds.String"
-        },
-        "max_capacity": {
-          "type": "cds.Integer"
-        },
-        "UOM": {
-          "type": "cds.String"
-        }
-      }
     },
     "FarmTankService.TankVolumes": {
       "kind": "entity",

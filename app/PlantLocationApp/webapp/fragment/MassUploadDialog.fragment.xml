@@ -10,7 +10,7 @@
         <content>
             <VBox class="sapUiSmallMarginTopBottom">
                 <MessageStrip
-                    text="{i18n>uploadInstructions}"
+                    text="{view>/upload/instructions}"
                     type="Information"
                     showIcon="true"
                     class="sapUiSmallMarginBottom" />

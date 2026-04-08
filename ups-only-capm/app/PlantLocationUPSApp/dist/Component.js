@@ -1,0 +1,2 @@
+sap.ui.define(["sap/ui/core/UIComponent","sap/ui/Device"],function(t,n){"use strict";return t.extend("upsonly.plantlocationapp.Component",{metadata:{manifest:"json"},init:function(){t.prototype.init.apply(this,arguments);this.getRouter().initialize()},getContentDensityClass:function(){if(this._sContentDensityClass===undefined){this._sContentDensityClass=n.support.touch?"sapUiSizeCozy":"sapUiSizeCompact"}return this._sContentDensityClass}})});
+//# sourceMappingURL=Component.js.map

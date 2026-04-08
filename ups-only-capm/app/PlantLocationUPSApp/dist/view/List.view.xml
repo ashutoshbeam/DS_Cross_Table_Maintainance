@@ -1,0 +1,63 @@
+<mvc:View
+    controllerName="upsonly.plantlocationapp.controller.List"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Page title="{i18n>appTitle}" busy="{view>/busy}">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <OverflowToolbar>
+                    <Title text="{view>/tableTitle}" level="H2" />
+                    <Button icon="sap-icon://add" type="Emphasized" tooltip="{i18n>create}" press=".onCreate" />
+                    <Button icon="sap-icon://edit" tooltip="{i18n>edit}" enabled="{= ${view>/selectedCount} === 1 }" press=".onEdit" />
+                    <Button icon="sap-icon://delete" text="{i18n>delete}" enabled="{= ${view>/selectedCount} > 0 }" press=".onDelete" />
+                    <ToolbarSpacer />
+                    <Text text="{i18n>selectedCountLabel}: {view>/selectedCount}" />
+                    <ToolbarSeparator />
+                    <SearchField width="18rem" placeholder="{i18n>searchPlaceholder}" liveChange=".onSearch" />
+                    <Button icon="sap-icon://refresh" text="{i18n>refresh}" press=".onRefresh" />
+                </OverflowToolbar>
+                <Table
+                    id="plantTable"
+                    mode="MultiSelect"
+                    growing="true"
+                    growingScrollToLoad="true"
+                    selectionChange=".onSelectionChange"
+                    updateFinished=".onUpdateFinished"
+                    items="{
+                        path: '/PlantLocation',
+                        parameters: {
+                            $$updateGroupId: 'plantLocationGroup',
+                            $count: true
+                        },
+                        sorter: {
+                            path: 'PLANT',
+                            descending: false
+                        }
+                    }">
+                    <columns>
+                        <Column><Text text="{i18n>Plant}" /></Column>
+                        <Column><Text text="{i18n>Location}" /></Column>
+                        <Column><Text text="{i18n>CompanyCode}" /></Column>
+                        <Column><Text text="{i18n>LocationType}" /></Column>
+                        <Column><Text text="{i18n>Region}" /></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <ObjectIdentifier title="{PLANT}" text="{LOCATION}" />
+                                <Text text="{LOCATION}" />
+                                <Text text="{COMPANY_CODE}" />
+                                <Text text="{LOCATION_TYPE}" />
+                                <Text text="{REGION}" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+        <dependents>
+            <core:Fragment fragmentName="upsonly.plantlocationapp.fragment.CreateEditDialog" type="XML" />
+        </dependents>
+    </Page>
+</mvc:View>
