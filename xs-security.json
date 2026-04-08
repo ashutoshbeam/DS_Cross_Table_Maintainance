@@ -2,6 +2,19 @@
   "xsappname": "FarmTankCAPProxy",
   "tenant-mode": "dedicated",
   "description": "Security profile of called application",
-  "scopes": [],
-  "role-templates": []
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.Access",
+      "description": "Technical access to FarmTankCAPProxy"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "Access",
+      "description": "Technical access to FarmTankCAPProxy",
+      "scope-references": [
+        "$XSAPPNAME.Access"
+      ]
+    }
+  ]
 }
