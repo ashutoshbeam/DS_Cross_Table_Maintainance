@@ -9,8 +9,14 @@
   <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
     <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
   </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/HTML5.xml">
+    <edmx:Include Alias="HTML5" Namespace="com.sap.vocabularies.HTML5.v1"/>
+  </edmx:Reference>
   <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
     <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Validation.V1.xml">
+    <edmx:Include Alias="Validation" Namespace="Org.OData.Validation.V1"/>
   </edmx:Reference>
   <edmx:DataServices>
     <Schema Namespace="FarmTankService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
@@ -23,30 +29,100 @@
         </Collection>
       </Annotation>
       <EntityContainer Name="EntityContainer">
-        <EntitySet Name="TankVolumes" EntityType="FarmTankService.TankVolumes"/>
-        <EntitySet Name="PlantLocation" EntityType="FarmTankService.PlantLocation"/>
+        <EntitySet Name="TankVolumes" EntityType="FarmTankService.TankVolumes">
+          <NavigationPropertyBinding Path="changes" Target="ChangeView"/>
+        </EntitySet>
+        <EntitySet Name="PlantLocation" EntityType="FarmTankService.PlantLocation">
+          <NavigationPropertyBinding Path="changes" Target="ChangeView"/>
+        </EntitySet>
+        <EntitySet Name="ChangeView" EntityType="FarmTankService.ChangeView"/>
       </EntityContainer>
       <EntityType Name="TankVolumes">
         <Key>
           <PropertyRef Name="TANK_ID"/>
         </Key>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
         <Property Name="TANK_ID" Type="Edm.String" MaxLength="30" Nullable="false"/>
+        <Property Name="ID" Type="Edm.Guid"/>
         <Property Name="VOLUME" Type="Edm.Decimal" Scale="variable"/>
         <Property Name="UOM" Type="Edm.String" MaxLength="3"/>
         <Property Name="TIME_STAMP" Type="Edm.DateTimeOffset" Precision="7"/>
         <Property Name="COMMENT" Type="Edm.String" MaxLength="50"/>
         <Property Name="SOURCE" Type="Edm.String" MaxLength="1" DefaultValue="M"/>
+        <NavigationProperty Name="changes" Type="Collection(FarmTankService.ChangeView)"/>
       </EntityType>
       <EntityType Name="PlantLocation">
         <Key>
           <PropertyRef Name="PLANT"/>
         </Key>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
         <Property Name="PLANT" Type="Edm.String" MaxLength="4" Nullable="false"/>
+        <Property Name="ID" Type="Edm.Guid"/>
         <Property Name="COMPANY_CODE" Type="Edm.String" MaxLength="4"/>
         <Property Name="LOCATION" Type="Edm.String" MaxLength="10"/>
         <Property Name="LOCATION_TYPE" Type="Edm.String" MaxLength="10"/>
         <Property Name="REGION" Type="Edm.String" MaxLength="10"/>
+        <NavigationProperty Name="changes" Type="Collection(FarmTankService.ChangeView)"/>
       </EntityType>
+      <EntityType Name="ChangeView">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="keys" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="attribute" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="valueChangedFrom" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="valueChangedTo" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="entity" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="serviceEntity" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="parentKey" Type="Edm.String"/>
+        <Property Name="serviceEntityPath" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="modification" Type="Edm.String"/>
+        <Property Name="valueDataType" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="changeLog_ID" Type="Edm.Guid"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="objectID" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="parentObjectID" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="entityKey" Type="Edm.String"/>
+      </EntityType>
+      <Annotations Target="FarmTankService.TankVolumes/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.TankVolumes/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.TankVolumes/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.TankVolumes/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.TankVolumes/ID">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
       <Annotations Target="FarmTankService.PlantLocation">
         <Annotation Term="Common.SemanticKey">
           <Collection>
@@ -175,6 +251,12 @@
               <PropertyValue Property="Label" String="{i18n>OrganizationalInformation}"/>
               <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Organizational"/>
             </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="ChangeHistoryFacet"/>
+              <PropertyValue Property="Label" String="{i18n>ChangeHistory}"/>
+              <PropertyValue Property="Target" AnnotationPath="changes/@UI.PresentationVariant"/>
+              <Annotation Term="UI.PartOfPreview" Bool="false"/>
+            </Record>
           </Collection>
         </Annotation>
       </Annotations>
@@ -212,8 +294,39 @@
           </Record>
         </Annotation>
       </Annotations>
+      <Annotations Target="FarmTankService.PlantLocation/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.PlantLocation/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.PlantLocation/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.PlantLocation/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
       <Annotations Target="FarmTankService.PlantLocation/PLANT">
         <Annotation Term="Common.Label" String="{i18n>Plant}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.PlantLocation/ID">
+        <Annotation Term="Core.Computed" Bool="true"/>
       </Annotations>
       <Annotations Target="FarmTankService.PlantLocation/COMPANY_CODE">
         <Annotation Term="Common.Label" String="{i18n>CompanyCode}"/>
@@ -226,6 +339,234 @@
       </Annotations>
       <Annotations Target="FarmTankService.PlantLocation/REGION">
         <Annotation Term="Common.Label" String="{i18n>Region}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView">
+        <Annotation Term="UI.PresentationVariant">
+          <Record Type="UI.PresentationVariantType">
+            <PropertyValue Property="Visualizations">
+              <Collection>
+                <AnnotationPath>@UI.LineItem</AnnotationPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="RequestAtLeast">
+              <Collection>
+                <PropertyPath>parentKey</PropertyPath>
+                <PropertyPath>serviceEntity</PropertyPath>
+                <PropertyPath>serviceEntityPath</PropertyPath>
+                <PropertyPath>valueDataType</PropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="SortOrder">
+              <Collection>
+                <Record Type="Common.SortOrderType">
+                  <PropertyValue Property="Property" PropertyPath="createdAt"/>
+                  <PropertyValue Property="Descending" Bool="true"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="modification"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="9%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="createdAt"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="12%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="createdBy"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="9%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="entity"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="11%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="objectID"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="14%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="attribute"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="9%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="valueChangedTo"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="11%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="valueChangedFrom"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="11%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="parentObjectID"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="14%"/>
+                </Record>
+              </Annotation>
+              <Annotation Term="UI.Hidden" Bool="true"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.DeleteHidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.EntityContainer/ChangeView">
+        <Annotation Term="UI.PresentationVariant">
+          <Record Type="UI.PresentationVariantType">
+            <PropertyValue Property="Visualizations">
+              <Collection>
+                <AnnotationPath>@UI.LineItem</AnnotationPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="RequestAtLeast">
+              <Collection>
+                <PropertyPath>parentKey</PropertyPath>
+                <PropertyPath>serviceEntity</PropertyPath>
+                <PropertyPath>serviceEntityPath</PropertyPath>
+                <PropertyPath>valueDataType</PropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="SortOrder">
+              <Collection>
+                <Record Type="Common.SortOrderType">
+                  <PropertyValue Property="Property" PropertyPath="createdAt"/>
+                  <PropertyValue Property="Descending" Bool="true"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.DeleteHidden" Bool="true"/>
+        <Annotation Term="Capabilities.DeleteRestrictions">
+          <Record Type="Capabilities.DeleteRestrictionsType">
+            <PropertyValue Property="Deletable" Bool="false"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Capabilities.InsertRestrictions">
+          <Record Type="Capabilities.InsertRestrictionsType">
+            <PropertyValue Property="Insertable" Bool="false"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Capabilities.UpdateRestrictions">
+          <Record Type="Capabilities.UpdateRestrictionsType">
+            <PropertyValue Property="Updatable" Bool="false"/>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/ID">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/keys">
+        <Annotation Term="Common.Label" String="{i18n>Changes.keys}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/attribute">
+        <Annotation Term="Common.Label" String="{i18n>Changes.attribute}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/valueChangedFrom">
+        <Annotation Term="UI.MultiLineText" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>Changes.valueChangedFrom}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/valueChangedTo">
+        <Annotation Term="UI.MultiLineText" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>Changes.valueChangedTo}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/entity">
+        <Annotation Term="Common.Label" String="{i18n>Changes.entity}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/serviceEntity">
+        <Annotation Term="Common.Label" String="{i18n>Changes.serviceEntity}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/parentKey">
+        <Annotation Term="Common.Label" String="{i18n>Changes.parentKey}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/serviceEntityPath">
+        <Annotation Term="Common.Label" String="{i18n>Changes.serviceEntityPath}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/modification">
+        <Annotation Term="Common.Label" String="{i18n>Changes.modification}"/>
+        <Annotation Term="Validation.AllowedValues">
+          <Collection>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="Create"/>
+              <PropertyValue Property="Value" String="create"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="Update"/>
+              <PropertyValue Property="Value" String="update"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="Delete"/>
+              <PropertyValue Property="Value" String="delete"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/valueDataType">
+        <Annotation Term="Common.Label" String="{i18n>Changes.valueDataType}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/changeLog_ID">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangeLog.ID}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangeLog.createdAt}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangeLog.createdBy}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/objectID">
+        <Annotation Term="Common.Label" String="{i18n>Changes.entityID}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/parentObjectID">
+        <Annotation Term="Common.Label" String="{i18n>Changes.parentEntityID}"/>
+      </Annotations>
+      <Annotations Target="FarmTankService.ChangeView/entityKey">
+        <Annotation Term="Common.Label" String="{i18n>ChangeLog.entityKey}"/>
       </Annotations>
     </Schema>
   </edmx:DataServices>

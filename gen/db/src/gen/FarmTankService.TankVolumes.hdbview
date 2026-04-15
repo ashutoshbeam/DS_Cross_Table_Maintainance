@@ -1,5 +1,10 @@
 VIEW FarmTankService_TankVolumes AS SELECT
+  TankVolumes_M_0.createdAt,
+  TankVolumes_M_0.createdBy,
+  TankVolumes_M_0.modifiedAt,
+  TankVolumes_M_0.modifiedBy,
   TankVolumes_M_0.TANK_ID,
+  TankVolumes_M_0.ID,
   TankVolumes_M_0.VOLUME,
   TankVolumes_M_0.UOM,
   TankVolumes_M_0.TIME_STAMP,

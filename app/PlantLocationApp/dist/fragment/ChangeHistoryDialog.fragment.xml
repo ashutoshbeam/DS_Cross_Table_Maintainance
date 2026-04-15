@@ -1,0 +1,81 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Dialog
+        id="changeHistoryDialog"
+        title="{i18n>changeHistoryPageTitle}"
+        contentWidth="82rem"
+        contentHeight="34rem"
+        draggable="true"
+        resizable="true"
+        class="sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer">
+        <content>
+            <VBox class="sapUiSmallMarginTopBottom">
+                <Toolbar design="Transparent">
+                    <Title text="{i18n>changeHistoryTitle}" level="H3" />
+                    <ToolbarSpacer />
+                    <Text text="{= ${view>/plant} ? ${view>/plant} : '' }" />
+                    <ToolbarSpacer />
+                    <SearchField
+                        width="20rem"
+                        placeholder="{i18n>changeHistorySearchPlaceholder}"
+                        liveChange=".onSearchChangeHistory" />
+                </Toolbar>
+
+                <Table
+                    id="changeHistoryTable"
+                    items="{view>/filteredHistory}"
+                    busy="{view>/historyBusy}"
+                    growing="true"
+                    growingScrollToLoad="true"
+                    noDataText="{i18n>changeHistoryNoData}">
+                    <columns>
+                        <Column width="8rem">
+                            <Text text="{i18n>changeHistoryModification}" />
+                        </Column>
+                        <Column width="10rem">
+                            <Text text="{i18n>changeHistoryCreatedAt}" />
+                        </Column>
+                        <Column width="10rem">
+                            <Text text="{i18n>changeHistoryCreatedBy}" />
+                        </Column>
+                        <Column width="12rem">
+                            <Text text="{i18n>changeHistoryEntity}" />
+                        </Column>
+                        <Column width="12rem">
+                            <Text text="{i18n>changeHistoryObjectId}" />
+                        </Column>
+                        <Column width="12rem">
+                            <Text text="{i18n>changeHistoryField}" />
+                        </Column>
+                        <Column width="18rem">
+                            <Text text="{i18n>changeHistoryNewValue}" />
+                        </Column>
+                        <Column width="18rem">
+                            <Text text="{i18n>changeHistoryOldValue}" />
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <ObjectStatus text="{view>modification}" />
+                                <Text text="{view>createdAt}" />
+                                <Text text="{view>createdBy}" />
+                                <Text text="{view>entity}" />
+                                <Text text="{view>objectID}" />
+                                <Text text="{view>attribute}" />
+                                <Text text="{view>valueChangedTo}" wrapping="true" />
+                                <Text text="{view>valueChangedFrom}" wrapping="true" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+        <endButton>
+            <Button
+                text="{i18n>cancel}"
+                press=".onCloseChangeHistory" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

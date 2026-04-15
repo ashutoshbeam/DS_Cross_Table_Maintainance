@@ -30,6 +30,10 @@
                     icon="sap-icon://delete"
                     text="{i18n>delete}"
                     press=".onDelete" />
+                <Button
+                    icon="sap-icon://history"
+                    text="{i18n>changeHistoryButton}"
+                    press=".onOpenChangeHistory" />
             </OverflowToolbar>
         </subHeader>
         <content>

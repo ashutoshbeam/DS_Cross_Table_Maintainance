@@ -1,7 +1,12 @@
 namespace dwcmission.farm;
 
-entity TankVolumes_M {
- key TANK_ID : String(30);
+using {
+  managed
+} from '@sap/cds/common';
+
+entity TankVolumes_M : managed {
+  key TANK_ID : String(30);
+  ID : UUID @cds.on.insert: $uuid;
   VOLUME  : Decimal;
   UOM  : String(3);
   TIME_STAMP : Timestamp;
@@ -10,8 +15,9 @@ entity TankVolumes_M {
 }
 
 
-entity ZPLANT_LOCATION {
+entity ZPLANT_LOCATION : managed {
   key PLANT : String(4);
+  ID : UUID @cds.on.insert: $uuid;
   COMPANY_CODE  : String(4);
   LOCATION  : String(10);
   LOCATION_TYPE : String(10);

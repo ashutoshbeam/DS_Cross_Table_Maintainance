@@ -1,0 +1,354 @@
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:15:57.392266] Updated app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 ({"lifecycle"=>{"data"=>{"buildpacks"=>["nodejs_buildpack"]}, "type"=>"buildpack"}}) (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:15:57.505856] Updating process: "web" (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:33.642555] Uploading app package for app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:33.912846] Updated app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 ({"environment_variables"=>"[PRIVATE DATA HIDDEN]"}) (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:43.853752] Stopping app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:43.950067] Cell c6839c92-6169-4a03-b42f-10d3d92c0e67 stopping instance 2ca05897-545e-417d-621c-4d04 (STDOUT, CELL)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:44.167966] Creating build for app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:44.602355] Downloading nodejs_buildpack... (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:44.631204] Downloaded nodejs_buildpack (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:44.631273] Cell 486313d3-c56f-48be-a53e-e0ee0d5b5c1c creating container for instance 3b98cd3e-edd9-433d-8601-9214a7657729 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:45.056579] Security group rules were updated (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:45.133936] Cell 486313d3-c56f-48be-a53e-e0ee0d5b5c1c successfully created container for instance 3b98cd3e-edd9-433d-8601-9214a7657729 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:45.576843] Downloading build artifacts cache... (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:45.576870] Downloading app package... (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:45.640556] Downloaded build artifacts cache (468B) (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:46.160573] Downloaded app package (4.8M) (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:46.229224] -----> Nodejs Buildpack version 1.8.44 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:46.410389] -----> Bootstrapping python (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:46.410404] -----> Installing python 3.11.14 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:46.410625] Copy [/tmp/buildpacks/206498232b000738/dependencies/b5e0345ae0ae1932e7d56fffaa49a487/python_3.11.14_linux_x64_cflinuxfs4_66f53248.tgz] (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:49.842669] -----> Installing binaries (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:49.842890] engines.node (package.json): ^20.00 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:49.842904] engines.npm (package.json): unspecified (use default) (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:49.842961] -----> Installing node 20.20.0 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:49.843106] Copy [/tmp/buildpacks/206498232b000738/dependencies/74a84d4e2bf273f4b10cb96c39282fe2/node_20.20.0_linux_x64_cflinuxfs4_0eeb6a6f.tgz] (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:49.945539] [31;1m**WARNING**[0m node 20.x.x will no longer be available in new buildpacks released after 2026-04-30. (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:49.945557] See: https://github.com/nodejs/Release (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.610410] Using default npm version: 10.8.2 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.610435] -----> Installing yarn 1.22.22 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.610591] Copy [/tmp/buildpacks/206498232b000738/dependencies/e3a39aedd1236924d69cc2d0637a8ed2/yarn_1.22.22_linux_noarch_any-stack_4911d0a6.tgz] (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.920959] Installed yarn 1.22.22 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.920977] -----> Creating runtime environment (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.922655] NODE_ENV=production (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.922670] NODE_HOME=/tmp/contents320133300/deps/0/node (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.922672] NODE_MODULES_CACHE=true (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.922676] NODE_VERBOSE=false (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.922678] NPM_CONFIG_LOGLEVEL=error (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.922680] NPM_CONFIG_PRODUCTION=true (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.922744] -----> Building dependencies (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.922758] Prebuild detected (node_modules already exists) (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:51.922772] Rebuilding any native modules (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:52.533152] rebuilt dependencies successfully (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:52.535613] npm notice (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:52.535630] npm notice New major version of npm available! 10.8.2 -> 11.12.1 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:52.535635] npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:52.535638] npm notice To update run: npm install -g npm@11.12.1 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:52.535641] npm notice (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:52.545113] Installing any new modules (package.json + package-lock.json) (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:54.325608] added 61 packages in 2s (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:54.325632] 34 packages are looking for funding (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:54.325646] run `npm fund` for details (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:16:55.314820] Contrast Security no credentials found. Will not write environment files. (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:04.094499] Exit status 0 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:04.094536] Uploading droplet, build artifacts cache... (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:04.094566] Uploading droplet... (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:04.094603] Uploading build artifacts cache... (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:04.129911] Uploaded build artifacts cache (468B) (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:04.714449] Creating droplet for app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:05.803623] Uploaded droplet (53M) (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:05.818879] Uploading complete (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:06.293826] Cell 486313d3-c56f-48be-a53e-e0ee0d5b5c1c stopping instance 3b98cd3e-edd9-433d-8601-9214a7657729 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:06.293863] Cell 486313d3-c56f-48be-a53e-e0ee0d5b5c1c destroying container for instance 3b98cd3e-edd9-433d-8601-9214a7657729 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:06.367954] Staging complete for build 3b98cd3e-edd9-433d-8601-9214a7657729 (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:08.637826] Cell 486313d3-c56f-48be-a53e-e0ee0d5b5c1c successfully destroyed container for instance 3b98cd3e-edd9-433d-8601-9214a7657729 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:13.789306] Updated app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 ({:droplet_guid=>"8bfbb4fc-056f-49dc-8642-35151d0791a3"}) (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:14.142643] Creating revision for app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:14.186706] Starting app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:14.472960] Cell ff218d29-2890-4e75-9013-246d0de8caff creating container for instance 1f4be1bb-df00-463a-5e1e-bb72 (STDOUT, CELL)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:14.912475] Security group rules were updated (STDOUT, CELL)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:14.988815] Cell ff218d29-2890-4e75-9013-246d0de8caff successfully created container for instance 1f4be1bb-df00-463a-5e1e-bb72 (STDOUT, CELL)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:15.519912] Downloading droplet... (STDOUT, CELL)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:19.077775] Downloaded droplet (53M) (STDOUT, CELL)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:19.077954] Starting health monitoring of container (STDOUT, CELL)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:19.166494] Invoking pre-start scripts. (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:19.385971] Invoking start command. (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:19.719488] > FarmTankCAPProxy@1.0.0 start (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:19.719516] > npx cds-serve (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:20.224156] [cds] - bootstrapping from { file: 'srv/server.js' } (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:20.445803] {"level":"info","logger":"cds","timestamp":"2026-04-14T15:17:20.444Z","layer":"cds","component_type":"application","container_id":"10.36.192.14","component_id":"0d0f0099-b83e-4aed-a589-c03511ae8191","component_name":"FarmTankCAPProxy-srv","component_instance":0,"source_instance":0,"organization_name":"sgs-apps-dev","organization_id":"793daa63-3860-4e61-a0d4-dfc18a648e33","space_name":"TRAINING","space_id":"1f454c3a-df8f-4f3c-a7f4-b9277738cd11","msg":"loaded model from 1 file(s):\n ","type":"log"} (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:20.445839] srv/csn.json (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:20.648758] {"level":"info","logger":"cds","timestamp":"2026-04-14T15:17:20.648Z","layer":"cds","component_type":"application","container_id":"10.36.192.14","component_id":"0d0f0099-b83e-4aed-a589-c03511ae8191","component_name":"FarmTankCAPProxy-srv","component_instance":0,"source_instance":0,"organization_name":"sgs-apps-dev","organization_id":"793daa63-3860-4e61-a0d4-dfc18a648e33","space_name":"TRAINING","space_id":"1f454c3a-df8f-4f3c-a7f4-b9277738cd11","msg":"connect to db > hana {\n  database_id: '116a3240-595d-4460-a2f9-f3ac166852f0',\n  host: '116a3240-595d-4460-a2f9-f3ac166852f0.hana.prod-us21.hanacloud.ondemand.com',\n  port: '443',\n  driver: 'com.sap.db.jdbc.Driver',\n  url: 'jdbc:sap://116a3240-595d-4460-a2f9-f3ac166852f0.hana.prod-us21.hanacloud.ondemand.com:443?encrypt=true&validateCertificate=true&currentschema=0BB73C680B454936867B03141EA16AB7',\n  schema: '0BB73C680B454936867B03141EA16AB7',\n  certificate: '...',\n  hdi_user: '0BB73C680B454936867B03141EA16AB7_DT6NO7O2C93DXUA6MWGP4PYOH_DT',\n  hdi_password: '...',\n  user: '0BB73C680B454936867B03141EA16AB7_DT6NO7O2C93DXUA6MWGP4PYOH_RT',\n  password: '...'\n}","type":"log"} (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:20.680010] {"level":"info","logger":"cds","timestamp":"2026-04-14T15:17:20.679Z","layer":"cds","component_type":"application","container_id":"10.36.192.14","component_id":"0d0f0099-b83e-4aed-a589-c03511ae8191","component_name":"FarmTankCAPProxy-srv","component_instance":0,"source_instance":0,"organization_name":"sgs-apps-dev","organization_id":"793daa63-3860-4e61-a0d4-dfc18a648e33","space_name":"TRAINING","space_id":"1f454c3a-df8f-4f3c-a7f4-b9277738cd11","msg":"using auth strategy { kind: 'xsuaa' }","type":"log"} (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:20.729113] {"level":"info","logger":"cds","timestamp":"2026-04-14T15:17:20.728Z","layer":"cds","component_type":"application","container_id":"10.36.192.14","component_id":"0d0f0099-b83e-4aed-a589-c03511ae8191","component_name":"FarmTankCAPProxy-srv","component_instance":0,"source_instance":0,"organization_name":"sgs-apps-dev","organization_id":"793daa63-3860-4e61-a0d4-dfc18a648e33","space_name":"TRAINING","space_id":"1f454c3a-df8f-4f3c-a7f4-b9277738cd11","msg":"serving FarmTankService {\n  at: [ '/odata/v4/farm-tank' ],\n  decl: 'srv/csn.json:181',\n  impl: 'srv/cap-service.js'\n}","type":"log"} (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:20.738519] {"level":"info","logger":"cds","timestamp":"2026-04-14T15:17:20.738Z","layer":"cds","component_type":"application","container_id":"10.36.192.14","component_id":"0d0f0099-b83e-4aed-a589-c03511ae8191","component_name":"FarmTankCAPProxy-srv","component_instance":0,"source_instance":0,"organization_name":"sgs-apps-dev","organization_id":"793daa63-3860-4e61-a0d4-dfc18a648e33","space_name":"TRAINING","space_id":"1f454c3a-df8f-4f3c-a7f4-b9277738cd11","msg":"server listening on { url: 'http://localhost:8080' }","type":"log"} (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:20.739523] {"level":"info","logger":"cds","timestamp":"2026-04-14T15:17:20.739Z","layer":"cds","component_type":"application","container_id":"10.36.192.14","component_id":"0d0f0099-b83e-4aed-a589-c03511ae8191","component_name":"FarmTankCAPProxy-srv","component_instance":0,"source_instance":0,"organization_name":"sgs-apps-dev","organization_id":"793daa63-3860-4e61-a0d4-dfc18a648e33","space_name":"TRAINING","space_id":"1f454c3a-df8f-4f3c-a7f4-b9277738cd11","msg":"server v9.8.4 launched in 574 ms","type":"log"} (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:21.929503] Container became healthy (STDOUT, CELL)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:21.976735] Process became ready with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 payload: {"instance"=>"1f4be1bb-df00-463a-5e1e-bb72", "index"=>0, "cell_id"=>"ff218d29-2890-4e75-9013-246d0de8caff", "ready"=>true, "version"=>"58ed8232-53cc-4545-bdc9-8638e2af56fa"} (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:50.598220] Cell c6839c92-6169-4a03-b42f-10d3d92c0e67 destroying container for instance 2ca05897-545e-417d-621c-4d04 (STDOUT, CELL)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:50.687284] Exit status 137 (STDOUT, PROXY)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:17:52.154092] Cell c6839c92-6169-4a03-b42f-10d3d92c0e67 successfully destroyed container for instance 2ca05897-545e-417d-621c-4d04 (STDOUT, CELL)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:24:57.535482] Updated app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 ({"lifecycle"=>{"data"=>{"buildpacks"=>["nodejs_buildpack"]}, "type"=>"buildpack"}}) (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:24:57.655017] Updating process: "web" (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:35.521727] Uploading app package for app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:35.780245] Updated app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 ({"environment_variables"=>"[PRIVATE DATA HIDDEN]"}) (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:45.562603] Stopping app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:45.628407] Cell ff218d29-2890-4e75-9013-246d0de8caff stopping instance 1f4be1bb-df00-463a-5e1e-bb72 (STDOUT, CELL)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:45.888963] Creating build for app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 (STDOUT, API)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:46.438303] Downloading nodejs_buildpack... (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:46.471285] Downloaded nodejs_buildpack (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:46.471350] Cell 486313d3-c56f-48be-a53e-e0ee0d5b5c1c creating container for instance 22ead550-ce6a-4067-8720-7cc3e54b7336 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:46.880680] Security group rules were updated (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:46.945764] Cell 486313d3-c56f-48be-a53e-e0ee0d5b5c1c successfully created container for instance 22ead550-ce6a-4067-8720-7cc3e54b7336 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:47.555374] Downloading app package... (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:47.555417] Downloading build artifacts cache... (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:47.618031] Downloaded build artifacts cache (468B) (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:48.151528] Downloaded app package (4.8M) (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:48.224548] -----> Nodejs Buildpack version 1.8.44 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:48.410367] -----> Bootstrapping python (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:48.410388] -----> Installing python 3.11.14 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:48.410447] Copy [/tmp/buildpacks/206498232b000738/dependencies/b5e0345ae0ae1932e7d56fffaa49a487/python_3.11.14_linux_x64_cflinuxfs4_66f53248.tgz] (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:51.799501] -----> Installing binaries (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:51.799629] engines.node (package.json): ^20.00 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:51.799653] engines.npm (package.json): unspecified (use default) (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:51.799671] -----> Installing node 20.20.0 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:51.799869] Copy [/tmp/buildpacks/206498232b000738/dependencies/74a84d4e2bf273f4b10cb96c39282fe2/node_20.20.0_linux_x64_cflinuxfs4_0eeb6a6f.tgz] (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:51.903722] [31;1m**WARNING**[0m node 20.x.x will no longer be available in new buildpacks released after 2026-04-30. (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:51.903737] See: https://github.com/nodejs/Release (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.589409] Using default npm version: 10.8.2 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.589438] -----> Installing yarn 1.22.22 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.589612] Copy [/tmp/buildpacks/206498232b000738/dependencies/e3a39aedd1236924d69cc2d0637a8ed2/yarn_1.22.22_linux_noarch_any-stack_4911d0a6.tgz] (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.881903] Installed yarn 1.22.22 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.881922] -----> Creating runtime environment (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.884156] NODE_ENV=production (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.884177] NODE_HOME=/tmp/contents3345446430/deps/0/node (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.884180] NODE_MODULES_CACHE=true (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.884184] NODE_VERBOSE=false (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.884186] NPM_CONFIG_LOGLEVEL=error (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.884188] NPM_CONFIG_PRODUCTION=true (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.884213] -----> Building dependencies (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.884223] Prebuild detected (node_modules already exists) (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:53.884315] Rebuilding any native modules (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:54.463313] rebuilt dependencies successfully (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:54.465358] npm notice (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:54.465376] npm notice New major version of npm available! 10.8.2 -> 11.12.1 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:54.465380] npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:54.465382] npm notice To update run: npm install -g npm@11.12.1 (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:54.465384] npm notice (STDOUT, STG)#
+#2026 04 14 15:25:55.231#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4277#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:54.474746] Installing any new modules (package.json + package-lock.json) (STDOUT, STG)#
+#2026 04 14 15:26:05.258#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4289#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:56.123534] added 61 packages in 2s (STDOUT, STG)#
+#2026 04 14 15:26:05.258#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4289#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:56.123571] 34 packages are looking for funding (STDOUT, STG)#
+#2026 04 14 15:26:05.258#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4289#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:56.123679] run `npm fund` for details (STDOUT, STG)#
+#2026 04 14 15:26:05.258#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4289#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:25:56.988851] Contrast Security no credentials found. Will not write environment files. (STDOUT, STG)#
+#2026 04 14 15:26:15.403#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4296#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:05.628692] Exit status 0 (STDOUT, STG)#
+#2026 04 14 15:26:15.403#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4296#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:05.628720] Uploading droplet, build artifacts cache... (STDOUT, STG)#
+#2026 04 14 15:26:15.403#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4296#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:05.628753] Uploading droplet... (STDOUT, STG)#
+#2026 04 14 15:26:15.403#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4296#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:05.628778] Uploading build artifacts cache... (STDOUT, STG)#
+#2026 04 14 15:26:15.403#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4296#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:05.667805] Uploaded build artifacts cache (469B) (STDOUT, STG)#
+#2026 04 14 15:26:15.403#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4296#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:06.250609] Creating droplet for app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 (STDOUT, API)#
+#2026 04 14 15:26:15.403#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4296#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:09.336337] Uploaded droplet (53M) (STDOUT, STG)#
+#2026 04 14 15:26:15.403#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4296#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:09.350394] Uploading complete (STDOUT, STG)#
+#2026 04 14 15:26:15.403#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4296#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:09.906586] Cell 486313d3-c56f-48be-a53e-e0ee0d5b5c1c stopping instance 22ead550-ce6a-4067-8720-7cc3e54b7336 (STDOUT, STG)#
+#2026 04 14 15:26:15.403#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4296#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:09.906635] Cell 486313d3-c56f-48be-a53e-e0ee0d5b5c1c destroying container for instance 22ead550-ce6a-4067-8720-7cc3e54b7336 (STDOUT, STG)#
+#2026 04 14 15:26:15.403#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4296#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:10.023319] Staging complete for build 22ead550-ce6a-4067-8720-7cc3e54b7336 (STDOUT, API)#
+#2026 04 14 15:26:15.403#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-4296#
+[PollStageAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:12.238562] Cell 486313d3-c56f-48be-a53e-e0ee0d5b5c1c successfully destroyed container for instance 22ead550-ce6a-4067-8720-7cc3e54b7336 (STDOUT, STG)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:15.517924] Updated app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 ({:droplet_guid=>"c65af53b-6f41-4ef3-92a1-830d9a4932f6"}) (STDOUT, API)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:15.896575] Creating revision for app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 (STDOUT, API)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:15.966443] Starting app with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 (STDOUT, API)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:16.262647] Cell e5913f38-eeff-4284-8c98-e60e0fb99f75 creating container for instance 2cd0bed3-4891-469b-74d7-69de (STDOUT, CELL)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:16.802067] Security group rules were updated (STDOUT, CELL)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:16.873076] Cell e5913f38-eeff-4284-8c98-e60e0fb99f75 successfully created container for instance 2cd0bed3-4891-469b-74d7-69de (STDOUT, CELL)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:17.453380] Downloading droplet... (STDOUT, CELL)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:21.318062] Downloaded droplet (53M) (STDOUT, CELL)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:21.318269] Starting health monitoring of container (STDOUT, CELL)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:21.412651] Invoking pre-start scripts. (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:21.640128] Invoking start command. (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:21.985435] > FarmTankCAPProxy@1.0.0 start (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:21.985468] > npx cds-serve (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:22.480072] [cds] - bootstrapping from { file: 'srv/server.js' } (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:22.709702] {"level":"info","logger":"cds","timestamp":"2026-04-14T15:26:22.708Z","layer":"cds","component_type":"application","container_id":"10.36.64.33","component_id":"0d0f0099-b83e-4aed-a589-c03511ae8191","component_name":"FarmTankCAPProxy-srv","component_instance":0,"source_instance":0,"organization_name":"sgs-apps-dev","organization_id":"793daa63-3860-4e61-a0d4-dfc18a648e33","space_name":"TRAINING","space_id":"1f454c3a-df8f-4f3c-a7f4-b9277738cd11","msg":"loaded model from 1 file(s):\n ","type":"log"} (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:22.709738] srv/csn.json (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:22.898613] {"level":"info","logger":"cds","timestamp":"2026-04-14T15:26:22.897Z","layer":"cds","component_type":"application","container_id":"10.36.64.33","component_id":"0d0f0099-b83e-4aed-a589-c03511ae8191","component_name":"FarmTankCAPProxy-srv","component_instance":0,"source_instance":0,"organization_name":"sgs-apps-dev","organization_id":"793daa63-3860-4e61-a0d4-dfc18a648e33","space_name":"TRAINING","space_id":"1f454c3a-df8f-4f3c-a7f4-b9277738cd11","msg":"connect to db > hana {\n  database_id: '116a3240-595d-4460-a2f9-f3ac166852f0',\n  host: '116a3240-595d-4460-a2f9-f3ac166852f0.hana.prod-us21.hanacloud.ondemand.com',\n  port: '443',\n  driver: 'com.sap.db.jdbc.Driver',\n  url: 'jdbc:sap://116a3240-595d-4460-a2f9-f3ac166852f0.hana.prod-us21.hanacloud.ondemand.com:443?encrypt=true&validateCertificate=true&currentschema=0BB73C680B454936867B03141EA16AB7',\n  schema: '0BB73C680B454936867B03141EA16AB7',\n  certificate: '...',\n  hdi_user: '0BB73C680B454936867B03141EA16AB7_DT6NO7O2C93DXUA6MWGP4PYOH_DT',\n  hdi_password: '...',\n  user: '0BB73C680B454936867B03141EA16AB7_DT6NO7O2C93DXUA6MWGP4PYOH_RT',\n  password: '...'\n}","type":"log"} (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:22.927138] {"level":"info","logger":"cds","timestamp":"2026-04-14T15:26:22.926Z","layer":"cds","component_type":"application","container_id":"10.36.64.33","component_id":"0d0f0099-b83e-4aed-a589-c03511ae8191","component_name":"FarmTankCAPProxy-srv","component_instance":0,"source_instance":0,"organization_name":"sgs-apps-dev","organization_id":"793daa63-3860-4e61-a0d4-dfc18a648e33","space_name":"TRAINING","space_id":"1f454c3a-df8f-4f3c-a7f4-b9277738cd11","msg":"using auth strategy { kind: 'xsuaa' }","type":"log"} (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:22.971561] {"level":"info","logger":"cds","timestamp":"2026-04-14T15:26:22.971Z","layer":"cds","component_type":"application","container_id":"10.36.64.33","component_id":"0d0f0099-b83e-4aed-a589-c03511ae8191","component_name":"FarmTankCAPProxy-srv","component_instance":0,"source_instance":0,"organization_name":"sgs-apps-dev","organization_id":"793daa63-3860-4e61-a0d4-dfc18a648e33","space_name":"TRAINING","space_id":"1f454c3a-df8f-4f3c-a7f4-b9277738cd11","msg":"serving FarmTankService {\n  at: [ '/odata/v4/farm-tank' ],\n  decl: 'srv/csn.json:181',\n  impl: 'srv/cap-service.js'\n}","type":"log"} (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:22.979792] {"level":"info","logger":"cds","timestamp":"2026-04-14T15:26:22.979Z","layer":"cds","component_type":"application","container_id":"10.36.64.33","component_id":"0d0f0099-b83e-4aed-a589-c03511ae8191","component_name":"FarmTankCAPProxy-srv","component_instance":0,"source_instance":0,"organization_name":"sgs-apps-dev","organization_id":"793daa63-3860-4e61-a0d4-dfc18a648e33","space_name":"TRAINING","space_id":"1f454c3a-df8f-4f3c-a7f4-b9277738cd11","msg":"server listening on { url: 'http://localhost:8080' }","type":"log"} (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:22.980729] {"level":"info","logger":"cds","timestamp":"2026-04-14T15:26:22.980Z","layer":"cds","component_type":"application","container_id":"10.36.64.33","component_id":"0d0f0099-b83e-4aed-a589-c03511ae8191","component_name":"FarmTankCAPProxy-srv","component_instance":0,"source_instance":0,"organization_name":"sgs-apps-dev","organization_id":"793daa63-3860-4e61-a0d4-dfc18a648e33","space_name":"TRAINING","space_id":"1f454c3a-df8f-4f3c-a7f4-b9277738cd11","msg":"server v9.8.4 launched in 559 ms","type":"log"} (STDOUT, APP/PROC/WEB)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:24.139356] Container became healthy (STDOUT, CELL)#
+#2026 04 14 15:26:25.568#Z#DEBUG#0e9c3510-3816-11f1-a686-eeee0a9a621f.FarmTankCAPProxy-srv#flowable-async-job-executor-thread-1520#
+[PollStartAppStatusExecution] 0d0f0099-b83e-4aed-a589-c03511ae8191 [2026-04-14T15:26:24.181990] Process became ready with guid 0d0f0099-b83e-4aed-a589-c03511ae8191 payload: {"instance"=>"2cd0bed3-4891-469b-74d7-69de", "index"=>0, "cell_id"=>"e5913f38-eeff-4284-8c98-e60e0fb99f75", "ready"=>true, "version"=>"3dc11f45-c1e9-404d-8047-d3fc91f8ece4"} (STDOUT, API)#

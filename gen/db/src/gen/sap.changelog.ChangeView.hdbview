@@ -1,0 +1,19 @@
+VIEW sap_changelog_ChangeView AS SELECT
+  Changes_0.ID,
+  Changes_0.keys,
+  Changes_0.attribute,
+  Changes_0.valueChangedFrom,
+  Changes_0.valueChangedTo,
+  Changes_0.entity,
+  Changes_0.serviceEntity,
+  Changes_0.parentKey,
+  Changes_0.serviceEntityPath,
+  Changes_0.modification,
+  Changes_0.valueDataType,
+  Changes_0.changeLog_ID,
+  changeLog_1.createdAt AS createdAt,
+  changeLog_1.createdBy AS createdBy,
+  Changes_0.entityID AS objectID,
+  Changes_0.parentEntityID AS parentObjectID,
+  changeLog_1.entityKey AS entityKey
+FROM (sap_changelog_Changes AS Changes_0 LEFT JOIN sap_changelog_ChangeLog AS changeLog_1 ON Changes_0.changeLog_ID = changeLog_1.ID)

@@ -74,6 +74,20 @@ sap.ui.define([
             });
         },
 
+        onOpenChangeHistory: function () {
+            var oContext = this.getView().getBindingContext(),
+                sPlant;
+
+            if (!oContext) {
+                return;
+            }
+
+            sPlant = oContext.getProperty("PLANT");
+            this.getRouter().navTo("PlantLocationChangeHistory", {
+                plant: sPlant
+            });
+        },
+
         onCancelEdit: function () {
             var oContext = this.getView().getBindingContext();
 

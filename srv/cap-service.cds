@@ -1,4 +1,5 @@
 using dwcmission.farm as db from '../db/data-model';
+using { sap.changelog.ChangeView as ChangelogChangeView } from '@cap-js/change-tracking';
 
 service FarmTankService @(path: '/odata/v4/farm-tank') {
     entity TankVolumes
@@ -12,4 +13,6 @@ service FarmTankService @(path: '/odata/v4/farm-tank') {
 
     entity PlantLocation
       as projection on db.ZPLANT_LOCATION;
+
+    entity ChangeView as projection on ChangelogChangeView;
 }

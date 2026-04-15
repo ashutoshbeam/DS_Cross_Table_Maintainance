@@ -38,6 +38,11 @@
                         enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} > 0 }"
                         press=".onDelete" />
                     <Button
+                        icon="sap-icon://history"
+                        text="{i18n>changeHistoryButton}"
+                        enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
+                        press=".onOpenChangeHistory" />
+                    <Button
                         icon="sap-icon://multi-select"
                         text="{i18n>multiUpdate}"
                         enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} > 1 }"

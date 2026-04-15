@@ -1,6 +1,8 @@
 sap.ui.define([
     "dwcmission/plantlocationapp/controller/BaseController",
     "sap/ui/model/json/JSONModel",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator",
     "sap/m/MessageBox",
     "sap/m/Column",
     "sap/m/ColumnListItem",
@@ -8,7 +10,7 @@ sap.ui.define([
     "sap/m/Label",
     "sap/m/Text",
     "sap/ui/layout/form/SimpleForm"
-], function (BaseController, JSONModel, MessageBox, Column, ColumnListItem, Input, Label, Text, SimpleForm) {
+], function (BaseController, JSONModel, Filter, FilterOperator, MessageBox, Column, ColumnListItem, Input, Label, Text, SimpleForm) {
     "use strict";
 
     return BaseController.extend("dwcmission.plantlocationapp.controller.List", {
@@ -41,7 +43,13 @@ sap.ui.define([
                     rows: [],
                     previewText: "",
                     instructions: ""
-                }
+                },
+                historyBusy: false,
+                plantHistory: [],
+                filteredHistory: [],
+                searchHistory: "",
+                plant: "",
+                entityKey: ""
             }), "view");
 
             this._loadTables();
@@ -125,6 +133,7 @@ sap.ui.define([
             var oViewModel = this.getModel("view"),
                 oPayload = oViewModel.getProperty("/createEdit"),
                 sTableName = this._getSelectedTableName(),
+                oTrackedEntity = this._getTrackedEntityConfig(),
                 sMethod = oPayload.mode === "create" ? "POST" : "PATCH",
                 sUrl = "api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/rows",
                 oBody;
@@ -133,15 +142,20 @@ sap.ui.define([
                 return;
             }
 
-            oBody = oPayload.mode === "create"
-                ? { data: oPayload.values }
-                : { keys: oPayload.originalKeys, data: oPayload.values };
+            if (oTrackedEntity) {
+                sUrl = this._buildTrackedEntityRequestUrl(oTrackedEntity, oPayload);
+                oBody = this._buildTrackedEntityPayload(oPayload, oTrackedEntity);
+            } else {
+                oBody = oPayload.mode === "create"
+                    ? { data: oPayload.values }
+                    : { keys: oPayload.originalKeys, data: oPayload.values };
+            }
 
             this._setBusy(true);
-            this._request(sUrl, {
+            (oTrackedEntity ? this._requestTrackedEntity(sUrl, sMethod, oBody) : this._request(sUrl, {
                 method: sMethod,
                 body: JSON.stringify(oBody)
-            })
+            }))
                 .then(function () {
                     this.byId("createEditDialog").close();
                     this.showToast(this.getText(
@@ -162,7 +176,8 @@ sap.ui.define([
 
         onDelete: function () {
             var aRows = this._getSelectedRows(),
-                sTableName = this._getSelectedTableName();
+                sTableName = this._getSelectedTableName(),
+                oTrackedEntity = this._getTrackedEntityConfig();
 
             if (!aRows.length) {
                 this.showToast(this.getText("selectAtLeastOne"));
@@ -174,10 +189,53 @@ sap.ui.define([
                 emphasizedAction: MessageBox.Action.DELETE,
                 onClose: function (sAction) {
                     if (sAction === MessageBox.Action.DELETE) {
-                        this._deleteSelectedRows(aRows);
+                        if (oTrackedEntity) {
+                            this._deleteTrackedRows(aRows, oTrackedEntity);
+                        } else {
+                            this._deleteSelectedRows(aRows);
+                        }
                     }
                 }.bind(this)
             });
+        },
+
+        onOpenChangeHistory: function () {
+            var aRows = this._getSelectedRows(),
+                sTableName = this._getSelectedTableName(),
+                oRow;
+
+            if (aRows.length !== 1) {
+                this.showToast(this.getText("selectSingleRecord"));
+                return;
+            }
+
+            oRow = aRows[0];
+
+            if (!String(sTableName || "").toUpperCase().includes("ZPLANT_LOCATION")) {
+                this.showToast(this.getText("changeHistoryUnsupported"));
+                return;
+            }
+
+            this.getModel("view").setProperty("/plant", oRow.PLANT);
+            this.getModel("view").setProperty("/entityKey", this._getTrackedEntityKeyValue(oRow) || oRow.PLANT);
+            this.getModel("view").setProperty("/searchHistory", "");
+            this._openChangeHistoryDialog()
+                .then(function () {
+                    return this._loadChangeHistory(this._getTrackedEntityKeyValue(oRow) || oRow.PLANT);
+                }.bind(this));
+        },
+
+        onCloseChangeHistory: function () {
+            var oDialog = this.byId("changeHistoryDialog");
+
+            if (oDialog) {
+                oDialog.close();
+            }
+        },
+
+        onSearchChangeHistory: function (oEvent) {
+            this.getModel("view").setProperty("/searchHistory", oEvent.getParameter("newValue") || "");
+            this._applyChangeHistoryFilters();
         },
 
         onOpenMultiUpdate: function () {
@@ -461,12 +519,16 @@ sap.ui.define([
 
             oFormBox.removeAllItems();
             this._getColumns().forEach(function (column) {
+                if (bCreate && this._isManagedColumn(column.name)) {
+                    return;
+                }
+
                 oForm.addContent(new Label({ text: column.name }));
                 oForm.addContent(new Input({
                     value: "{view>/createEdit/values/" + column.name + "}",
-                    editable: bCreate || !column.key
+                    editable: bCreate ? true : !column.key && !this._isManagedColumn(column.name)
                 }));
-            });
+            }.bind(this));
             oFormBox.addItem(oForm);
         },
 
@@ -511,6 +573,24 @@ sap.ui.define([
                 }.bind(this));
         },
 
+        _deleteTrackedRows: function (aRows, oConfig) {
+            this._setBusy(true);
+            Promise.all(aRows.map(function (oRow) {
+                return this._requestTrackedEntity(
+                    "/odata/v4/farm-tank/" + oConfig.entityName + this._buildODataKeyPredicate(oConfig, oRow),
+                    "DELETE"
+                );
+            }.bind(this)))
+                .then(function () {
+                    this.showToast(this.getText("deleteSuccessGeneric", [aRows.length, this._getSelectedTableName()]));
+                    return this._loadSelectedTable();
+                }.bind(this))
+                .catch(this._handleActionError.bind(this, "deleteFailed"))
+                .finally(function () {
+                    this._setBusy(false);
+                }.bind(this));
+        },
+
         _validateCreateEdit: function (oPayload) {
             var aKeyColumns = this.getModel("view").getProperty("/keyColumns") || [];
 
@@ -546,17 +626,247 @@ sap.ui.define([
 
         _getEditableColumns: function () {
             return this._getColumns().filter(function (column) {
-                return !column.key;
-            });
+                return !column.key && !this._isManagedColumn(column.name);
+            }.bind(this));
+        },
+
+        _isManagedColumn: function (sColumnName) {
+            var sNormalized = String(sColumnName || "").toUpperCase();
+
+            return ["ID", "CREATEDAT", "CREATEDBY", "MODIFIEDAT", "MODIFIEDBY"].indexOf(sNormalized) > -1;
         },
 
         _getSelectedTableName: function () {
             return this.getModel("view").getProperty("/selectedTable");
         },
 
+        _getTrackedEntityConfig: function () {
+            var sTableName = String(this._getSelectedTableName() || "").toUpperCase();
+
+            if (sTableName.indexOf("ZPLANT_LOCATION") > -1) {
+                return {
+                    entityName: "PlantLocation",
+                    keyColumn: "PLANT"
+                };
+            }
+
+            if (sTableName.indexOf("TANK_VOLUMES") > -1 || sTableName.indexOf("TANKVOLUMES") > -1) {
+                return {
+                    entityName: "TankVolumes",
+                    keyColumn: "TANK_ID"
+                };
+            }
+
+            return null;
+        },
+
+        _getTrackedEntityKeyValue: function (oRow) {
+            var oConfig = this._getTrackedEntityConfig();
+
+            if (!oConfig || !oRow) {
+                return "";
+            }
+
+            return oRow[oConfig.keyColumn] || "";
+        },
+
+        _buildTrackedEntityRequestUrl: function (oConfig, oPayload) {
+            var sBaseUrl = "/odata/v4/farm-tank/" + oConfig.entityName;
+
+            if (oPayload.mode === "create") {
+                return sBaseUrl;
+            }
+
+            return sBaseUrl + this._buildODataKeyPredicate(oConfig, oPayload.originalKeys || oPayload.values || {});
+        },
+
+        _buildTrackedEntityPayload: function (oPayload, oConfig) {
+            var oSanitized = {};
+
+            this._getColumns().forEach(function (column) {
+                var sName = column.name;
+
+                if (this._isManagedColumn(sName)) {
+                    return;
+                }
+
+                if (oPayload.mode !== "create" && column.key) {
+                    return;
+                }
+
+                if (oPayload.values[sName] !== undefined && oPayload.values[sName] !== null && oPayload.values[sName] !== "") {
+                    oSanitized[sName] = oPayload.values[sName];
+                }
+            }.bind(this));
+
+            if (oPayload.mode === "create" && oConfig.keyColumn && oPayload.values[oConfig.keyColumn] !== undefined) {
+                oSanitized[oConfig.keyColumn] = oPayload.values[oConfig.keyColumn];
+            }
+
+            return oSanitized;
+        },
+
+        _buildODataKeyPredicate: function (oConfig, oValues) {
+            var oKeyColumn = this._getColumns().find(function (column) {
+                    return column.name === oConfig.keyColumn;
+                }) || {},
+                vKeyValue = oValues[oConfig.keyColumn];
+
+            if (vKeyValue === undefined || vKeyValue === null || vKeyValue === "") {
+                throw new Error(this.getText("requiredKeyFieldsMissing"));
+            }
+
+            if (/^Edm\.(Int|Decimal|Double|Single|Byte|SByte|Int16|Int32|Int64|Float)$/i.test(oKeyColumn.type || "")) {
+                return "(" + oConfig.keyColumn + "=" + vKeyValue + ")";
+            }
+
+            return "(" + oConfig.keyColumn + "='" + String(vKeyValue).replace(/'/g, "''") + "')";
+        },
+
+        _getCsrfToken: function () {
+            if (!this._csrfTokenPromise) {
+                this._csrfTokenPromise = fetch("/odata/v4/farm-tank/", {
+                    method: "GET",
+                    credentials: "same-origin",
+                    headers: {
+                        "Accept": "application/json",
+                        "x-csrf-token": "Fetch"
+                    }
+                }).then(function (response) {
+                    var sToken = response.headers.get("x-csrf-token");
+
+                    if (!sToken) {
+                        throw new Error("Failed to obtain CSRF token.");
+                    }
+
+                    return sToken;
+                }).catch(function (error) {
+                    this._csrfTokenPromise = null;
+                    throw error;
+                }.bind(this));
+            }
+
+            return this._csrfTokenPromise;
+        },
+
+        _requestTrackedEntity: function (sUrl, sMethod, oBody) {
+            return this._getCsrfToken().then(function (sToken) {
+                var oOptions = {
+                    method: sMethod,
+                    credentials: "same-origin",
+                    headers: {
+                        "Accept": "application/json",
+                        "x-csrf-token": sToken
+                    }
+                };
+
+                if (sMethod !== "POST") {
+                    oOptions.headers["If-Match"] = "*";
+                }
+
+                if (oBody) {
+                    oOptions.headers["Content-Type"] = "application/json";
+                    oOptions.body = JSON.stringify(oBody);
+                }
+
+                return fetch(sUrl, oOptions).then(function (response) {
+                    return response.json().catch(function () {
+                        return {};
+                    }).then(function (payload) {
+                        if (!response.ok) {
+                            throw new Error(payload.error || response.statusText);
+                        }
+
+                        return payload;
+                    });
+                });
+            }.bind(this));
+        },
+
         _setBusy: function (bBusy) {
             this.getModel("view").setProperty("/busy", bBusy);
             this.getView().setBusy(bBusy);
+        },
+
+        _openChangeHistoryDialog: function () {
+            var oView = this.getView();
+
+            if (this.byId("changeHistoryDialog")) {
+                return Promise.resolve().then(function () {
+                    oView.byId("changeHistoryDialog").open();
+                });
+            }
+
+            return this.loadFragment({
+                name: "dwcmission.plantlocationapp.fragment.ChangeHistoryDialog"
+            }).then(function (oDialog) {
+                oView.addDependent(oDialog);
+                oDialog.open();
+            });
+        },
+
+        _loadChangeHistory: function (sEntityKey) {
+            var oModel = this.getOwnerComponent().getModel(),
+                aFilters = [
+                    new Filter({
+                        filters: [
+                            new Filter("entityKey", FilterOperator.EQ, sEntityKey),
+                            new Filter("objectID", FilterOperator.EQ, sEntityKey),
+                            new Filter("keys", FilterOperator.Contains, sEntityKey)
+                        ],
+                        and: false
+                    })
+                ],
+                oListBinding;
+
+            this.getModel("view").setProperty("/historyBusy", true);
+
+            oListBinding = oModel.bindList("/ChangeView", undefined, undefined, aFilters);
+
+            return oListBinding.requestContexts(0, 200)
+                .then(function (aContexts) {
+                    var aHistory = (aContexts || []).map(function (oContext) {
+                        return oContext.getObject();
+                    });
+
+                    this.getModel("view").setProperty("/plantHistory", aHistory);
+                    this._applyChangeHistoryFilters();
+                }.bind(this))
+                .catch(function () {
+                    this.getModel("view").setProperty("/plantHistory", []);
+                    this.getModel("view").setProperty("/filteredHistory", []);
+                }.bind(this))
+                .finally(function () {
+                    this.getModel("view").setProperty("/historyBusy", false);
+                }.bind(this));
+        },
+
+        _applyChangeHistoryFilters: function () {
+            var oViewModel = this.getModel("view"),
+                aHistory = oViewModel.getProperty("/plantHistory") || [],
+                sSearch = (oViewModel.getProperty("/searchHistory") || "").toLowerCase(),
+                aFiltered;
+
+            if (!sSearch) {
+                aFiltered = aHistory;
+            } else {
+                aFiltered = aHistory.filter(function (oRow) {
+                    return [
+                        oRow.modification,
+                        oRow.entity,
+                        oRow.objectID,
+                        oRow.attribute,
+                        oRow.valueChangedTo,
+                        oRow.valueChangedFrom,
+                        oRow.createdBy,
+                        oRow.createdAt
+                    ].some(function (v) {
+                        return String(v ?? "").toLowerCase().indexOf(sSearch) > -1;
+                    });
+                });
+            }
+
+            oViewModel.setProperty("/filteredHistory", aFiltered);
         },
 
         _updateSelectionState: function () {

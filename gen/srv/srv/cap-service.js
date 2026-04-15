@@ -4,6 +4,19 @@ const express = require("express");
 const ROW_LIMIT = 200;
 let dbPromise;
 
+const MANAGED_FIELD_NAMES = new Set([
+    "ID",
+    "createdAt",
+    "createdBy",
+    "modifiedAt",
+    "modifiedBy"
+]);
+
+const normalizeColumnName = (name) => String(name || "").toUpperCase();
+
+const SYSTEM_TIMESTAMPS = new Set(["CREATEDAT", "MODIFIEDAT"]);
+const SYSTEM_USERS = new Set(["CREATEDBY", "MODIFIEDBY"]);
+
 const quoteIdentifier = (value) => `"${String(value).replace(/"/g, '""')}"`;
 
 const toArray = (result) => {
@@ -22,10 +35,27 @@ const normalizeValue = (column, value, { allowNull = true } = {}) => {
     }
 
     if (value === null || value === "") {
+        if (/timestamp|date/i.test(column?.type || "") && value === "") {
+            return undefined;
+        }
+
         return allowNull && column.nullable ? null : value;
     }
 
+    if (column && /timestamp|date/i.test(column.type || "") && value instanceof Date) {
+        return value.toISOString().replace("T", " ").replace("Z", "");
+    }
+
     return value;
+};
+
+const isBlankValue = (value) => value === undefined || value === null || value === "";
+
+const isManagedField = (name) => MANAGED_FIELD_NAMES.has(normalizeColumnName(name));
+
+const getColumnByName = (definition, name) => {
+    const normalized = normalizeColumnName(name);
+    return (definition.columns || []).find((column) => normalizeColumnName(column.name) === normalized);
 };
 
 const buildWhereClause = (keys, keyColumns, columns) => {
@@ -209,12 +239,42 @@ async function readRows(db, definition, search) {
     };
 }
 
-async function insertRow(db, definition, payload) {
+async function insertRow(db, definition, payload, req) {
+    const now = new Date();
+    const user = getRequestUser(req);
+    const row = Object.assign({}, payload);
+
+    const idColumn = getColumnByName(definition, "ID");
+    const createdAtColumn = getColumnByName(definition, "createdAt");
+    const createdByColumn = getColumnByName(definition, "createdBy");
+    const modifiedAtColumn = getColumnByName(definition, "modifiedAt");
+    const modifiedByColumn = getColumnByName(definition, "modifiedBy");
+
+    if (idColumn && isBlankValue(row[idColumn.name])) {
+        row[idColumn.name] = cds.utils.uuid();
+    }
+
+    if (createdAtColumn && isBlankValue(row[createdAtColumn.name])) {
+        row[createdAtColumn.name] = now;
+    }
+
+    if (createdByColumn && isBlankValue(row[createdByColumn.name])) {
+        row[createdByColumn.name] = user;
+    }
+
+    if (modifiedAtColumn && isBlankValue(row[modifiedAtColumn.name])) {
+        row[modifiedAtColumn.name] = now;
+    }
+
+    if (modifiedByColumn && isBlankValue(row[modifiedByColumn.name])) {
+        row[modifiedByColumn.name] = user;
+    }
+
     const validColumns = definition.columns
-        .filter((column) => payload[column.name] !== undefined)
+        .filter((column) => row[column.name] !== undefined)
         .map((column) => ({
             ...column,
-            value: normalizeValue(column, payload[column.name])
+            value: normalizeValue(column, row[column.name])
         }))
         .filter((column) => column.value !== undefined);
 
@@ -227,14 +287,35 @@ async function insertRow(db, definition, payload) {
         VALUES (${validColumns.map(() => "?").join(", ")})`;
 
     await executeStatement(db, sql, validColumns.map((column) => column.value));
+    await writeChangeLog(db, definition, "create", row, null, row, req);
 }
 
-async function updateRow(db, definition, keys, changes) {
+async function updateRow(db, definition, keys, changes, req) {
+    const beforeRow = await readRowByKeys(db, definition, keys);
+    const now = new Date();
+    const user = getRequestUser(req);
+    const payload = Object.assign({}, changes);
+    const idColumn = getColumnByName(definition, "ID");
+    const modifiedAtColumn = getColumnByName(definition, "modifiedAt");
+    const modifiedByColumn = getColumnByName(definition, "modifiedBy");
+
+    if (idColumn && isBlankValue(beforeRow && beforeRow[idColumn.name])) {
+        payload[idColumn.name] = cds.utils.uuid();
+    }
+
+    if (modifiedAtColumn) {
+        payload[modifiedAtColumn.name] = now;
+    }
+
+    if (modifiedByColumn) {
+        payload[modifiedByColumn.name] = user;
+    }
+
     const editableColumns = definition.columns
-        .filter((column) => !column.key && changes[column.name] !== undefined)
+        .filter((column) => !column.key && (!isManagedField(column.name) || SYSTEM_TIMESTAMPS.has(normalizeColumnName(column.name)) || SYSTEM_USERS.has(normalizeColumnName(column.name))) && payload[column.name] !== undefined)
         .map((column) => ({
             ...column,
-            value: normalizeValue(column, changes[column.name])
+            value: normalizeValue(column, payload[column.name])
         }))
         .filter((column) => column.value !== undefined);
 
@@ -248,14 +329,177 @@ async function updateRow(db, definition, keys, changes) {
         WHERE ${where.clause}`;
 
     await executeStatement(db, sql, editableColumns.map((column) => column.value).concat(where.values));
+    await writeChangeLog(db, definition, "update", keys, beforeRow, Object.assign({}, beforeRow, payload), req);
 }
 
-async function deleteRow(db, definition, keys) {
+async function deleteRow(db, definition, keys, req) {
+    const beforeRow = await readRowByKeys(db, definition, keys);
     const where = buildWhereClause(keys, definition.keyColumns, definition.columns);
     const sql = `DELETE FROM ${quoteIdentifier(definition.schemaName)}.${quoteIdentifier(definition.tableName)}
         WHERE ${where.clause}`;
 
     await executeStatement(db, sql, where.values);
+    await writeChangeLog(db, definition, "delete", keys, beforeRow, null, req);
+}
+
+const getRequestUser = (req) => {
+    const authInfo = req?.authInfo || req?.user?.authInfo || cds.context?.user?.authInfo;
+    const logonName = authInfo?.getLogonName?.()
+        || authInfo?.getUserInfo?.()?.logonName
+        || authInfo?.token?.email
+        || authInfo?.token?.user_name;
+    const userId = req?.user?.id && req.user.id !== "anonymous" ? req.user.id : null;
+
+    return userId
+        || req?.user?.loginName
+        || req?.user?.name
+        || logonName
+        || cds.context?.user?.id
+        || cds.context?.user?.name
+        || "anonymous";
+};
+
+const formatAuditValue = (value) => {
+    if (value === undefined || value === null) {
+        return null;
+    }
+
+    if (value instanceof Date) {
+        return value.toISOString();
+    }
+
+    if (typeof value === "object") {
+        try {
+            return JSON.stringify(value);
+        } catch (error) {
+            return String(value);
+        }
+    }
+
+    return String(value);
+};
+
+const getEntityKeyValue = (definition, row) => {
+    if (row && row.ID) {
+        return formatAuditValue(row.ID);
+    }
+
+    const values = (definition.keyColumns || []).map((keyName) => row[keyName]);
+
+    if (!values.length) {
+        return "";
+    }
+
+    if (values.length === 1) {
+        return formatAuditValue(values[0]);
+    }
+
+    return JSON.stringify(
+        definition.keyColumns.reduce((acc, keyName) => {
+            acc[keyName] = row[keyName];
+            return acc;
+        }, {})
+    );
+};
+
+const getChangeLogText = (definition) => `${definition.schemaName}.${definition.tableName}`;
+
+const getChangeColumns = (definition, beforeRow, afterRow, action) => {
+    const rows = [];
+
+    definition.columns.forEach((column) => {
+        if (isManagedField(column.name)) {
+            return;
+        }
+
+        const oldValue = beforeRow ? beforeRow[column.name] : undefined;
+        const newValue = afterRow ? afterRow[column.name] : undefined;
+
+        if (action === "create" && newValue !== undefined && newValue !== null && newValue !== "") {
+            rows.push({
+                attribute: column.name,
+                valueChangedFrom: null,
+                valueChangedTo: formatAuditValue(newValue),
+                valueDataType: column.type
+            });
+        } else if (action === "delete" && oldValue !== undefined && oldValue !== null && oldValue !== "") {
+            rows.push({
+                attribute: column.name,
+                valueChangedFrom: formatAuditValue(oldValue),
+                valueChangedTo: null,
+                valueDataType: column.type
+            });
+        } else if (action === "update" && formatAuditValue(oldValue) !== formatAuditValue(newValue)) {
+            rows.push({
+                attribute: column.name,
+                valueChangedFrom: formatAuditValue(oldValue),
+                valueChangedTo: formatAuditValue(newValue),
+                valueDataType: column.type
+            });
+        }
+    });
+
+    return rows;
+};
+
+async function readRowByKeys(db, definition, keys) {
+    const where = buildWhereClause(keys, definition.keyColumns, definition.columns);
+    const sql = `SELECT * FROM ${quoteIdentifier(definition.schemaName)}.${quoteIdentifier(definition.tableName)}
+        WHERE ${where.clause}`;
+    const [row] = await executeQuery(db, sql, where.values);
+    return row;
+}
+
+async function writeChangeLog(db, definition, action, keys, beforeRow, afterRow, req) {
+    const changeId = cds.utils.uuid();
+    const now = new Date();
+    const user = getRequestUser(req);
+    const entityKey = getEntityKeyValue(definition, afterRow || beforeRow || keys || {});
+    const changes = getChangeColumns(definition, beforeRow, afterRow, action);
+
+    if (!changes.length) {
+        return;
+    }
+
+    try {
+        await db.run(
+            INSERT.into("sap.changelog.ChangeLog").entries({
+                ID: changeId,
+                createdAt: now,
+                createdBy: user,
+                modifiedAt: now,
+                modifiedBy: user,
+                serviceEntity: getChangeLogText(definition),
+                entity: getChangeLogText(definition),
+                entityKey
+            })
+        );
+
+        for (const change of changes) {
+            await db.run(
+                INSERT.into("sap.changelog.Changes").entries({
+                    ID: cds.utils.uuid(),
+                    keys: JSON.stringify(keys || {}),
+                    attribute: change.attribute,
+                    valueChangedFrom: change.valueChangedFrom,
+                    valueChangedTo: change.valueChangedTo,
+                    entityID: entityKey,
+                    entity: getChangeLogText(definition),
+                    serviceEntity: getChangeLogText(definition),
+                    parentEntityID: null,
+                    parentKey: null,
+                    serviceEntityPath: `${getChangeLogText(definition)}(${entityKey})`,
+                    modification: action,
+                    valueDataType: change.valueDataType,
+                    changeLog_ID: changeId,
+                    createdAt: now,
+                    createdBy: user
+                })
+            );
+        }
+    } catch (error) {
+        console.warn("change log write skipped:", error.message);
+    }
 }
 
 cds.on("bootstrap", (app) => {
@@ -315,7 +559,7 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const schemaName = await getCurrentSchema(db);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
-                await insertRow(db, definition, req.body.data || {});
+                await insertRow(db, definition, req.body.data || {}, req);
             });
 
             res.status(201).json({ success: true });
@@ -330,7 +574,7 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const schemaName = await getCurrentSchema(db);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
-                await updateRow(db, definition, req.body.keys || {}, req.body.data || {});
+                await updateRow(db, definition, req.body.keys || {}, req.body.data || {}, req);
             });
 
             res.json({ success: true });
@@ -345,7 +589,7 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const schemaName = await getCurrentSchema(db);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
-                await deleteRow(db, definition, req.body.keys || {});
+                await deleteRow(db, definition, req.body.keys || {}, req);
             });
 
             res.json({ success: true });
@@ -365,7 +609,7 @@ cds.on("bootstrap", (app) => {
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
 
                 for (const keys of rows) {
-                    await updateRow(db, definition, keys, changes);
+                    await updateRow(db, definition, keys, changes, req);
                 }
             });
 
@@ -385,7 +629,7 @@ cds.on("bootstrap", (app) => {
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
 
                 for (const row of rows) {
-                    await insertRow(db, definition, row);
+                    await insertRow(db, definition, row, req);
                 }
             });
 
@@ -395,8 +639,4 @@ cds.on("bootstrap", (app) => {
             res.status(400).json({ error: error.message });
         }
     });
-});
-
-module.exports = cds.service.impl(async function () {
-    // Service entities remain available through OData.
 });

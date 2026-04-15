@@ -1,0 +1,19 @@
+VIEW FarmTankService_ChangeView AS SELECT
+  ChangelogChangeView_0.ID,
+  ChangelogChangeView_0.keys,
+  ChangelogChangeView_0.attribute,
+  ChangelogChangeView_0.valueChangedFrom,
+  ChangelogChangeView_0.valueChangedTo,
+  ChangelogChangeView_0.entity,
+  ChangelogChangeView_0.serviceEntity,
+  ChangelogChangeView_0.parentKey,
+  ChangelogChangeView_0.serviceEntityPath,
+  ChangelogChangeView_0.modification,
+  ChangelogChangeView_0.valueDataType,
+  ChangelogChangeView_0.changeLog_ID,
+  ChangelogChangeView_0.createdAt,
+  ChangelogChangeView_0.createdBy,
+  ChangelogChangeView_0.objectID,
+  ChangelogChangeView_0.parentObjectID,
+  ChangelogChangeView_0.entityKey
+FROM sap_changelog_ChangeView AS ChangelogChangeView_0

@@ -1,0 +1,11 @@
+COLUMN TABLE sap_changelog_ChangeLog (
+  createdAt TIMESTAMP,
+  createdBy NVARCHAR(255),
+  modifiedAt TIMESTAMP,
+  modifiedBy NVARCHAR(255),
+  ID NVARCHAR(36) NOT NULL,
+  serviceEntity NVARCHAR(5000),
+  entity NVARCHAR(5000),
+  entityKey NVARCHAR(5000),
+  PRIMARY KEY(ID)
+)

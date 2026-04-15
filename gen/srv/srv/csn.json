@@ -3,11 +3,72 @@
   "definitions": {
     "dwcmission.farm.TankVolumes_M": {
       "kind": "entity",
+      "includes": [
+        "managed"
+      ],
       "elements": {
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "createdBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "modifiedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "modifiedBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
         "TANK_ID": {
           "key": true,
           "type": "cds.String",
           "length": 30
+        },
+        "ID": {
+          "@cds.on.insert": {
+            "=": "$uuid"
+          },
+          "type": "cds.UUID"
         },
         "VOLUME": {
           "type": "cds.Decimal"
@@ -30,15 +91,77 @@
             "val": "M"
           }
         }
-      }
+      },
+      "change-tracking-isRootEntity": true
     },
     "dwcmission.farm.ZPLANT_LOCATION": {
       "kind": "entity",
+      "includes": [
+        "managed"
+      ],
       "elements": {
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "createdBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "modifiedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "modifiedBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
         "PLANT": {
           "key": true,
           "type": "cds.String",
           "length": 4
+        },
+        "ID": {
+          "@cds.on.insert": {
+            "=": "$uuid"
+          },
+          "type": "cds.UUID"
         },
         "COMPANY_CODE": {
           "type": "cds.String",
@@ -56,7 +179,8 @@
           "type": "cds.String",
           "length": 10
         }
-      }
+      },
+      "change-tracking-isRootEntity": true
     },
     "FarmTankService": {
       "@source": "srv/cap-service.cds",
@@ -75,23 +199,116 @@
           ]
         }
       ],
+      "@changelog": [
+        {
+          "=": "TANK_ID"
+        }
+      ],
       "projection": {
         "from": {
           "ref": [
             "dwcmission.farm.TankVolumes_M"
           ]
-        }
+        },
+        "columns": [
+          "*",
+          {
+            "as": "changes",
+            "cast": {
+              "type": "cds.Association",
+              "cardinality": {
+                "max": "*"
+              },
+              "target": "sap.changelog.ChangeView",
+              "on": [
+                {
+                  "ref": [
+                    "changes",
+                    "entityKey"
+                  ]
+                },
+                "=",
+                {
+                  "ref": [
+                    "TANK_ID"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
       },
       "elements": {
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "createdBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "modifiedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "modifiedBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
         "TANK_ID": {
+          "@changelog": true,
           "key": true,
           "type": "cds.String",
           "length": 30
         },
+        "ID": {
+          "@cds.on.insert": {
+            "=": "$uuid"
+          },
+          "type": "cds.UUID"
+        },
         "VOLUME": {
+          "@changelog": true,
           "type": "cds.Decimal"
         },
         "UOM": {
+          "@changelog": true,
           "type": "cds.String",
           "length": 3
         },
@@ -99,20 +316,28 @@
           "type": "cds.Timestamp"
         },
         "COMMENT": {
+          "@changelog": true,
           "type": "cds.String",
           "length": 50
         },
         "SOURCE": {
+          "@changelog": true,
           "type": "cds.String",
           "length": 1,
           "default": {
             "val": "M"
           }
         }
-      }
+      },
+      "change-tracking-isRootEntity": true
     },
     "FarmTankService.PlantLocation": {
       "kind": "entity",
+      "@changelog": [
+        {
+          "=": "PLANT"
+        }
+      ],
       "@Common.SemanticKey": [
         {
           "=": "PLANT"
@@ -271,6 +496,13 @@
           "ID": "OrganizationalFacet",
           "Label": "{i18n>OrganizationalInformation}",
           "Target": "@UI.FieldGroup#Organizational"
+        },
+        {
+          "$Type": "UI.ReferenceFacet",
+          "ID": "ChangeHistoryFacet",
+          "Label": "{i18n>ChangeHistory}",
+          "Target": "changes/@UI.PresentationVariant",
+          "@UI.PartOfPreview": false
         }
       ],
       "@Capabilities.InsertRestrictions.Insertable": true,
@@ -281,36 +513,370 @@
           "ref": [
             "dwcmission.farm.ZPLANT_LOCATION"
           ]
-        }
+        },
+        "columns": [
+          "*",
+          {
+            "as": "changes",
+            "cast": {
+              "type": "cds.Association",
+              "cardinality": {
+                "max": "*"
+              },
+              "target": "sap.changelog.ChangeView",
+              "on": [
+                {
+                  "ref": [
+                    "changes",
+                    "entityKey"
+                  ]
+                },
+                "=",
+                {
+                  "ref": [
+                    "PLANT"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
       },
       "elements": {
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "createdBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "modifiedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "modifiedBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
         "PLANT": {
+          "@changelog": true,
           "@Common.Label": "{i18n>Plant}",
           "key": true,
           "type": "cds.String",
           "length": 4
         },
+        "ID": {
+          "@cds.on.insert": {
+            "=": "$uuid"
+          },
+          "type": "cds.UUID"
+        },
         "COMPANY_CODE": {
+          "@changelog": true,
           "@Common.Label": "{i18n>CompanyCode}",
           "type": "cds.String",
           "length": 4
         },
         "LOCATION": {
+          "@changelog": true,
           "@Common.Label": "{i18n>Location}",
           "type": "cds.String",
           "length": 10
         },
         "LOCATION_TYPE": {
+          "@changelog": true,
           "@Common.Label": "{i18n>LocationType}",
           "type": "cds.String",
           "length": 10
         },
         "REGION": {
+          "@changelog": true,
           "@Common.Label": "{i18n>Region}",
           "type": "cds.String",
           "length": 10
         }
-      }
+      },
+      "change-tracking-isRootEntity": true
+    },
+    "FarmTankService.ChangeView": {
+      "kind": "entity",
+      "@readonly": true,
+      "@UI.PresentationVariant.Visualizations": [
+        "@UI.LineItem"
+      ],
+      "@UI.PresentationVariant.RequestAtLeast": [
+        {
+          "=": "parentKey"
+        },
+        {
+          "=": "serviceEntity"
+        },
+        {
+          "=": "serviceEntityPath"
+        },
+        {
+          "=": "valueDataType"
+        }
+      ],
+      "@UI.PresentationVariant.SortOrder": [
+        {
+          "Property": {
+            "=": "createdAt"
+          },
+          "Descending": true
+        }
+      ],
+      "@UI.LineItem": [
+        {
+          "Value": {
+            "=": "modification"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "9%"
+          }
+        },
+        {
+          "Value": {
+            "=": "createdAt"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "12%"
+          }
+        },
+        {
+          "Value": {
+            "=": "createdBy"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "9%"
+          }
+        },
+        {
+          "Value": {
+            "=": "entity"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "11%"
+          }
+        },
+        {
+          "Value": {
+            "=": "objectID"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "14%"
+          }
+        },
+        {
+          "Value": {
+            "=": "attribute"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "9%"
+          }
+        },
+        {
+          "Value": {
+            "=": "valueChangedTo"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "11%"
+          }
+        },
+        {
+          "Value": {
+            "=": "valueChangedFrom"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "11%"
+          }
+        },
+        {
+          "Value": {
+            "=": "parentObjectID"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "14%"
+          },
+          "@UI.Hidden": true
+        }
+      ],
+      "@UI.DeleteHidden": true,
+      "projection": {
+        "from": {
+          "ref": [
+            "sap.changelog.ChangeView"
+          ],
+          "as": "ChangelogChangeView"
+        }
+      },
+      "elements": {
+        "ID": {
+          "@UI.Hidden": true,
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "keys": {
+          "@title": "{i18n>Changes.keys}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "attribute": {
+          "@title": "{i18n>Changes.attribute}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "valueChangedFrom": {
+          "@title": "{i18n>Changes.valueChangedFrom}",
+          "@UI.MultiLineText": true,
+          "type": "cds.String",
+          "length": 5000
+        },
+        "valueChangedTo": {
+          "@title": "{i18n>Changes.valueChangedTo}",
+          "@UI.MultiLineText": true,
+          "type": "cds.String",
+          "length": 5000
+        },
+        "entity": {
+          "@title": "{i18n>Changes.entity}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "serviceEntity": {
+          "@title": "{i18n>Changes.serviceEntity}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "parentKey": {
+          "@title": "{i18n>Changes.parentKey}",
+          "type": "cds.String"
+        },
+        "serviceEntityPath": {
+          "@title": "{i18n>Changes.serviceEntityPath}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "modification": {
+          "@title": "{i18n>Changes.modification}",
+          "type": "cds.String",
+          "enum": {
+            "Create": {
+              "val": "create"
+            },
+            "Update": {
+              "val": "update"
+            },
+            "Delete": {
+              "val": "delete"
+            }
+          }
+        },
+        "valueDataType": {
+          "@title": "{i18n>Changes.valueDataType}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "changeLog": {
+          "@title": "{i18n>ChangeLog.ID}",
+          "@UI.Hidden": true,
+          "type": "cds.Association",
+          "target": "sap.changelog.ChangeLog",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        },
+        "createdAt": {
+          "@title": "{i18n>ChangeLog.createdAt}",
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@readonly": true,
+          "type": {
+            "ref": [
+              "managed",
+              "createdAt"
+            ]
+          }
+        },
+        "createdBy": {
+          "@title": "{i18n>ChangeLog.createdBy}",
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": {
+            "ref": [
+              "managed",
+              "createdBy"
+            ]
+          },
+          "length": 255
+        },
+        "objectID": {
+          "@title": "{i18n>Changes.entityID}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "parentObjectID": {
+          "@title": "{i18n>Changes.parentEntityID}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "entityKey": {
+          "@title": "{i18n>ChangeLog.entityKey}",
+          "type": "cds.String"
+        }
+      },
+      "change-tracking-isRootEntity": true
     },
     "cds.outbox.Messages": {
       "kind": "entity",
@@ -358,13 +924,1351 @@
           "type": "cds.String",
           "length": 255
         }
+      },
+      "change-tracking-isRootEntity": true
+    },
+    "sap.changelog.aspect": {
+      "kind": "entity",
+      "@cds.persistence.skip": true,
+      "@UI.Facets": [
+        {
+          "$Type": "UI.ReferenceFacet",
+          "ID": "ChangeHistoryFacet",
+          "Label": "{i18n>ChangeHistory}",
+          "Target": "changes/@UI.PresentationVariant",
+          "@UI.PartOfPreview": false
+        }
+      ],
+      "elements": {
+        "changes": {
+          "type": "cds.Association",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.changelog.ChangeView",
+          "on": [
+            {
+              "ref": [
+                "changes",
+                "entityKey"
+              ]
+            },
+            "="
+          ]
+        },
+        "ID": {
+          "key": true,
+          "type": "cds.String"
+        }
+      },
+      "change-tracking-isRootEntity": true
+    },
+    "sap.changelog.ChangeView": {
+      "kind": "entity",
+      "@readonly": true,
+      "@UI.PresentationVariant.Visualizations": [
+        "@UI.LineItem"
+      ],
+      "@UI.PresentationVariant.RequestAtLeast": [
+        {
+          "=": "parentKey"
+        },
+        {
+          "=": "serviceEntity"
+        },
+        {
+          "=": "serviceEntityPath"
+        },
+        {
+          "=": "valueDataType"
+        }
+      ],
+      "@UI.PresentationVariant.SortOrder": [
+        {
+          "Property": {
+            "=": "createdAt"
+          },
+          "Descending": true
+        }
+      ],
+      "@UI.LineItem": [
+        {
+          "Value": {
+            "=": "modification"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "9%"
+          }
+        },
+        {
+          "Value": {
+            "=": "createdAt"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "12%"
+          }
+        },
+        {
+          "Value": {
+            "=": "createdBy"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "9%"
+          }
+        },
+        {
+          "Value": {
+            "=": "entity"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "11%"
+          }
+        },
+        {
+          "Value": {
+            "=": "objectID"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "14%"
+          }
+        },
+        {
+          "Value": {
+            "=": "attribute"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "9%"
+          }
+        },
+        {
+          "Value": {
+            "=": "valueChangedTo"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "11%"
+          }
+        },
+        {
+          "Value": {
+            "=": "valueChangedFrom"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "11%"
+          }
+        },
+        {
+          "Value": {
+            "=": "parentObjectID"
+          },
+          "@HTML5.CssDefaults": {
+            "width": "14%"
+          },
+          "@UI.Hidden": true
+        }
+      ],
+      "@UI.DeleteHidden": true,
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "sap.changelog.Changes"
+            ]
+          },
+          "columns": [
+            "*",
+            {
+              "ref": [
+                "entityID"
+              ],
+              "as": "objectID"
+            },
+            {
+              "ref": [
+                "parentEntityID"
+              ],
+              "as": "parentObjectID"
+            },
+            {
+              "ref": [
+                "changeLog",
+                "entityKey"
+              ],
+              "as": "entityKey"
+            },
+            {
+              "ref": [
+                "changeLog",
+                "createdAt"
+              ],
+              "as": "createdAt"
+            },
+            {
+              "ref": [
+                "changeLog",
+                "createdBy"
+              ],
+              "as": "createdBy"
+            }
+          ],
+          "excluding": [
+            "entityID",
+            "parentEntityID"
+          ]
+        }
+      },
+      "elements": {
+        "ID": {
+          "@UI.Hidden": true,
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "keys": {
+          "@title": "{i18n>Changes.keys}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "attribute": {
+          "@title": "{i18n>Changes.attribute}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "valueChangedFrom": {
+          "@title": "{i18n>Changes.valueChangedFrom}",
+          "@UI.MultiLineText": true,
+          "type": "cds.String",
+          "length": 5000
+        },
+        "valueChangedTo": {
+          "@title": "{i18n>Changes.valueChangedTo}",
+          "@UI.MultiLineText": true,
+          "type": "cds.String",
+          "length": 5000
+        },
+        "entity": {
+          "@title": "{i18n>Changes.entity}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "serviceEntity": {
+          "@title": "{i18n>Changes.serviceEntity}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "parentKey": {
+          "@title": "{i18n>Changes.parentKey}",
+          "type": "cds.String"
+        },
+        "serviceEntityPath": {
+          "@title": "{i18n>Changes.serviceEntityPath}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "modification": {
+          "@title": "{i18n>Changes.modification}",
+          "type": "cds.String",
+          "enum": {
+            "Create": {
+              "val": "create"
+            },
+            "Update": {
+              "val": "update"
+            },
+            "Delete": {
+              "val": "delete"
+            }
+          }
+        },
+        "valueDataType": {
+          "@title": "{i18n>Changes.valueDataType}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "changeLog": {
+          "@title": "{i18n>ChangeLog.ID}",
+          "@UI.Hidden": true,
+          "type": "cds.Association",
+          "target": "sap.changelog.ChangeLog",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        },
+        "createdAt": {
+          "@title": "{i18n>ChangeLog.createdAt}",
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@readonly": true,
+          "type": {
+            "ref": [
+              "managed",
+              "createdAt"
+            ]
+          }
+        },
+        "createdBy": {
+          "@title": "{i18n>ChangeLog.createdBy}",
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": {
+            "ref": [
+              "managed",
+              "createdBy"
+            ]
+          },
+          "length": 255
+        },
+        "objectID": {
+          "@title": "{i18n>Changes.entityID}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "parentObjectID": {
+          "@title": "{i18n>Changes.parentEntityID}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "entityKey": {
+          "@title": "{i18n>ChangeLog.entityKey}",
+          "type": "cds.String"
+        }
+      },
+      "change-tracking-isRootEntity": true
+    },
+    "sap.changelog.ChangeLog": {
+      "kind": "entity",
+      "includes": [
+        "managed",
+        "cuid"
+      ],
+      "elements": {
+        "createdAt": {
+          "@title": "{i18n>ChangeLog.createdAt}",
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@readonly": true,
+          "type": {
+            "ref": [
+              "managed",
+              "createdAt"
+            ]
+          }
+        },
+        "createdBy": {
+          "@title": "{i18n>ChangeLog.createdBy}",
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": {
+            "ref": [
+              "managed",
+              "createdBy"
+            ]
+          },
+          "length": 255
+        },
+        "modifiedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "modifiedBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "serviceEntity": {
+          "@title": "{i18n>ChangeLog.serviceEntity}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "entity": {
+          "@title": "{i18n>ChangeLog.entity}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "entityKey": {
+          "@title": "{i18n>ChangeLog.entityKey}",
+          "type": "cds.String"
+        },
+        "changes": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.changelog.Changes",
+          "on": [
+            {
+              "ref": [
+                "changes",
+                "changeLog"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$self"
+              ]
+            }
+          ]
+        }
+      },
+      "change-tracking-isRootEntity": true
+    },
+    "sap.changelog.Changes": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "@UI.Hidden": true,
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "keys": {
+          "@title": "{i18n>Changes.keys}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "attribute": {
+          "@title": "{i18n>Changes.attribute}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "valueChangedFrom": {
+          "@title": "{i18n>Changes.valueChangedFrom}",
+          "@UI.MultiLineText": true,
+          "type": "cds.String",
+          "length": 5000
+        },
+        "valueChangedTo": {
+          "@title": "{i18n>Changes.valueChangedTo}",
+          "@UI.MultiLineText": true,
+          "type": "cds.String",
+          "length": 5000
+        },
+        "entityID": {
+          "@title": "{i18n>Changes.entityID}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "entity": {
+          "@title": "{i18n>Changes.entity}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "serviceEntity": {
+          "@title": "{i18n>Changes.serviceEntity}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "parentEntityID": {
+          "@title": "{i18n>Changes.parentEntityID}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "parentKey": {
+          "@title": "{i18n>Changes.parentKey}",
+          "type": "cds.String"
+        },
+        "serviceEntityPath": {
+          "@title": "{i18n>Changes.serviceEntityPath}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "modification": {
+          "@title": "{i18n>Changes.modification}",
+          "type": "cds.String",
+          "enum": {
+            "Create": {
+              "val": "create"
+            },
+            "Update": {
+              "val": "update"
+            },
+            "Delete": {
+              "val": "delete"
+            }
+          }
+        },
+        "valueDataType": {
+          "@title": "{i18n>Changes.valueDataType}",
+          "type": "cds.String",
+          "length": 5000
+        },
+        "changeLog": {
+          "@title": "{i18n>ChangeLog.ID}",
+          "@UI.Hidden": true,
+          "type": "cds.Association",
+          "target": "sap.changelog.ChangeLog",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        },
+        "createdAt": {
+          "@title": "{i18n>ChangeLog.createdAt}",
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@readonly": true,
+          "type": {
+            "ref": [
+              "managed",
+              "createdAt"
+            ]
+          }
+        },
+        "createdBy": {
+          "@title": "{i18n>ChangeLog.createdBy}",
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": {
+            "ref": [
+              "managed",
+              "createdBy"
+            ]
+          },
+          "length": 255
+        }
+      },
+      "change-tracking-isRootEntity": false,
+      "change-tracking-parentEntity": {
+        "associationName": "changeLog",
+        "entityName": "sap.changelog.ChangeLog"
       }
+    },
+    "Language": {
+      "kind": "type",
+      "@title": "{i18n>Language}",
+      "@description": "{i18n>LanguageCode.Description}",
+      "type": "cds.Association",
+      "target": "sap.common.Languages",
+      "keys": [
+        {
+          "ref": [
+            "code"
+          ]
+        }
+      ]
+    },
+    "Currency": {
+      "kind": "type",
+      "@title": "{i18n>Currency}",
+      "@description": "{i18n>CurrencyCode.Description}",
+      "type": "cds.Association",
+      "target": "sap.common.Currencies",
+      "keys": [
+        {
+          "ref": [
+            "code"
+          ]
+        }
+      ]
+    },
+    "Country": {
+      "kind": "type",
+      "@title": "{i18n>Country}",
+      "@description": "{i18n>CountryCode.Description}",
+      "type": "cds.Association",
+      "target": "sap.common.Countries",
+      "keys": [
+        {
+          "ref": [
+            "code"
+          ]
+        }
+      ]
+    },
+    "Timezone": {
+      "kind": "type",
+      "type": "cds.Association",
+      "target": "sap.common.Timezones",
+      "keys": [
+        {
+          "ref": [
+            "code"
+          ]
+        }
+      ]
+    },
+    "sap.common": {
+      "kind": "context"
+    },
+    "sap.common.Locale": {
+      "kind": "type",
+      "@title": "{i18n>LanguageCode}",
+      "type": "cds.String",
+      "length": 14
+    },
+    "sap.common.Languages": {
+      "kind": "entity",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@Common.Text": {
+            "=": "name"
+          },
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.common.Languages.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.common.Languages.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      },
+      "change-tracking-isRootEntity": true
+    },
+    "sap.common.Countries": {
+      "kind": "entity",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@title": "{i18n>CountryCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.common.Countries.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.common.Countries.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      },
+      "change-tracking-isRootEntity": true
+    },
+    "sap.common.Currencies": {
+      "kind": "entity",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@title": "{i18n>CurrencyCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3
+        },
+        "symbol": {
+          "@title": "{i18n>CurrencySymbol}",
+          "type": "cds.String",
+          "length": 5
+        },
+        "minorUnit": {
+          "@title": "{i18n>CurrencyMinorUnit}",
+          "type": "cds.Int16"
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.common.Currencies.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.common.Currencies.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      },
+      "change-tracking-isRootEntity": true
+    },
+    "sap.common.Timezones": {
+      "kind": "entity",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@title": "{i18n>TimeZoneCode}",
+          "key": true,
+          "type": "cds.String",
+          "length": 100
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.common.Timezones.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.common.Timezones.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      },
+      "change-tracking-isRootEntity": true
+    },
+    "sap.common.CodeList": {
+      "kind": "aspect",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000
+        }
+      }
+    },
+    "sap.common.TextsAspect": {
+      "kind": "aspect",
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        }
+      }
+    },
+    "sap.common.FlowHistory": {
+      "kind": "aspect",
+      "@cds.persistence.skip": "if-unused",
+      "elements": {
+        "transitions_": {
+          "@odata.draft.enabled": false,
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "targetAspect": {
+            "elements": {
+              "timestamp": {
+                "@cds.on.insert": {
+                  "=": "$now"
+                },
+                "@UI.HiddenFilter": true,
+                "@UI.ExcludeFromNavigationContext": true,
+                "@Core.Immutable": true,
+                "@title": "{i18n>CreatedAt}",
+                "@readonly": true,
+                "key": true,
+                "type": {
+                  "ref": [
+                    "managed",
+                    "createdAt"
+                  ]
+                }
+              },
+              "user": {
+                "@cds.on.insert": {
+                  "=": "$user"
+                },
+                "@UI.HiddenFilter": true,
+                "@UI.ExcludeFromNavigationContext": true,
+                "@Core.Immutable": true,
+                "@title": "{i18n>CreatedBy}",
+                "@readonly": true,
+                "@description": "{i18n>UserID.Description}",
+                "type": {
+                  "ref": [
+                    "managed",
+                    "createdBy"
+                  ]
+                },
+                "length": 255
+              },
+              "status": {
+                "type": "cds.String"
+              },
+              "comment": {
+                "type": "cds.String"
+              }
+            }
+          }
+        }
+      }
+    },
+    "cuid": {
+      "kind": "aspect",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        }
+      }
+    },
+    "managed": {
+      "kind": "aspect",
+      "elements": {
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "createdBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        },
+        "modifiedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp"
+        },
+        "modifiedBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "User",
+          "length": 255
+        }
+      }
+    },
+    "temporal": {
+      "kind": "aspect",
+      "elements": {
+        "validFrom": {
+          "@cds.valid.from": true,
+          "type": "cds.Timestamp"
+        },
+        "validTo": {
+          "@cds.valid.to": true,
+          "type": "cds.Timestamp"
+        }
+      }
+    },
+    "User": {
+      "kind": "type",
+      "@title": "{i18n>UserID}",
+      "@description": "{i18n>UserID.Description}",
+      "type": "cds.String",
+      "length": 255
+    },
+    "sap.common.Languages.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@Common.Text": {
+            "=": "name"
+          },
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        }
+      },
+      "change-tracking-isRootEntity": false
+    },
+    "sap.common.Countries.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@title": "{i18n>CountryCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3
+        }
+      },
+      "change-tracking-isRootEntity": false
+    },
+    "sap.common.Currencies.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@title": "{i18n>CurrencyCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3
+        }
+      },
+      "change-tracking-isRootEntity": false
+    },
+    "sap.common.Timezones.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "sap.common.Locale",
+          "length": 14
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@title": "{i18n>TimeZoneCode}",
+          "key": true,
+          "type": "cds.String",
+          "length": 100
+        }
+      },
+      "change-tracking-isRootEntity": false
     }
   },
   "meta": {
     "creator": "CDS Compiler v6.8.0",
     "compilerCsnFlavor": "inferred",
-    "flavor": "inferred"
+    "flavor": "inferred",
+    "sap.changelog.enhanced": true
   },
   "$version": "2.0"
 }

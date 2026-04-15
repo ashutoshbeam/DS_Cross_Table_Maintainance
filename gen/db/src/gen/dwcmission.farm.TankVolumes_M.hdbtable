@@ -1,5 +1,10 @@
 COLUMN TABLE dwcmission_farm_TankVolumes_M (
+  createdAt TIMESTAMP,
+  createdBy NVARCHAR(255),
+  modifiedAt TIMESTAMP,
+  modifiedBy NVARCHAR(255),
   TANK_ID NVARCHAR(30) NOT NULL,
+  ID NVARCHAR(36),
   VOLUME DECIMAL,
   UOM NVARCHAR(3),
   TIME_STAMP TIMESTAMP,

@@ -103,6 +103,11 @@
 					"pattern": "PlantLocation/{plant}",
 					"name": "PlantLocationObjectPage",
 					"target": "PlantLocationObjectPage"
+				},
+				{
+					"pattern": "PlantLocation/{plant}/changes",
+					"name": "PlantLocationChangeHistory",
+					"target": "PlantLocationChangeHistory"
 				}
 			],
 			"targets": {
@@ -113,6 +118,10 @@
 				"PlantLocationObjectPage": {
 					"viewName": "Detail",
 					"viewId": "PlantLocationObjectPage"
+				},
+				"PlantLocationChangeHistory": {
+					"viewName": "ChangeHistory",
+					"viewId": "PlantLocationChangeHistory"
 				}
 			}
 		},

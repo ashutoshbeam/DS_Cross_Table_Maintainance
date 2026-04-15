@@ -1,0 +1,19 @@
+COLUMN TABLE sap_changelog_Changes (
+  ID NVARCHAR(36) NOT NULL,
+  keys NVARCHAR(5000),
+  attribute NVARCHAR(5000),
+  valueChangedFrom NVARCHAR(5000),
+  valueChangedTo NVARCHAR(5000),
+  entityID NVARCHAR(5000),
+  entity NVARCHAR(5000),
+  serviceEntity NVARCHAR(5000),
+  parentEntityID NVARCHAR(5000),
+  parentKey NVARCHAR(5000),
+  serviceEntityPath NVARCHAR(5000),
+  modification NVARCHAR(5000),
+  valueDataType NVARCHAR(5000),
+  changeLog_ID NVARCHAR(36),
+  createdAt TIMESTAMP,
+  createdBy NVARCHAR(255),
+  PRIMARY KEY(ID)
+)
