@@ -9,7 +9,7 @@
       "fallbackLocale": "en"
     },
     "applicationVersion": {
-      "version": "1.0.7"
+      "version": "1.0.10"
     },
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",

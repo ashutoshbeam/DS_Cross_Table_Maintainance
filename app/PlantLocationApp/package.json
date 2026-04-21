@@ -1,6 +1,6 @@
 {
   "name": "plantlocationapp",
-  "version": "0.0.1",
+  "version": "1.0.10",
   "description": "Consolidated Plant Location Application",
   "devDependencies": {
     "@ui5/cli": "^4.0.33",

@@ -9,15 +9,23 @@
                 <OverflowToolbar>
                     <Title text="{view>/tableTitle}" level="H2" />
                     <ToolbarSpacer />
+                    <Label text="{i18n>templateRoleSelectLabel}" />
+                    <Select
+                        width="12rem"
+                        forceSelection="false"
+                        selectedKey="{view>/selectedTemplateRole}"
+                        change=".onTemplateRoleChange"
+                        items="{view>/templateRoleItems}">
+                        <core:Item key="{view>key}" text="{view>text}" />
+                    </Select>
                     <Label text="{i18n>tableSelectLabel}" />
                     <Select
                         width="16rem"
+                        forceSelection="false"
                         selectedKey="{view>/selectedTable}"
                         change=".onTableChange"
-                        items="{
-                            path: 'view>/tables'
-                        }">
-                        <core:Item key="{view>name}" text="{view>label}" />
+                        items="{view>/tableSelectItems}">
+                        <core:Item key="{view>key}" text="{view>text}" />
                     </Select>
                 </OverflowToolbar>
                 <OverflowToolbar>

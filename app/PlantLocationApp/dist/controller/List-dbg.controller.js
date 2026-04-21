@@ -13,14 +13,30 @@ sap.ui.define([
 ], function (BaseController, JSONModel, Filter, FilterOperator, MessageBox, Column, ColumnListItem, Input, Label, Text, SimpleForm) {
     "use strict";
 
-    return BaseController.extend("dwcmission.plantlocationapp.controller.List", {
-        onInit: function () {
-            this.setModel(new JSONModel({
-                busy: false,
-                tables: [],
-                selectedTable: "",
-                schemaName: "",
-                tableTitle: this.getText("tableTitle"),
+        return BaseController.extend("dwcmission.plantlocationapp.controller.List", {
+            onInit: function () {
+                this.setModel(new JSONModel({
+                    busy: false,
+                    tables: [],
+                    tableSelectItems: [
+                        { key: "", text: this.getText("tableSelectPlaceholder") }
+                    ],
+                    filteredTables: [],
+                    templateRoles: [
+                        { key: "DEMAND", text: "Demand" },
+                        { key: "SUPPLY", text: "Supply" },
+                        { key: "BASIC_DATA", text: "Basic Data" }
+                    ],
+                    templateRoleItems: [
+                        { key: "", text: this.getText("templateRoleSelectPlaceholder") },
+                        { key: "DEMAND", text: "Demand" },
+                        { key: "SUPPLY", text: "Supply" },
+                        { key: "BASIC_DATA", text: "Basic Data" }
+                    ],
+                    selectedTemplateRole: "",
+                    selectedTable: "",
+                    schemaName: "",
+                    tableTitle: this.getText("tableTitle"),
                 search: "",
                 selectedCount: 0,
                 columns: [],
@@ -53,6 +69,15 @@ sap.ui.define([
             }), "view");
 
             this._loadTables();
+        },
+
+        onTemplateRoleChange: function () {
+            var oViewModel = this.getModel("view");
+
+            oViewModel.setProperty("/selectedTable", "");
+            oViewModel.setProperty("/search", "");
+            this._applyTemplateRoleFilter();
+            this._loadSelectedTable();
         },
 
         onTableChange: function () {
@@ -136,19 +161,22 @@ sap.ui.define([
                 oTrackedEntity = this._getTrackedEntityConfig(),
                 sMethod = oPayload.mode === "create" ? "POST" : "PATCH",
                 sUrl = "api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/rows",
-                oBody;
+                oBody,
+                oSchemaBrowserBody;
 
             if (!this._validateCreateEdit(oPayload)) {
                 return;
             }
 
+            oSchemaBrowserBody = oPayload.mode === "create"
+                ? { data: oPayload.values }
+                : { keys: oPayload.originalKeys, data: oPayload.values };
+
             if (oTrackedEntity) {
                 sUrl = this._buildTrackedEntityRequestUrl(oTrackedEntity, oPayload);
                 oBody = this._buildTrackedEntityPayload(oPayload, oTrackedEntity);
             } else {
-                oBody = oPayload.mode === "create"
-                    ? { data: oPayload.values }
-                    : { keys: oPayload.originalKeys, data: oPayload.values };
+                oBody = oSchemaBrowserBody;
             }
 
             this._setBusy(true);
@@ -156,6 +184,16 @@ sap.ui.define([
                 method: sMethod,
                 body: JSON.stringify(oBody)
             }))
+                .catch(function (oError) {
+                    if (!oTrackedEntity || !/not found/i.test(String(oError && oError.message || ""))) {
+                        throw oError;
+                    }
+
+                    return this._request("api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/rows", {
+                        method: sMethod,
+                        body: JSON.stringify(oSchemaBrowserBody)
+                    });
+                }.bind(this))
                 .then(function () {
                     this.byId("createEditDialog").close();
                     this.showToast(this.getText(
@@ -384,6 +422,7 @@ sap.ui.define([
 
                     oViewModel.setProperty("/tables", aTables);
                     oViewModel.setProperty("/schemaName", oResult.schemaName || "");
+                    this._applyTemplateRoleFilter();
 
                     this._setTableState({
                         columns: [],
@@ -397,6 +436,33 @@ sap.ui.define([
                 .finally(function () {
                     this._setBusy(false);
                 }.bind(this));
+        },
+
+        _applyTemplateRoleFilter: function () {
+            var oViewModel = this.getModel("view"),
+                aTables = oViewModel.getProperty("/tables") || [],
+                sSelectedTemplateRole = oViewModel.getProperty("/selectedTemplateRole"),
+                aFilteredTables = sSelectedTemplateRole ? aTables : [],
+                aTableSelectItems = [{
+                    key: "",
+                    text: this.getText("tableSelectPlaceholder")
+                }].concat(aFilteredTables.map(function (oTable) {
+                    return {
+                        key: oTable.name,
+                        text: oTable.label
+                    };
+                })),
+                sSelectedTable = oViewModel.getProperty("/selectedTable"),
+                bTableStillAvailable = aFilteredTables.some(function (oTable) {
+                    return oTable.name === sSelectedTable;
+                });
+
+            oViewModel.setProperty("/filteredTables", aFilteredTables);
+            oViewModel.setProperty("/tableSelectItems", aTableSelectItems);
+
+            if (!bTableStillAvailable) {
+                oViewModel.setProperty("/selectedTable", "");
+            }
         },
 
         _loadSelectedTable: function () {
@@ -710,17 +776,34 @@ sap.ui.define([
             var oKeyColumn = this._getColumns().find(function (column) {
                     return column.name === oConfig.keyColumn;
                 }) || {},
+                aKeyColumns = this.getModel("view").getProperty("/keyColumns") || [],
                 vKeyValue = oValues[oConfig.keyColumn];
 
             if (vKeyValue === undefined || vKeyValue === null || vKeyValue === "") {
                 throw new Error(this.getText("requiredKeyFieldsMissing"));
             }
 
-            if (/^Edm\.(Int|Decimal|Double|Single|Byte|SByte|Int16|Int32|Int64|Float)$/i.test(oKeyColumn.type || "")) {
-                return "(" + oConfig.keyColumn + "=" + vKeyValue + ")";
+            var sFormattedValue = this._formatODataKeyValue(vKeyValue, oKeyColumn.type);
+
+            return "(" + oConfig.keyColumn + "=" + sFormattedValue + ")";
+        },
+
+        _formatODataKeyValue: function (vValue, sType) {
+            var sColumnType = String(sType || "").toUpperCase();
+
+            if (["INTEGER", "INT", "SMALLINT", "BIGINT", "DECIMAL", "DOUBLE", "REAL", "FLOAT", "NUMBER"].indexOf(sColumnType) > -1) {
+                return String(vValue);
             }
 
-            return "(" + oConfig.keyColumn + "='" + String(vKeyValue).replace(/'/g, "''") + "')";
+            if (sColumnType === "BOOLEAN") {
+                return String(vValue).toLowerCase() === "true" ? "true" : "false";
+            }
+
+            if (sColumnType === "UUID" || sColumnType === "GUID") {
+                return String(vValue);
+            }
+
+            return "'" + encodeURIComponent(String(vValue).replace(/'/g, "''")) + "'";
         },
 
         _getCsrfToken: function () {
@@ -770,11 +853,23 @@ sap.ui.define([
                 }
 
                 return fetch(sUrl, oOptions).then(function (response) {
-                    return response.json().catch(function () {
-                        return {};
-                    }).then(function (payload) {
+                    return response.text().then(function (text) {
+                        var payload = {};
+
+                        try {
+                            payload = text ? JSON.parse(text) : {};
+                        } catch (e) {
+                            payload = {};
+                        }
+
                         if (!response.ok) {
-                            throw new Error(payload.error || response.statusText);
+                            throw new Error(
+                                payload.error?.message
+                                || payload.error
+                                || text
+                                || response.statusText
+                                || "Request failed"
+                            );
                         }
 
                         return payload;

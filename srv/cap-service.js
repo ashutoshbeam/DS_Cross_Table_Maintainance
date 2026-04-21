@@ -19,6 +19,50 @@ const SYSTEM_USERS = new Set(["CREATEDBY", "MODIFIEDBY"]);
 
 const quoteIdentifier = (value) => `"${String(value).replace(/"/g, '""')}"`;
 
+const decodeJwtPayload = (token) => {
+    if (!token || typeof token !== "string") {
+        return null;
+    }
+
+    const parts = token.split(".");
+    if (parts.length < 2) {
+        return null;
+    }
+
+    try {
+        const normalized = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const padding = "=".repeat((4 - (normalized.length % 4)) % 4);
+        return JSON.parse(Buffer.from(normalized + padding, "base64").toString("utf8"));
+    } catch (error) {
+        return null;
+    }
+};
+
+const getUserFromJwtPayload = (payload) => {
+    if (!payload || typeof payload !== "object") {
+        return null;
+    }
+
+    return payload.email
+        || payload.user_name
+        || payload.given_name
+        || payload.name
+        || payload.sub
+        || null;
+};
+
+const getAuthTokenFromHeaders = (headers = {}) => {
+    const authorization = headers.authorization || headers.Authorization;
+    const approuterAuthorization = headers["x-approuter-authorization"] || headers["X-Approuter-Authorization"];
+    const bearerValue = authorization || approuterAuthorization;
+
+    if (!bearerValue || typeof bearerValue !== "string") {
+        return null;
+    }
+
+    return bearerValue.replace(/^Bearer\s+/i, "").trim() || null;
+};
+
 const toArray = (result) => {
     if (Array.isArray(result)) {
         return result;
@@ -343,17 +387,21 @@ async function deleteRow(db, definition, keys, req) {
 }
 
 const getRequestUser = (req) => {
+    const headers = req?.headers || req?.http?.req?.headers || {};
+    const tokenPayload = decodeJwtPayload(getAuthTokenFromHeaders(headers));
     const authInfo = req?.authInfo || req?.user?.authInfo || cds.context?.user?.authInfo;
     const logonName = authInfo?.getLogonName?.()
         || authInfo?.getUserInfo?.()?.logonName
         || authInfo?.token?.email
         || authInfo?.token?.user_name;
+    const headerUser = getUserFromJwtPayload(tokenPayload);
     const userId = req?.user?.id && req.user.id !== "anonymous" ? req.user.id : null;
 
     return userId
         || req?.user?.loginName
         || req?.user?.name
         || logonName
+        || headerUser
         || cds.context?.user?.id
         || cds.context?.user?.name
         || "anonymous";
@@ -639,4 +687,34 @@ cds.on("bootstrap", (app) => {
             res.status(400).json({ error: error.message });
         }
     });
+});
+
+module.exports = cds.service.impl(function () {
+    const { PlantLocation, TankVolumes } = this.entities;
+
+    const stampManagedFields = (req) => {
+        const user = getRequestUser(req);
+        const now = new Date().toISOString();
+        const data = req.data || {};
+
+        if (user && user !== "anonymous") {
+            if (req.event === "CREATE") {
+                data.createdBy ??= user;
+            }
+            data.modifiedBy = user;
+        }
+
+        if (req.event === "CREATE") {
+            data.createdAt ??= now;
+        }
+        data.modifiedAt = now;
+    };
+
+    if (PlantLocation) {
+        this.before(["CREATE", "UPDATE"], PlantLocation, stampManagedFields);
+    }
+
+    if (TankVolumes) {
+        this.before(["CREATE", "UPDATE"], TankVolumes, stampManagedFields);
+    }
 });
