@@ -1,0 +1,81 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout">
+    <Dialog
+        id="createTableDialog"
+        title="{i18n>createTableDialogTitle}"
+        contentWidth="900px"
+        resizable="true">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <f:SimpleForm editable="true" layout="ResponsiveGridLayout" columnsM="2" columnsL="2">
+                    <f:content>
+                        <Label text="{i18n>tableNameLabel}" required="true" />
+                        <Input value="{view>/createTable/tableName}" />
+
+                        <Label text="{i18n>tableTypeLabel}" />
+                        <Select selectedKey="{view>/createTable/tableType}">
+                            <core:Item key="COLUMN" text="{i18n>columnStore}" />
+                            <core:Item key="ROW" text="{i18n>rowStore}" />
+                        </Select>
+
+                        <Label text="{i18n>tableCommentLabel}" />
+                        <Input value="{view>/createTable/tableComment}" />
+                    </f:content>
+                </f:SimpleForm>
+
+                <Title text="{i18n>fieldsTitle}" level="H3" class="sapUiTinyMarginTop sapUiTinyMarginBottom" />
+                
+                <Table
+                    items="{view>/createTable/fields}"
+                    mode="Delete"
+                    delete=".onRemoveTableColumn">
+                    <headerToolbar>
+                        <OverflowToolbar>
+                            <ToolbarSpacer />
+                            <Button icon="sap-icon://add" text="{i18n>addField}" press=".onAddTableColumn" />
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column width="10rem"><Text text="{i18n>fieldNameLabel}" /></Column>
+                        <Column width="8rem"><Text text="{i18n>fieldTypeLabel}" /></Column>
+                        <Column width="4rem"><Text text="{i18n>fieldLengthLabel}" /></Column>
+                        <Column width="4rem"><Text text="{i18n>fieldScaleLabel}" /></Column>
+                        <Column width="4rem"><Text text="{i18n>fieldPrimaryKeyLabel}" /></Column>
+                        <Column width="4rem"><Text text="{i18n>fieldNotNullLabel}" /></Column>
+                        <Column width="6rem"><Text text="{i18n>fieldDefaultLabel}" /></Column>
+                        <Column width="8rem"><Text text="{i18n>fieldCommentLabel}" /></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Input value="{view>name}" />
+                                <Select selectedKey="{view>type}">
+                                    <core:Item key="NVARCHAR" text="NVARCHAR" />
+                                    <core:Item key="INTEGER" text="INTEGER" />
+                                    <core:Item key="DECIMAL" text="DECIMAL" />
+                                    <core:Item key="BOOLEAN" text="BOOLEAN" />
+                                    <core:Item key="DATE" text="DATE" />
+                                    <core:Item key="TIMESTAMP" text="TIMESTAMP" />
+                                    <core:Item key="DOUBLE" text="DOUBLE" />
+                                </Select>
+                                <Input value="{view>length}" type="Number" enabled="{= ${view>type} === 'NVARCHAR' || ${view>type} === 'DECIMAL' }" />
+                                <Input value="{view>scale}" type="Number" enabled="{= ${view>type} === 'DECIMAL' }" />
+                                <CheckBox selected="{view>isPrimary}" />
+                                <CheckBox selected="{view>isNotNull}" enabled="{= !${view>isPrimary} }" />
+                                <Input value="{view>defaultValue}" />
+                                <Input value="{view>comment}" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+        <buttons>
+            <Button text="{i18n>save}" type="Emphasized" press=".onSaveNewTable" />
+            <Button text="{i18n>cancel}" press=".onCancelNewTable" />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

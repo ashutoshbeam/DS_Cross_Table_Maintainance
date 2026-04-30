@@ -61,11 +61,16 @@ sap.ui.define([
                     instructions: ""
                 },
                 historyBusy: false,
-                plantHistory: [],
                 filteredHistory: [],
                 searchHistory: "",
                 plant: "",
-                entityKey: ""
+                entityKey: "",
+                createTable: {
+                    tableName: "",
+                    tableType: "COLUMN",
+                    tableComment: "",
+                    fields: []
+                }
             }), "view");
 
             this._loadTables();
@@ -131,6 +136,91 @@ sap.ui.define([
 
             this._buildCreateEditForm();
             this.byId("createEditDialog").open();
+        },
+
+        onCreateTableOpen: function () {
+            this.getModel("view").setProperty("/createTable", {
+                tableName: "",
+                tableType: "COLUMN",
+                tableComment: "",
+                fields: [
+                    {
+                        name: "ID",
+                        type: "INTEGER",
+                        length: null,
+                        scale: null,
+                        isPrimary: true,
+                        isNotNull: true,
+                        defaultValue: "",
+                        comment: ""
+                    }
+                ]
+            });
+            this.byId("createTableDialog").open();
+        },
+
+        onAddTableColumn: function () {
+            var aFields = this.getModel("view").getProperty("/createTable/fields") || [];
+            aFields.push({
+                name: "",
+                type: "NVARCHAR",
+                length: 50,
+                scale: null,
+                isPrimary: false,
+                isNotNull: false,
+                defaultValue: "",
+                comment: ""
+            });
+            this.getModel("view").setProperty("/createTable/fields", aFields);
+        },
+
+        onRemoveTableColumn: function (oEvent) {
+            var oItem = oEvent.getParameter("listItem"),
+                sPath = oItem.getBindingContext("view").getPath(),
+                iIndex = parseInt(sPath.split("/").pop(), 10),
+                aFields = this.getModel("view").getProperty("/createTable/fields") || [];
+                
+            aFields.splice(iIndex, 1);
+            this.getModel("view").setProperty("/createTable/fields", aFields);
+        },
+
+        onCancelNewTable: function () {
+            this.byId("createTableDialog").close();
+        },
+
+        onSaveNewTable: function () {
+            var oPayload = this.getModel("view").getProperty("/createTable");
+
+            if (!oPayload.tableName) {
+                this.showToast(this.getText("tableNameRequired"));
+                return;
+            }
+
+            if (!oPayload.fields || !oPayload.fields.length) {
+                this.showToast(this.getText("createTableNoFields"));
+                return;
+            }
+
+            var bHasInvalidField = oPayload.fields.some(function(f) { return !f.name; });
+            if (bHasInvalidField) {
+                this.showToast(this.getText("fieldNameRequired"));
+                return;
+            }
+
+            this._setBusy(true);
+            this._request("api/schema-browser/tables", {
+                method: "POST",
+                body: JSON.stringify(oPayload)
+            })
+                .then(function () {
+                    this.byId("createTableDialog").close();
+                    this.showToast(this.getText("createTableSuccess", [oPayload.tableName]));
+                    return this._loadTables();
+                }.bind(this))
+                .catch(this._handleActionError.bind(this, "createTableFailed"))
+                .finally(function () {
+                    this._setBusy(false);
+                }.bind(this));
         },
 
         onEdit: function () {
