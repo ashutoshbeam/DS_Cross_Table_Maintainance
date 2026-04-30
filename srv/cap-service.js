@@ -570,6 +570,58 @@ cds.on("bootstrap", (app) => {
         }
     });
 
+    app.post("/api/schema-browser/tables", async (req, res) => {
+        try {
+            const { tableName, tableType, tableComment, fields } = req.body;
+            if (!tableName || !fields || !fields.length) {
+                return res.status(400).json({ error: "Missing tableName or fields" });
+            }
+
+            await withDbClient(async (db) => {
+                const schemaName = await getCurrentSchema(db);
+                const isRowStore = String(tableType || "").toUpperCase() === "ROW";
+                const createPrefix = isRowStore ? "CREATE ROW TABLE" : "CREATE COLUMN TABLE";
+                
+                const columnDefs = fields.map(f => {
+                    let colDef = `${quoteIdentifier(f.name)} ${f.type}`;
+                    if (f.length) {
+                        colDef += `(${f.length}${f.scale ? ',' + f.scale : ''})`;
+                    }
+                    if (f.defaultValue !== undefined && f.defaultValue !== "") {
+                        colDef += ` DEFAULT '${String(f.defaultValue).replace(/'/g, "''")}'`;
+                    }
+                    if (f.isNotNull || f.isPrimary) {
+                        colDef += " NOT NULL";
+                    }
+                    return colDef;
+                });
+                
+                const primaryKeys = fields.filter(f => f.isPrimary).map(f => quoteIdentifier(f.name));
+                if (primaryKeys.length > 0) {
+                    columnDefs.push(`PRIMARY KEY (${primaryKeys.join(", ")})`);
+                }
+                
+                const sql = `${createPrefix} ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} (\n    ${columnDefs.join(",\n    ")}\n)`;
+                await executeStatement(db, sql);
+                
+                if (tableComment) {
+                    await executeStatement(db, `COMMENT ON TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} IS '${String(tableComment).replace(/'/g, "''")}'`);
+                }
+                
+                for (const f of fields) {
+                    if (f.comment) {
+                        await executeStatement(db, `COMMENT ON COLUMN ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}.${quoteIdentifier(f.name)} IS '${String(f.comment).replace(/'/g, "''")}'`);
+                    }
+                }
+            });
+
+            res.status(201).json({ success: true });
+        } catch (error) {
+            console.error("schema-browser/tables POST failed:", error);
+            res.status(400).json({ error: error.message });
+        }
+    });
+
     app.get("/api/schema-browser/tables/:table/metadata", async (req, res) => {
         try {
             await withDbClient(async (db) => {

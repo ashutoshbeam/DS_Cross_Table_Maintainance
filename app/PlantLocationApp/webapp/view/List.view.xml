@@ -27,6 +27,12 @@
                         items="{view>/tableSelectItems}">
                         <core:Item key="{view>key}" text="{view>text}" />
                     </Select>
+                    <ToolbarSeparator />
+                    <Button
+                        icon="sap-icon://add-document"
+                        text="{i18n>createTable}"
+                        type="Transparent"
+                        press=".onCreateTableOpen" />
                 </OverflowToolbar>
                 <OverflowToolbar>
                     <Button
@@ -87,6 +93,7 @@
             <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.CreateEditDialog" type="XML" />
             <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.MultiUpdateDialog" type="XML" />
             <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.MassUploadDialog" type="XML" />
+            <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.CreateTableDialog" type="XML" />
         </dependents>
     </Page>
 </mvc:View>
