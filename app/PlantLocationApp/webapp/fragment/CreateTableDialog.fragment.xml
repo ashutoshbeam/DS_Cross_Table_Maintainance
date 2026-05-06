@@ -23,6 +23,19 @@
 
                         <Label text="{i18n>tableCommentLabel}" />
                         <Input value="{view>/createTable/tableComment}" />
+
+                        <core:Title text="{i18n>capAspectsTitle}" />
+                        <Label text="{i18n>includeCuidLabel}" />
+                        <CheckBox selected="{view>/createTable/includeCuid}" />
+                        
+                        <Label text="{i18n>includeManagedLabel}" />
+                        <CheckBox selected="{view>/createTable/includeManaged}" />
+
+                        <Label text="{i18n>includeTemporalLabel}" />
+                        <CheckBox selected="{view>/createTable/includeTemporal}" />
+
+                        <Label text="{i18n>includeCodeListLabel}" />
+                        <CheckBox selected="{view>/createTable/includeCodeList}" />
                     </f:content>
                 </f:SimpleForm>
 

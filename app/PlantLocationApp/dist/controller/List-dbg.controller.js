@@ -34,6 +34,8 @@ sap.ui.define([
                         { key: "BASIC_DATA", text: "Basic Data" }
                     ],
                     selectedTemplateRole: "",
+                    selectedSchema: "",
+                    schemaSelectItems: [],
                     selectedTable: "",
                     schemaName: "",
                     tableTitle: this.getText("tableTitle"),
@@ -73,6 +75,12 @@ sap.ui.define([
                 }
             }), "view");
 
+            this._loadSchemas();
+        },
+
+        onSchemaChange: function () {
+            this.getModel("view").setProperty("/selectedTable", "");
+            this.getModel("view").setProperty("/search", "");
             this._loadTables();
         },
 
@@ -143,18 +151,11 @@ sap.ui.define([
                 tableName: "",
                 tableType: "COLUMN",
                 tableComment: "",
-                fields: [
-                    {
-                        name: "ID",
-                        type: "INTEGER",
-                        length: null,
-                        scale: null,
-                        isPrimary: true,
-                        isNotNull: true,
-                        defaultValue: "",
-                        comment: ""
-                    }
-                ]
+                includeCuid: true,
+                includeManaged: true,
+                includeTemporal: false,
+                includeCodeList: false,
+                fields: []
             });
             this.byId("createTableDialog").open();
         },
@@ -196,15 +197,21 @@ sap.ui.define([
                 return;
             }
 
-            if (!oPayload.fields || !oPayload.fields.length) {
+            // We no longer strictly require fields if they checked a CAP aspect like cuid or CodeList
+            if ((!oPayload.fields || !oPayload.fields.length) && !oPayload.includeCuid && !oPayload.includeManaged && !oPayload.includeTemporal && !oPayload.includeCodeList) {
                 this.showToast(this.getText("createTableNoFields"));
                 return;
             }
 
-            var bHasInvalidField = oPayload.fields.some(function(f) { return !f.name; });
+            var bHasInvalidField = (oPayload.fields || []).some(function(f) { return !f.name; });
             if (bHasInvalidField) {
                 this.showToast(this.getText("fieldNameRequired"));
                 return;
+            }
+
+            var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
+            if (sSelectedSchema) {
+                oPayload.schemaName = sSelectedSchema;
             }
 
             this._setBusy(true);
@@ -218,6 +225,143 @@ sap.ui.define([
                     return this._loadTables();
                 }.bind(this))
                 .catch(this._handleActionError.bind(this, "createTableFailed"))
+                .finally(function () {
+                    this._setBusy(false);
+                }.bind(this));
+        },
+
+        onDeleteTable: function () {
+            var sTableName = this.getModel("view").getProperty("/selectedTable");
+            var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
+            if (!sTableName) return;
+
+            var sUrl = "api/schema-browser/tables/" + encodeURIComponent(sTableName);
+            if (sSelectedSchema) {
+                sUrl += "?schemaName=" + encodeURIComponent(sSelectedSchema);
+            }
+
+            MessageBox.confirm(this.getText("confirmDropTable", [sTableName]), {
+                onClose: function (sAction) {
+                    if (sAction === MessageBox.Action.OK) {
+                        this._setBusy(true);
+                        this._request(sUrl, {
+                            method: "DELETE"
+                        })
+                            .then(function () {
+                                this.showToast(this.getText("dropTableSuccess", [sTableName]));
+                                this.getModel("view").setProperty("/selectedTable", "");
+                                return this._loadTables();
+                            }.bind(this))
+                            .catch(this._handleActionError.bind(this, "dropTableFailed"))
+                            .finally(function () {
+                                this._setBusy(false);
+                            }.bind(this));
+                    }
+                }.bind(this)
+            });
+        },
+
+        onAlterTableOpen: function () {
+            var sTableName = this.getModel("view").getProperty("/selectedTable");
+            var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
+            if (!sTableName) return;
+
+            var sUrl = "api/schema-browser/columns?tableName=" + encodeURIComponent(sTableName);
+            if (sSelectedSchema) {
+                sUrl += "&schemaName=" + encodeURIComponent(sSelectedSchema);
+            }
+
+            this._setBusy(true);
+            this._request(sUrl)
+                .then(function (aCols) {
+                    var aFields = aCols.map(function(c) {
+                        return {
+                            name: c.COLUMN_NAME,
+                            type: c.DATA_TYPE_NAME,
+                            length: c.LENGTH || null,
+                            scale: c.SCALE || null,
+                            isPrimary: false,
+                            isNotNull: c.IS_NULLABLE === "FALSE",
+                            defaultValue: c.DEFAULT_VALUE || "",
+                            comment: "",
+                            isExisting: true
+                        };
+                    });
+
+                    this.getModel("view").setProperty("/alterTable", {
+                        tableName: sTableName,
+                        fields: aFields
+                    });
+                    this.byId("alterTableDialog").open();
+                }.bind(this))
+                .catch(this._handleActionError.bind(this, "loadColumnsFailed"))
+                .finally(function () {
+                    this._setBusy(false);
+                }.bind(this));
+        },
+
+        onAddAlterTableColumn: function () {
+            var aFields = this.getModel("view").getProperty("/alterTable/fields") || [];
+            aFields.push({
+                name: "",
+                type: "NVARCHAR",
+                length: 50,
+                scale: null,
+                isPrimary: false,
+                isNotNull: false,
+                defaultValue: "",
+                comment: "",
+                isExisting: false
+            });
+            this.getModel("view").setProperty("/alterTable/fields", aFields);
+        },
+
+        onRemoveAlterTableColumn: function (oEvent) {
+            var oItem = oEvent.getParameter("listItem"),
+                sPath = oItem.getBindingContext("view").getPath(),
+                iIndex = parseInt(sPath.split("/").pop(), 10),
+                aFields = this.getModel("view").getProperty("/alterTable/fields") || [];
+                
+            aFields.splice(iIndex, 1);
+            this.getModel("view").setProperty("/alterTable/fields", aFields);
+        },
+
+        onCancelAlterTable: function () {
+            this.byId("alterTableDialog").close();
+        },
+
+        onSaveAlterTable: function () {
+            var oPayload = this.getModel("view").getProperty("/alterTable");
+
+            if (!oPayload.fields || !oPayload.fields.length) {
+                this.showToast(this.getText("createTableNoFields"));
+                return;
+            }
+
+            var bHasInvalidField = oPayload.fields.some(function(f) { return !f.name; });
+            if (bHasInvalidField) {
+                this.showToast(this.getText("fieldNameRequired"));
+                return;
+            }
+
+            var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
+            var oBody = { fields: oPayload.fields };
+            if (sSelectedSchema) {
+                oBody.schemaName = sSelectedSchema;
+            }
+
+            this._setBusy(true);
+            this._request("api/schema-browser/tables/" + encodeURIComponent(oPayload.tableName), {
+                method: "PATCH",
+                body: JSON.stringify(oBody)
+            })
+                .then(function () {
+                    this.byId("alterTableDialog").close();
+                    this.showToast(this.getText("alterTableSuccess", [oPayload.tableName]));
+                    this._loadColumns(oPayload.tableName);
+                    this._loadData(oPayload.tableName);
+                }.bind(this))
+                .catch(this._handleActionError.bind(this, "alterTableFailed"))
                 .finally(function () {
                     this._setBusy(false);
                 }.bind(this));
@@ -327,9 +471,16 @@ sap.ui.define([
             });
         },
 
+        _getEntityKeyString: function (oRow) {
+            if (oRow && oRow.ID !== undefined) return String(oRow.ID);
+            var aKeyColumns = this.getModel("view").getProperty("/keyColumns") || [];
+            if (!aKeyColumns.length) return "";
+            if (aKeyColumns.length === 1) return String(oRow[aKeyColumns[0]]);
+            return JSON.stringify(this._extractKeys(oRow));
+        },
+
         onOpenChangeHistory: function () {
             var aRows = this._getSelectedRows(),
-                sTableName = this._getSelectedTableName(),
                 oRow;
 
             if (aRows.length !== 1) {
@@ -339,17 +490,14 @@ sap.ui.define([
 
             oRow = aRows[0];
 
-            if (!String(sTableName || "").toUpperCase().includes("ZPLANT_LOCATION")) {
-                this.showToast(this.getText("changeHistoryUnsupported"));
-                return;
-            }
+            var sEntityKey = this._getTrackedEntityKeyValue(oRow) || this._getEntityKeyString(oRow);
 
-            this.getModel("view").setProperty("/plant", oRow.PLANT);
-            this.getModel("view").setProperty("/entityKey", this._getTrackedEntityKeyValue(oRow) || oRow.PLANT);
+            this.getModel("view").setProperty("/plant", sEntityKey);
+            this.getModel("view").setProperty("/entityKey", sEntityKey);
             this.getModel("view").setProperty("/searchHistory", "");
             this._openChangeHistoryDialog()
                 .then(function () {
-                    return this._loadChangeHistory(this._getTrackedEntityKeyValue(oRow) || oRow.PLANT);
+                    return this._loadChangeHistory(sEntityKey);
                 }.bind(this));
         },
 
@@ -483,8 +631,14 @@ sap.ui.define([
                 return;
             }
 
+            var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
+            var sUrl = "api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/mass-upload";
+            if (sSelectedSchema) {
+                sUrl += "?schemaName=" + encodeURIComponent(sSelectedSchema);
+            }
+
             this._setBusy(true);
-            this._request("api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/mass-upload", {
+            this._request(sUrl, {
                 method: "POST",
                 body: JSON.stringify({ rows: aValidRows })
             })
@@ -503,9 +657,31 @@ sap.ui.define([
             this.byId("massUploadDialog").close();
         },
 
+        _loadSchemas: function () {
+            this._setBusy(true);
+            return this._request("api/schema-browser/schemas")
+                .then(function (oResult) {
+                    var oViewModel = this.getModel("view");
+                    oViewModel.setProperty("/schemaSelectItems", oResult.schemas || []);
+                    oViewModel.setProperty("/selectedSchema", oResult.currentSchema || "");
+                    oViewModel.setProperty("/schemaName", oResult.currentSchema || "");
+                    return this._loadTables();
+                }.bind(this))
+                .catch(this._handleActionError.bind(this, "schemasLoadFailed"))
+                .finally(function () {
+                    this._setBusy(false);
+                }.bind(this));
+        },
+
         _loadTables: function () {
             this._setBusy(true);
-            return this._request("api/schema-browser/tables")
+            var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
+            var sUrl = "api/schema-browser/tables";
+            if (sSelectedSchema) {
+                sUrl += "?schemaName=" + encodeURIComponent(sSelectedSchema);
+            }
+
+            return this._request(sUrl)
                 .then(function (oResult) {
                     var oViewModel = this.getModel("view"),
                         aTables = oResult.tables || [];
@@ -558,6 +734,7 @@ sap.ui.define([
         _loadSelectedTable: function () {
             var sTableName = this._getSelectedTableName(),
                 sSearch = this.getModel("view").getProperty("/search"),
+                sSelectedSchema = this.getModel("view").getProperty("/selectedSchema"),
                 sUrl;
 
             if (!sTableName) {
@@ -571,8 +748,15 @@ sap.ui.define([
             }
 
             sUrl = "api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/rows";
+            var aParams = [];
+            if (sSelectedSchema) {
+                aParams.push("schemaName=" + encodeURIComponent(sSelectedSchema));
+            }
             if (sSearch) {
-                sUrl += "?search=" + encodeURIComponent(sSearch);
+                aParams.push("search=" + encodeURIComponent(sSearch));
+            }
+            if (aParams.length > 0) {
+                sUrl += "?" + aParams.join("&");
             }
 
             return this._request(sUrl).then(function (oResult) {
@@ -709,10 +893,16 @@ sap.ui.define([
 
         _deleteSelectedRows: function (aRows) {
             var sTableName = this._getSelectedTableName();
+            var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
+
+            var sUrl = "api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/rows";
+            if (sSelectedSchema) {
+                sUrl += "?schemaName=" + encodeURIComponent(sSelectedSchema);
+            }
 
             this._setBusy(true);
             Promise.all(aRows.map(function (row) {
-                return this._request("api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/rows", {
+                return this._request(sUrl, {
                     method: "DELETE",
                     body: JSON.stringify({
                         keys: this._extractKeys(row)
@@ -751,8 +941,11 @@ sap.ui.define([
             var aKeyColumns = this.getModel("view").getProperty("/keyColumns") || [];
 
             if (oPayload.mode === "create" && !aKeyColumns.every(function (key) {
+                if (this._isManagedColumn(key)) {
+                    return true;
+                }
                 return !!oPayload.values[key];
-            })) {
+            }.bind(this))) {
                 this.showToast(this.getText("requiredKeyFieldsMissing"));
                 return false;
             }

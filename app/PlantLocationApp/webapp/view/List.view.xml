@@ -18,6 +18,14 @@
                         items="{view>/templateRoleItems}">
                         <core:Item key="{view>key}" text="{view>text}" />
                     </Select>
+                    <Label text="{i18n>schemaSelectLabel}" />
+                    <ComboBox
+                        width="12rem"
+                        value="{view>/selectedSchema}"
+                        change=".onSchemaChange"
+                        items="{view>/schemaSelectItems}">
+                        <core:Item key="{view>name}" text="{view>name}" />
+                    </ComboBox>
                     <Label text="{i18n>tableSelectLabel}" />
                     <Select
                         width="16rem"
@@ -33,6 +41,18 @@
                         text="{i18n>createTable}"
                         type="Transparent"
                         press=".onCreateTableOpen" />
+                    <Button
+                        icon="sap-icon://edit"
+                        text="{i18n>alterTable}"
+                        type="Transparent"
+                        enabled="{= !!${view>/selectedTable} }"
+                        press=".onAlterTableOpen" />
+                    <Button
+                        icon="sap-icon://delete"
+                        text="{i18n>dropTable}"
+                        type="Transparent"
+                        enabled="{= !!${view>/selectedTable} }"
+                        press=".onDeleteTable" />
                 </OverflowToolbar>
                 <OverflowToolbar>
                     <Button
@@ -94,6 +114,7 @@
             <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.MultiUpdateDialog" type="XML" />
             <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.MassUploadDialog" type="XML" />
             <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.CreateTableDialog" type="XML" />
+            <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.AlterTableDialog" type="XML" />
         </dependents>
     </Page>
 </mvc:View>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+    <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+    <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+  </edmx:Reference>
+  <edmx:DataServices>
+    <Schema Namespace="SchemaBrowserService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <Annotation Term="Core.Links">
+        <Collection>
+          <Record>
+            <PropertyValue Property="rel" String="author"/>
+            <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+          </Record>
+        </Collection>
+      </Annotation>
+      <EntityContainer Name="EntityContainer">
+        <FunctionImport Name="getSchemas" Function="SchemaBrowserService.getSchemas"/>
+        <FunctionImport Name="getTables" Function="SchemaBrowserService.getTables"/>
+        <FunctionImport Name="getColumns" Function="SchemaBrowserService.getColumns"/>
+        <ActionImport Name="createTable" Action="SchemaBrowserService.createTable"/>
+        <ActionImport Name="dropTable" Action="SchemaBrowserService.dropTable"/>
+        <ActionImport Name="alterTable" Action="SchemaBrowserService.alterTable"/>
+      </EntityContainer>
+      <ComplexType Name="SchemaType">
+        <Property Name="name" Type="Edm.String"/>
+      </ComplexType>
+      <ComplexType Name="SchemasResponse">
+        <Property Name="schemas" Type="Collection(SchemaBrowserService.SchemaType)" Nullable="true"/>
+        <Property Name="currentSchema" Type="Edm.String"/>
+      </ComplexType>
+      <ComplexType Name="TableType">
+        <Property Name="name" Type="Edm.String"/>
+        <Property Name="label" Type="Edm.String"/>
+      </ComplexType>
+      <ComplexType Name="TablesResponse">
+        <Property Name="schemaName" Type="Edm.String"/>
+        <Property Name="tables" Type="Collection(SchemaBrowserService.TableType)" Nullable="true"/>
+      </ComplexType>
+      <ComplexType Name="ColumnType">
+        <Property Name="COLUMN_NAME" Type="Edm.String"/>
+        <Property Name="DATA_TYPE_NAME" Type="Edm.String"/>
+        <Property Name="LENGTH" Type="Edm.Int32"/>
+        <Property Name="SCALE" Type="Edm.Int32"/>
+        <Property Name="IS_NULLABLE" Type="Edm.String"/>
+        <Property Name="DEFAULT_VALUE" Type="Edm.String"/>
+      </ComplexType>
+      <ComplexType Name="FieldDef">
+        <Property Name="name" Type="Edm.String"/>
+        <Property Name="type" Type="Edm.String"/>
+        <Property Name="length" Type="Edm.Int32"/>
+        <Property Name="scale" Type="Edm.Int32"/>
+        <Property Name="isPrimary" Type="Edm.Boolean"/>
+        <Property Name="isNotNull" Type="Edm.Boolean"/>
+        <Property Name="defaultValue" Type="Edm.String"/>
+        <Property Name="comment" Type="Edm.String"/>
+      </ComplexType>
+      <ComplexType Name="ActionResponse">
+        <Property Name="success" Type="Edm.Boolean"/>
+        <Property Name="message" Type="Edm.String"/>
+      </ComplexType>
+      <Function Name="getSchemas" IsBound="false" IsComposable="false">
+        <ReturnType Type="SchemaBrowserService.SchemasResponse"/>
+      </Function>
+      <Function Name="getTables" IsBound="false" IsComposable="false">
+        <Parameter Name="schemaName" Type="Edm.String"/>
+        <ReturnType Type="SchemaBrowserService.TablesResponse"/>
+      </Function>
+      <Function Name="getColumns" IsBound="false" IsComposable="false">
+        <Parameter Name="tableName" Type="Edm.String"/>
+        <Parameter Name="schemaName" Type="Edm.String"/>
+        <ReturnType Type="Collection(SchemaBrowserService.ColumnType)" Nullable="true"/>
+      </Function>
+      <Action Name="createTable" IsBound="false">
+        <Parameter Name="schemaName" Type="Edm.String"/>
+        <Parameter Name="tableName" Type="Edm.String"/>
+        <Parameter Name="tableType" Type="Edm.String"/>
+        <Parameter Name="tableComment" Type="Edm.String"/>
+        <Parameter Name="fields" Type="Collection(SchemaBrowserService.FieldDef)" Nullable="true"/>
+        <Parameter Name="includeCuid" Type="Edm.Boolean"/>
+        <Parameter Name="includeManaged" Type="Edm.Boolean"/>
+        <Parameter Name="includeTemporal" Type="Edm.Boolean"/>
+        <Parameter Name="includeCodeList" Type="Edm.Boolean"/>
+        <ReturnType Type="SchemaBrowserService.ActionResponse"/>
+      </Action>
+      <Action Name="dropTable" IsBound="false">
+        <Parameter Name="schemaName" Type="Edm.String"/>
+        <Parameter Name="tableName" Type="Edm.String"/>
+        <ReturnType Type="SchemaBrowserService.ActionResponse"/>
+      </Action>
+      <Action Name="alterTable" IsBound="false">
+        <Parameter Name="schemaName" Type="Edm.String"/>
+        <Parameter Name="tableName" Type="Edm.String"/>
+        <Parameter Name="fields" Type="Collection(SchemaBrowserService.FieldDef)" Nullable="true"/>
+        <ReturnType Type="SchemaBrowserService.ActionResponse"/>
+      </Action>
+      <Annotations Target="SchemaBrowserService.getTables(Edm.String)/schemaName">
+        <Annotation Term="Core.OptionalParameter">
+          <Record Type="Core.OptionalParameterType"/>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="SchemaBrowserService.getColumns(Edm.String,Edm.String)/tableName">
+        <Annotation Term="Core.OptionalParameter">
+          <Record Type="Core.OptionalParameterType"/>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="SchemaBrowserService.getColumns(Edm.String,Edm.String)/schemaName">
+        <Annotation Term="Core.OptionalParameter">
+          <Record Type="Core.OptionalParameterType"/>
+        </Annotation>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

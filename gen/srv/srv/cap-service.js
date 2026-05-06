@@ -167,8 +167,12 @@ async function getTables(db, schemaName) {
         `SELECT TABLE_NAME
            FROM SYS.TABLES
           WHERE SCHEMA_NAME = ?
+         UNION ALL
+         SELECT VIEW_NAME AS TABLE_NAME
+           FROM SYS.VIEWS
+          WHERE SCHEMA_NAME = ?
           ORDER BY TABLE_NAME`,
-        [schemaName]
+        [schemaName, schemaName]
     );
 
     return rows.map((row) => ({
@@ -188,8 +192,18 @@ async function getColumns(db, schemaName, tableName) {
            FROM SYS.TABLE_COLUMNS
           WHERE SCHEMA_NAME = ?
             AND TABLE_NAME = ?
+         UNION ALL
+         SELECT COLUMN_NAME,
+                DATA_TYPE_NAME,
+                LENGTH,
+                SCALE,
+                IS_NULLABLE,
+                POSITION
+           FROM SYS.VIEW_COLUMNS
+          WHERE SCHEMA_NAME = ?
+            AND VIEW_NAME = ?
           ORDER BY POSITION`,
-        [schemaName, tableName]
+        [schemaName, tableName, schemaName, tableName]
     );
 
     return rows.map((row) => ({
@@ -553,10 +567,38 @@ async function writeChangeLog(db, definition, action, keys, beforeRow, afterRow,
 cds.on("bootstrap", (app) => {
     app.use(express.json({ limit: "5mb" }));
 
+    app.get("/api/schema-browser/schemas", async (req, res) => {
+        try {
+            await withDbClient(async (db) => {
+                const rows = await executeQuery(db, `
+                    SELECT SCHEMA_NAME 
+                    FROM SYS.SCHEMAS 
+                    WHERE SCHEMA_NAME NOT LIKE '\\_SYS\\_%' ESCAPE '\\' 
+                      AND SCHEMA_NAME NOT LIKE 'SYS%' 
+                      AND SCHEMA_NAME NOT LIKE 'SAP%' 
+                    ORDER BY SCHEMA_NAME
+                `);
+                
+                const schemas = rows.map(r => ({ name: r.SCHEMA_NAME }));
+                const currentSchema = await getCurrentSchema(db);
+                
+                if (!schemas.some(s => s.name === currentSchema)) {
+                    schemas.unshift({ name: currentSchema });
+                }
+                
+                res.json({ schemas, currentSchema });
+            });
+        } catch (error) {
+            console.error("schema-browser/schemas failed:", error);
+            res.status(500).json({ error: error.message });
+        }
+    });
+
     app.get("/api/schema-browser/tables", async (req, res) => {
         try {
             await withDbClient(async (db) => {
-                const schemaName = await getCurrentSchema(db);
+                const requestedSchema = req.query.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
                 const tables = await getTables(db, schemaName);
 
                 res.json({
@@ -570,23 +612,85 @@ cds.on("bootstrap", (app) => {
         }
     });
 
-    app.post("/api/schema-browser/tables", async (req, res) => {
+    app.get("/api/schema-browser/columns", async (req, res) => {
         try {
-            const { tableName, tableType, tableComment, fields } = req.body;
-            if (!tableName || !fields || !fields.length) {
-                return res.status(400).json({ error: "Missing tableName or fields" });
+            const { tableName, schemaName: requestedSchema } = req.query;
+            if (!tableName) {
+                return res.status(400).json({ error: "Missing tableName" });
             }
 
             await withDbClient(async (db) => {
-                const schemaName = await getCurrentSchema(db);
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                const sql = `
+                    SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE, IS_NULLABLE, DEFAULT_VALUE
+                    FROM SYS.TABLE_COLUMNS
+                    WHERE SCHEMA_NAME = ? AND TABLE_NAME = ?
+                    UNION ALL
+                    SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE, IS_NULLABLE, NULL AS DEFAULT_VALUE
+                    FROM SYS.VIEW_COLUMNS
+                    WHERE SCHEMA_NAME = ? AND VIEW_NAME = ?
+                    ORDER BY POSITION
+                `;
+                const columns = await executeQuery(db, sql, [schemaName, tableName, schemaName, tableName]);
+                res.json(columns);
+            });
+        } catch (error) {
+            console.error("schema-browser/columns failed:", error);
+            res.status(500).json({ error: error.message });
+        }
+    });
+
+    app.post("/api/schema-browser/tables", async (req, res) => {
+        try {
+            const { tableName, tableType, tableComment, fields, includeCuid, includeManaged, includeTemporal, includeCodeList } = req.body;
+            if (!tableName || ((!fields || !fields.length) && !includeCuid && !includeManaged && !includeTemporal && !includeCodeList)) {
+                return res.status(400).json({ error: "Missing tableName or fields" });
+            }
+
+            const processedFields = [...(fields || [])];
+
+            if (includeCuid) {
+                processedFields.unshift({ name: "ID", type: "NVARCHAR", length: 36, isPrimary: true, isNotNull: true, comment: "UUID" });
+            }
+            if (includeManaged) {
+                processedFields.push(
+                    { name: "createdAt", type: "TIMESTAMP", isPrimary: false, isNotNull: false, comment: "Created At" },
+                    { name: "createdBy", type: "NVARCHAR", length: 255, isPrimary: false, isNotNull: false, comment: "Created By" },
+                    { name: "modifiedAt", type: "TIMESTAMP", isPrimary: false, isNotNull: false, comment: "Modified At" },
+                    { name: "modifiedBy", type: "NVARCHAR", length: 255, isPrimary: false, isNotNull: false, comment: "Modified By" }
+                );
+            }
+            if (includeTemporal) {
+                processedFields.push(
+                    { name: "validFrom", type: "TIMESTAMP", isPrimary: false, isNotNull: false, comment: "Valid From" },
+                    { name: "validTo", type: "TIMESTAMP", isPrimary: false, isNotNull: false, comment: "Valid To" }
+                );
+            }
+            if (includeCodeList) {
+                processedFields.push(
+                    { name: "name", type: "NVARCHAR", length: 255, isPrimary: false, isNotNull: false, comment: "Name" },
+                    { name: "descr", type: "NVARCHAR", length: 1000, isPrimary: false, isNotNull: false, comment: "Description" }
+                );
+            }
+
+            await withDbClient(async (db) => {
+                const requestedSchema = req.body.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
                 const isRowStore = String(tableType || "").toUpperCase() === "ROW";
                 const createPrefix = isRowStore ? "CREATE ROW TABLE" : "CREATE COLUMN TABLE";
                 
-                const columnDefs = fields.map(f => {
+                const columnDefs = processedFields.map(f => {
                     let colDef = `${quoteIdentifier(f.name)} ${f.type}`;
-                    if (f.length) {
-                        colDef += `(${f.length}${f.scale ? ',' + f.scale : ''})`;
+                    const typeUpper = String(f.type || "").toUpperCase();
+                    
+                    if (f.length && ["VARCHAR", "NVARCHAR", "VARBINARY", "DECIMAL"].includes(typeUpper)) {
+                        if (typeUpper === "DECIMAL") {
+                            colDef += `(${f.length}${f.scale ? ',' + f.scale : ''})`;
+                        } else {
+                            colDef += `(${f.length})`;
+                        }
                     }
+                    
                     if (f.defaultValue !== undefined && f.defaultValue !== "") {
                         colDef += ` DEFAULT '${String(f.defaultValue).replace(/'/g, "''")}'`;
                     }
@@ -596,36 +700,136 @@ cds.on("bootstrap", (app) => {
                     return colDef;
                 });
                 
-                const primaryKeys = fields.filter(f => f.isPrimary).map(f => quoteIdentifier(f.name));
+                const primaryKeys = processedFields.filter(f => f.isPrimary).map(f => quoteIdentifier(f.name));
                 if (primaryKeys.length > 0) {
                     columnDefs.push(`PRIMARY KEY (${primaryKeys.join(", ")})`);
                 }
                 
                 const sql = `${createPrefix} ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} (\n    ${columnDefs.join(",\n    ")}\n)`;
-                await executeStatement(db, sql);
+                await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
                 
                 if (tableComment) {
-                    await executeStatement(db, `COMMENT ON TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} IS '${String(tableComment).replace(/'/g, "''")}'`);
+                    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [`COMMENT ON TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} IS '${String(tableComment).replace(/'/g, "''")}'`]);
                 }
                 
-                for (const f of fields) {
+                for (const f of processedFields) {
                     if (f.comment) {
-                        await executeStatement(db, `COMMENT ON COLUMN ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}.${quoteIdentifier(f.name)} IS '${String(f.comment).replace(/'/g, "''")}'`);
+                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [`COMMENT ON COLUMN ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}.${quoteIdentifier(f.name)} IS '${String(f.comment).replace(/'/g, "''")}'`]);
                     }
                 }
             });
 
-            res.status(201).json({ success: true });
-        } catch (error) {
-            console.error("schema-browser/tables POST failed:", error);
-            res.status(400).json({ error: error.message });
+            res.json({ success: true, message: "Table created successfully" });
+        } catch (err) {
+            console.error("Error creating table:", err);
+            res.status(500).json({ error: err.message || "Failed to create table" });
+        }
+    });
+
+    app.delete("/api/schema-browser/tables/:tableName", async (req, res) => {
+        try {
+            const { tableName } = req.params;
+            await withDbClient(async (db) => {
+                const requestedSchema = req.query.schemaName || req.body.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                const sql = `DROP TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}`;
+                await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+            });
+            res.json({ success: true, message: "Table dropped successfully" });
+        } catch (err) {
+            console.error("Error dropping table:", err);
+            res.status(500).json({ error: err.message || "Failed to drop table" });
+        }
+    });
+
+    app.patch("/api/schema-browser/tables/:tableName", async (req, res) => {
+        try {
+            const { tableName } = req.params;
+            const { fields } = req.body;
+            
+            if (!fields || !fields.length) {
+                return res.status(400).json({ error: "Missing fields" });
+            }
+
+            await withDbClient(async (db) => {
+                const requestedSchema = req.query.schemaName || req.body.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                
+                const currentColsSql = `
+                    SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE
+                    FROM SYS.TABLE_COLUMNS
+                    WHERE SCHEMA_NAME = ? AND TABLE_NAME = ?
+                    UNION ALL
+                    SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE
+                    FROM SYS.VIEW_COLUMNS
+                    WHERE SCHEMA_NAME = ? AND VIEW_NAME = ?
+                `;
+                const currentCols = await executeQuery(db, currentColsSql, [schemaName, tableName, schemaName, tableName]);
+                
+                const currentColMap = new Map();
+                currentCols.forEach(c => currentColMap.set(c.COLUMN_NAME, c));
+                
+                const reqColMap = new Map();
+                fields.forEach(f => reqColMap.set(f.name, f));
+                
+                // Add or Alter
+                for (const f of fields) {
+                    let colDef = `${quoteIdentifier(f.name)} ${f.type}`;
+                    const typeUpper = String(f.type || "").toUpperCase();
+                    if (f.length && ["VARCHAR", "NVARCHAR", "VARBINARY", "DECIMAL"].includes(typeUpper)) {
+                        if (typeUpper === "DECIMAL") {
+                            colDef += `(${f.length}${f.scale ? ',' + f.scale : ''})`;
+                        } else {
+                            colDef += `(${f.length})`;
+                        }
+                    }
+
+                    if (!currentColMap.has(f.name)) {
+                        // ADD
+                        if (f.defaultValue !== undefined && f.defaultValue !== "") {
+                            colDef += ` DEFAULT '${String(f.defaultValue).replace(/'/g, "''")}'`;
+                        }
+                        if (f.isNotNull) colDef += " NOT NULL";
+                        
+                        const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} ADD (${colDef})`;
+                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+                    } else {
+                        // ALTER (only if type or length changed to avoid HANA errors)
+                        const curr = currentColMap.get(f.name);
+                        const currType = String(curr.DATA_TYPE_NAME || "").toUpperCase();
+                        if (typeUpper !== currType || f.length != curr.LENGTH || f.scale != curr.SCALE) {
+                            const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} ALTER (${colDef})`;
+                            await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+                        }
+                    }
+                    
+                    // Comments
+                    if (f.comment) {
+                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [`COMMENT ON COLUMN ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}.${quoteIdentifier(f.name)} IS '${String(f.comment).replace(/'/g, "''")}'`]);
+                    }
+                }
+                
+                // Drop
+                for (const curr of currentCols) {
+                    if (!reqColMap.has(curr.COLUMN_NAME)) {
+                        const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} DROP (${quoteIdentifier(curr.COLUMN_NAME)})`;
+                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+                    }
+                }
+            });
+
+            res.json({ success: true, message: "Table altered successfully" });
+        } catch (err) {
+            console.error("Error altering table:", err);
+            res.status(500).json({ error: err.message || "Failed to alter table" });
         }
     });
 
     app.get("/api/schema-browser/tables/:table/metadata", async (req, res) => {
         try {
             await withDbClient(async (db) => {
-                const schemaName = await getCurrentSchema(db);
+                const requestedSchema = req.query.schemaName || req.body.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
 
                 res.json(definition);
@@ -639,7 +843,8 @@ cds.on("bootstrap", (app) => {
     app.get("/api/schema-browser/tables/:table/rows", async (req, res) => {
         try {
             await withDbClient(async (db) => {
-                const schemaName = await getCurrentSchema(db);
+                const requestedSchema = req.query.schemaName || req.body.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
                 const result = await readRows(db, definition, req.query.search);
 
@@ -657,7 +862,8 @@ cds.on("bootstrap", (app) => {
     app.post("/api/schema-browser/tables/:table/rows", async (req, res) => {
         try {
             await withDbClient(async (db) => {
-                const schemaName = await getCurrentSchema(db);
+                const requestedSchema = req.query.schemaName || req.body.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
                 await insertRow(db, definition, req.body.data || {}, req);
             });
@@ -672,7 +878,8 @@ cds.on("bootstrap", (app) => {
     app.patch("/api/schema-browser/tables/:table/rows", async (req, res) => {
         try {
             await withDbClient(async (db) => {
-                const schemaName = await getCurrentSchema(db);
+                const requestedSchema = req.query.schemaName || req.body.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
                 await updateRow(db, definition, req.body.keys || {}, req.body.data || {}, req);
             });
@@ -687,7 +894,8 @@ cds.on("bootstrap", (app) => {
     app.delete("/api/schema-browser/tables/:table/rows", async (req, res) => {
         try {
             await withDbClient(async (db) => {
-                const schemaName = await getCurrentSchema(db);
+                const requestedSchema = req.query.schemaName || req.body.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
                 await deleteRow(db, definition, req.body.keys || {}, req);
             });
@@ -769,4 +977,268 @@ module.exports = cds.service.impl(function () {
     if (TankVolumes) {
         this.before(["CREATE", "UPDATE"], TankVolumes, stampManagedFields);
     }
+
+    // OData V4 handlers for SchemaBrowserService
+    this.on('getSchemas', async (req) => {
+        try {
+            return await withDbClient(async (db) => {
+                const rows = await executeQuery(db, `
+                    SELECT SCHEMA_NAME 
+                    FROM SYS.SCHEMAS 
+                    WHERE SCHEMA_NAME NOT LIKE '\\_SYS\\_%' ESCAPE '\\' 
+                      AND SCHEMA_NAME NOT LIKE 'SYS%' 
+                      AND SCHEMA_NAME NOT LIKE 'SAP%' 
+                    ORDER BY SCHEMA_NAME
+                `);
+                
+                const schemas = rows.map(r => ({ name: r.SCHEMA_NAME }));
+                const currentSchema = await getCurrentSchema(db);
+                
+                if (!schemas.some(s => s.name === currentSchema)) {
+                    schemas.unshift({ name: currentSchema });
+                }
+                
+                return { schemas, currentSchema };
+            });
+        } catch (error) {
+            req.reject(500, error.message);
+        }
+    });
+
+    this.on('getTables', async (req) => {
+        try {
+            return await withDbClient(async (db) => {
+                const requestedSchema = req.data.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                const tables = await getTables(db, schemaName);
+
+                return {
+                    schemaName,
+                    tables
+                };
+            });
+        } catch (error) {
+            req.reject(500, error.message);
+        }
+    });
+
+    this.on('getColumns', async (req) => {
+        try {
+            const { tableName, schemaName: requestedSchema } = req.data;
+            if (!tableName) {
+                return req.reject(400, "Missing tableName");
+            }
+
+            return await withDbClient(async (db) => {
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                const sql = `
+                    SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE, IS_NULLABLE, DEFAULT_VALUE
+                    FROM SYS.TABLE_COLUMNS
+                    WHERE SCHEMA_NAME = ? AND TABLE_NAME = ?
+                    UNION ALL
+                    SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE, IS_NULLABLE, NULL AS DEFAULT_VALUE
+                    FROM SYS.VIEW_COLUMNS
+                    WHERE SCHEMA_NAME = ? AND VIEW_NAME = ?
+                    ORDER BY POSITION
+                `;
+                const columns = await executeQuery(db, sql, [schemaName, tableName, schemaName, tableName]);
+                return columns.map(c => ({
+                    COLUMN_NAME: c.COLUMN_NAME,
+                    DATA_TYPE_NAME: c.DATA_TYPE_NAME,
+                    LENGTH: c.LENGTH || null,
+                    SCALE: c.SCALE || null,
+                    IS_NULLABLE: c.IS_NULLABLE,
+                    DEFAULT_VALUE: c.DEFAULT_VALUE || null
+                }));
+            });
+        } catch (error) {
+            req.reject(500, error.message);
+        }
+    });
+
+    this.on('createTable', async (req) => {
+        try {
+            const { tableName, tableType, tableComment, fields, includeCuid, includeManaged, includeTemporal, includeCodeList } = req.data;
+            if (!tableName || ((!fields || !fields.length) && !includeCuid && !includeManaged && !includeTemporal && !includeCodeList)) {
+                return req.reject(400, "Missing tableName or fields");
+            }
+
+            const processedFields = [...(fields || [])];
+
+            if (includeCuid) {
+                processedFields.unshift({ name: "ID", type: "NVARCHAR", length: 36, isPrimary: true, isNotNull: true, comment: "UUID" });
+            }
+            if (includeManaged) {
+                processedFields.push(
+                    { name: "createdAt", type: "TIMESTAMP", isPrimary: false, isNotNull: false, comment: "Created At" },
+                    { name: "createdBy", type: "NVARCHAR", length: 255, isPrimary: false, isNotNull: false, comment: "Created By" },
+                    { name: "modifiedAt", type: "TIMESTAMP", isPrimary: false, isNotNull: false, comment: "Modified At" },
+                    { name: "modifiedBy", type: "NVARCHAR", length: 255, isPrimary: false, isNotNull: false, comment: "Modified By" }
+                );
+            }
+            if (includeTemporal) {
+                processedFields.push(
+                    { name: "validFrom", type: "TIMESTAMP", isPrimary: false, isNotNull: false, comment: "Valid From" },
+                    { name: "validTo", type: "TIMESTAMP", isPrimary: false, isNotNull: false, comment: "Valid To" }
+                );
+            }
+            if (includeCodeList) {
+                processedFields.push(
+                    { name: "name", type: "NVARCHAR", length: 255, isPrimary: false, isNotNull: false, comment: "Name" },
+                    { name: "descr", type: "NVARCHAR", length: 1000, isPrimary: false, isNotNull: false, comment: "Description" }
+                );
+            }
+
+            await withDbClient(async (db) => {
+                const requestedSchema = req.data.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                const isRowStore = String(tableType || "").toUpperCase() === "ROW";
+                const createPrefix = isRowStore ? "CREATE ROW TABLE" : "CREATE COLUMN TABLE";
+                
+                const columnDefs = processedFields.map(f => {
+                    let colDef = `${quoteIdentifier(f.name)} ${f.type}`;
+                    const typeUpper = String(f.type || "").toUpperCase();
+                    
+                    if (f.length && ["VARCHAR", "NVARCHAR", "VARBINARY", "DECIMAL"].includes(typeUpper)) {
+                        if (typeUpper === "DECIMAL") {
+                            colDef += `(${f.length}${f.scale ? ',' + f.scale : ''})`;
+                        } else {
+                            colDef += `(${f.length})`;
+                        }
+                    }
+                    
+                    if (f.defaultValue !== undefined && f.defaultValue !== null && f.defaultValue !== "") {
+                        colDef += ` DEFAULT '${String(f.defaultValue).replace(/'/g, "''")}'`;
+                    }
+                    if (f.isNotNull || f.isPrimary) {
+                        colDef += " NOT NULL";
+                    }
+                    return colDef;
+                });
+                
+                const primaryKeys = processedFields.filter(f => f.isPrimary).map(f => quoteIdentifier(f.name));
+                if (primaryKeys.length > 0) {
+                    columnDefs.push(`PRIMARY KEY (${primaryKeys.join(", ")})`);
+                }
+                
+                const sql = `${createPrefix} ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} (\n    ${columnDefs.join(",\n    ")}\n)`;
+                await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+                
+                if (tableComment) {
+                    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [`COMMENT ON TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} IS '${String(tableComment).replace(/'/g, "''")}'`]);
+                }
+                
+                for (const f of processedFields) {
+                    if (f.comment) {
+                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [`COMMENT ON COLUMN ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}.${quoteIdentifier(f.name)} IS '${String(f.comment).replace(/'/g, "''")}'`]);
+                    }
+                }
+            });
+
+            return { success: true, message: "Table created successfully" };
+        } catch (err) {
+            console.error("Error creating table via OData:", err);
+            req.reject(500, err.message || "Failed to create table");
+        }
+    });
+
+    this.on('dropTable', async (req) => {
+        try {
+            const { tableName } = req.data;
+            if (!tableName) return req.reject(400, "Missing tableName");
+
+            await withDbClient(async (db) => {
+                const requestedSchema = req.data.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                const sql = `DROP TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}`;
+                await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+            });
+            return { success: true, message: "Table dropped successfully" };
+        } catch (err) {
+            console.error("Error dropping table via OData:", err);
+            req.reject(500, err.message || "Failed to drop table");
+        }
+    });
+
+    this.on('alterTable', async (req) => {
+        try {
+            const { tableName, fields } = req.data;
+            
+            if (!tableName || !fields || !fields.length) {
+                return req.reject(400, "Missing tableName or fields");
+            }
+
+            await withDbClient(async (db) => {
+                const requestedSchema = req.data.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                
+                const currentColsSql = `
+                    SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE
+                    FROM SYS.TABLE_COLUMNS
+                    WHERE SCHEMA_NAME = ? AND TABLE_NAME = ?
+                    UNION ALL
+                    SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE
+                    FROM SYS.VIEW_COLUMNS
+                    WHERE SCHEMA_NAME = ? AND VIEW_NAME = ?
+                `;
+                const currentCols = await executeQuery(db, currentColsSql, [schemaName, tableName, schemaName, tableName]);
+                
+                const currentColMap = new Map();
+                currentCols.forEach(c => currentColMap.set(c.COLUMN_NAME, c));
+                
+                const reqColMap = new Map();
+                fields.forEach(f => reqColMap.set(f.name, f));
+                
+                // Add or Alter
+                for (const f of fields) {
+                    let colDef = `${quoteIdentifier(f.name)} ${f.type}`;
+                    const typeUpper = String(f.type || "").toUpperCase();
+                    if (f.length && ["VARCHAR", "NVARCHAR", "VARBINARY", "DECIMAL"].includes(typeUpper)) {
+                        if (typeUpper === "DECIMAL") {
+                            colDef += `(${f.length}${f.scale ? ',' + f.scale : ''})`;
+                        } else {
+                            colDef += `(${f.length})`;
+                        }
+                    }
+
+                    if (!currentColMap.has(f.name)) {
+                        // ADD
+                        if (f.defaultValue !== undefined && f.defaultValue !== null && f.defaultValue !== "") {
+                            colDef += ` DEFAULT '${String(f.defaultValue).replace(/'/g, "''")}'`;
+                        }
+                        if (f.isNotNull) colDef += " NOT NULL";
+                        
+                        const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} ADD (${colDef})`;
+                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+                    } else {
+                        // ALTER (only if type or length changed to avoid HANA errors)
+                        const curr = currentColMap.get(f.name);
+                        const currType = String(curr.DATA_TYPE_NAME || "").toUpperCase();
+                        if (typeUpper !== currType || f.length != curr.LENGTH || f.scale != curr.SCALE) {
+                            const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} ALTER (${colDef})`;
+                            await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+                        }
+                    }
+                    
+                    // Comments
+                    if (f.comment) {
+                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [`COMMENT ON COLUMN ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}.${quoteIdentifier(f.name)} IS '${String(f.comment).replace(/'/g, "''")}'`]);
+                    }
+                }
+                
+                // Drop
+                for (const curr of currentCols) {
+                    if (!reqColMap.has(curr.COLUMN_NAME)) {
+                        const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} DROP (${quoteIdentifier(curr.COLUMN_NAME)})`;
+                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+                    }
+                }
+            });
+
+            return { success: true, message: "Table altered successfully" };
+        } catch (err) {
+            console.error("Error altering table via OData:", err);
+            req.reject(500, err.message || "Failed to alter table");
+        }
+    });
 });

@@ -878,6 +878,222 @@
       },
       "change-tracking-isRootEntity": true
     },
+    "SchemaBrowserService": {
+      "@source": "srv/cap-service.cds",
+      "kind": "service",
+      "@path": "/odata/v4/schema-browser"
+    },
+    "SchemaBrowserService.SchemaType": {
+      "kind": "type",
+      "elements": {
+        "name": {
+          "type": "cds.String"
+        }
+      }
+    },
+    "SchemaBrowserService.SchemasResponse": {
+      "kind": "type",
+      "elements": {
+        "schemas": {
+          "items": {
+            "type": "SchemaBrowserService.SchemaType"
+          }
+        },
+        "currentSchema": {
+          "type": "cds.String"
+        }
+      }
+    },
+    "SchemaBrowserService.TableType": {
+      "kind": "type",
+      "elements": {
+        "name": {
+          "type": "cds.String"
+        },
+        "label": {
+          "type": "cds.String"
+        }
+      }
+    },
+    "SchemaBrowserService.TablesResponse": {
+      "kind": "type",
+      "elements": {
+        "schemaName": {
+          "type": "cds.String"
+        },
+        "tables": {
+          "items": {
+            "type": "SchemaBrowserService.TableType"
+          }
+        }
+      }
+    },
+    "SchemaBrowserService.ColumnType": {
+      "kind": "type",
+      "elements": {
+        "COLUMN_NAME": {
+          "type": "cds.String"
+        },
+        "DATA_TYPE_NAME": {
+          "type": "cds.String"
+        },
+        "LENGTH": {
+          "type": "cds.Integer"
+        },
+        "SCALE": {
+          "type": "cds.Integer"
+        },
+        "IS_NULLABLE": {
+          "type": "cds.String"
+        },
+        "DEFAULT_VALUE": {
+          "type": "cds.String"
+        }
+      }
+    },
+    "SchemaBrowserService.FieldDef": {
+      "kind": "type",
+      "elements": {
+        "name": {
+          "type": "cds.String"
+        },
+        "type": {
+          "type": "cds.String"
+        },
+        "length": {
+          "type": "cds.Integer"
+        },
+        "scale": {
+          "type": "cds.Integer"
+        },
+        "isPrimary": {
+          "type": "cds.Boolean"
+        },
+        "isNotNull": {
+          "type": "cds.Boolean"
+        },
+        "defaultValue": {
+          "type": "cds.String"
+        },
+        "comment": {
+          "type": "cds.String"
+        }
+      }
+    },
+    "SchemaBrowserService.ActionResponse": {
+      "kind": "type",
+      "elements": {
+        "success": {
+          "type": "cds.Boolean"
+        },
+        "message": {
+          "type": "cds.String"
+        }
+      }
+    },
+    "SchemaBrowserService.getSchemas": {
+      "kind": "function",
+      "returns": {
+        "type": "SchemaBrowserService.SchemasResponse"
+      }
+    },
+    "SchemaBrowserService.getTables": {
+      "kind": "function",
+      "params": {
+        "schemaName": {
+          "type": "cds.String"
+        }
+      },
+      "returns": {
+        "type": "SchemaBrowserService.TablesResponse"
+      }
+    },
+    "SchemaBrowserService.getColumns": {
+      "kind": "function",
+      "params": {
+        "tableName": {
+          "type": "cds.String"
+        },
+        "schemaName": {
+          "type": "cds.String"
+        }
+      },
+      "returns": {
+        "items": {
+          "type": "SchemaBrowserService.ColumnType"
+        }
+      }
+    },
+    "SchemaBrowserService.createTable": {
+      "kind": "action",
+      "params": {
+        "schemaName": {
+          "type": "cds.String"
+        },
+        "tableName": {
+          "type": "cds.String"
+        },
+        "tableType": {
+          "type": "cds.String"
+        },
+        "tableComment": {
+          "type": "cds.String"
+        },
+        "fields": {
+          "items": {
+            "type": "SchemaBrowserService.FieldDef"
+          }
+        },
+        "includeCuid": {
+          "type": "cds.Boolean"
+        },
+        "includeManaged": {
+          "type": "cds.Boolean"
+        },
+        "includeTemporal": {
+          "type": "cds.Boolean"
+        },
+        "includeCodeList": {
+          "type": "cds.Boolean"
+        }
+      },
+      "returns": {
+        "type": "SchemaBrowserService.ActionResponse"
+      }
+    },
+    "SchemaBrowserService.dropTable": {
+      "kind": "action",
+      "params": {
+        "schemaName": {
+          "type": "cds.String"
+        },
+        "tableName": {
+          "type": "cds.String"
+        }
+      },
+      "returns": {
+        "type": "SchemaBrowserService.ActionResponse"
+      }
+    },
+    "SchemaBrowserService.alterTable": {
+      "kind": "action",
+      "params": {
+        "schemaName": {
+          "type": "cds.String"
+        },
+        "tableName": {
+          "type": "cds.String"
+        },
+        "fields": {
+          "items": {
+            "type": "SchemaBrowserService.FieldDef"
+          }
+        }
+      },
+      "returns": {
+        "type": "SchemaBrowserService.ActionResponse"
+      }
+    },
     "cds.outbox.Messages": {
       "kind": "entity",
       "elements": {
