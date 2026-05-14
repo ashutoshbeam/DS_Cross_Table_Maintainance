@@ -31,11 +31,15 @@
                     </headerToolbar>
                     <columns>
                         <Column width="10rem"><Text text="{i18n>fieldNameLabel}" /></Column>
+                        <Column width="9rem"><Text text="{i18n>fieldSemanticTypeLabel}" /></Column>
                         <Column width="8rem"><Text text="{i18n>fieldTypeLabel}" /></Column>
                         <Column width="4rem"><Text text="{i18n>fieldLengthLabel}" /></Column>
                         <Column width="4rem"><Text text="{i18n>fieldScaleLabel}" /></Column>
                         <Column width="4rem"><Text text="{i18n>fieldPrimaryKeyLabel}" /></Column>
                         <Column width="4rem"><Text text="{i18n>fieldNotNullLabel}" /></Column>
+                        <Column width="9rem"><Text text="{i18n>fieldReferenceTableLabel}" /></Column>
+                        <Column width="9rem"><Text text="{i18n>fieldReferenceColumnLabel}" /></Column>
+                        <Column width="9rem"><Text text="{i18n>fieldAliasesLabel}" /></Column>
                         <Column width="6rem"><Text text="{i18n>fieldDefaultLabel}" /></Column>
                         <Column width="8rem"><Text text="{i18n>fieldCommentLabel}" /></Column>
                     </columns>
@@ -43,6 +47,9 @@
                         <ColumnListItem>
                             <cells>
                                 <Input value="{view>name}" editable="{= !${view>isExisting} }" />
+                                <ComboBox value="{view>semanticType}" change=".onFieldSemanticTypeChange" items="{view>/semanticTypeSuggestions}">
+                                    <core:Item key="{view>key}" text="{view>text}" />
+                                </ComboBox>
                                 <Select selectedKey="{view>type}">
                                     <core:Item key="VARCHAR" text="VARCHAR" />
                                     <core:Item key="NVARCHAR" text="NVARCHAR" />
@@ -57,6 +64,9 @@
                                 <Input value="{view>scale}" type="Number" enabled="{= ${view>type} === 'DECIMAL' }" />
                                 <CheckBox selected="{view>isPrimary}" enabled="false" />
                                 <CheckBox selected="{view>isNotNull}" enabled="{= !${view>isPrimary} }" />
+                                <Input value="{view>referenceTable}" />
+                                <Input value="{view>referenceColumn}" />
+                                <Input value="{view>aliases}" />
                                 <Input value="{view>defaultValue}" />
                                 <Input value="{view>comment}" />
                             </cells>

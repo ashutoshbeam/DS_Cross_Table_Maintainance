@@ -1,0 +1,377 @@
+.workspacePage .sapMPageEnableScrolling {
+    background:
+        radial-gradient(circle at top left, rgba(210, 227, 255, 0.9), transparent 28%),
+        linear-gradient(180deg, #f5f8fc 0%, #eef3f8 100%);
+}
+
+.workspaceShell {
+    gap: 1rem;
+    padding: 1rem 1.25rem 2rem;
+}
+
+.heroPanel,
+.controlCard,
+.tableCard {
+    border-radius: 1.25rem;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 1rem 2.5rem rgba(21, 42, 77, 0.08);
+    border: 1px solid rgba(148, 173, 214, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.heroPanel {
+    padding: 1.35rem 1.5rem;
+    background:
+        linear-gradient(135deg, rgba(14, 76, 146, 0.96), rgba(38, 126, 181, 0.9)),
+        linear-gradient(180deg, #0b4a8f 0%, #1765aa 100%);
+    color: #ffffff;
+    overflow: hidden;
+    position: relative;
+}
+
+.heroPanel::after {
+    content: "";
+    position: absolute;
+    inset: auto -8% -45% auto;
+    width: 16rem;
+    height: 16rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.heroPanelRow {
+    gap: 1rem;
+}
+
+.heroCopy {
+    gap: 0.25rem;
+}
+
+.heroTitle.sapMTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.heroSubtitle {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.98rem;
+}
+
+.heroStatusRow {
+    gap: 0.75rem;
+}
+
+.statusChip {
+    min-width: 9rem;
+    padding: 0.85rem 1rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.statusChipLabel {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.25rem;
+}
+
+.statusChip .sapMObjStatus {
+    color: #ffffff;
+}
+
+.statusChip .sapMObjStatusText,
+.statusChip .sapMObjStatus>.sapMObjStatusText,
+.statusChip .sapMObjStatusStatusNone,
+.statusChip .sapMObjStatusIcon {
+    color: #ffffff !important;
+    text-shadow: none !important;
+}
+
+.controlCard {
+    padding: 0.5rem;
+}
+
+.workspaceToolbar {
+    background: transparent;
+    border-radius: 1rem;
+    padding: 0.35rem 0.45rem;
+}
+
+.workspaceToolbar + .workspaceToolbar {
+    margin-top: 0.35rem;
+}
+
+.workspaceToolbarPrimary {
+    background: linear-gradient(180deg, rgba(243, 248, 254, 0.95), rgba(236, 244, 252, 0.95));
+}
+
+.workspaceToolbarSecondary {
+    background: #ffffff;
+    border: 1px solid rgba(148, 173, 214, 0.18);
+}
+
+.toolbarTitle.sapMTitle {
+    color: #18324f;
+    font-weight: 700;
+    margin-right: 0.5rem;
+}
+
+.workspaceActionButton .sapMBtnInner {
+    border-radius: 999px;
+}
+
+.workspaceDangerButton .sapMBtnInner {
+    color: #a23131;
+}
+
+.workspaceSearch {
+    min-width: 14rem;
+}
+
+.workspaceSearch .sapMSF {
+    border-radius: 999px;
+    background: #f6f9fd;
+    border: 1px solid rgba(148, 173, 214, 0.28);
+}
+
+.tableCard {
+    padding: 1rem 1rem 0.35rem;
+}
+
+.tableCardHeader {
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.tableCardTitle.sapMTitle {
+    color: #16324d;
+    font-weight: 700;
+}
+
+.tableCardHint {
+    color: #6a7e96;
+}
+
+.selectionBadge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: #eef5ff;
+    border: 1px solid rgba(121, 161, 218, 0.28);
+}
+
+.workspaceTable {
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.workspaceTable .sapMListTblHeaderCell {
+    background: #f6f9fd;
+    border-bottom: 1px solid rgba(148, 173, 214, 0.24);
+}
+
+.workspaceTable .sapMListTblHeaderCell .sapMText,
+.workspaceTable .sapMColumnHeader .sapMText {
+    color: #35506e;
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.workspaceTable .sapMLIB {
+    border-bottom: 1px solid rgba(224, 232, 242, 0.8);
+}
+
+.workspaceTable .sapMLIBSelected {
+    background: rgba(225, 238, 255, 0.78);
+}
+
+.sapMDialog.sapMDialogOpen .sapMDialogSection {
+    border-radius: 1.15rem;
+}
+
+.sapMDialog .sapMDialogTitleGroup {
+    background: linear-gradient(180deg, #f7faff 0%, #eef4fb 100%);
+}
+
+.createTableDialog .sapMDialogSection,
+.createTableDialog .sapMDialogScrollCont {
+    background:
+        radial-gradient(circle at top right, rgba(202, 224, 255, 0.55), transparent 24%),
+        linear-gradient(180deg, #f6f9fd 0%, #eef3f8 100%);
+}
+
+.createTableShell {
+    gap: 1rem;
+}
+
+.createTableIntroRow {
+    gap: 1rem;
+}
+
+.createTableCard {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(148, 173, 214, 0.2);
+    box-shadow: 0 0.75rem 1.75rem rgba(21, 42, 77, 0.08);
+    border-radius: 1.15rem;
+    padding: 1rem 1.1rem;
+}
+
+.createTableBasicsCard {
+    flex: 1 1 30rem;
+}
+
+.createTableAspectsCard {
+    flex: 1 1 22rem;
+}
+
+.createTableFieldsCard {
+    padding-bottom: 0.6rem;
+}
+
+.dialogSectionTitle.sapMTitle {
+    color: #193452;
+    font-weight: 700;
+}
+
+.aspectList {
+    gap: 0.5rem;
+}
+
+.aspectRow {
+    padding: 0.7rem 0.85rem;
+    border-radius: 0.9rem;
+    background: #f8fbff;
+    border: 1px solid rgba(148, 173, 214, 0.16);
+}
+
+.aspectText {
+    color: #2c4764;
+    max-width: 85%;
+}
+
+.fieldsHeaderToolbar {
+    background: transparent;
+    padding: 0 0 0.6rem;
+}
+
+.designerTable {
+    border-radius: 1rem;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.designerTable .sapMListTblHeaderCell {
+    background: #f4f8fd;
+    border-bottom: 1px solid rgba(148, 173, 214, 0.22);
+}
+
+.designerTable .sapMColumnHeader .sapMText,
+.designerTable .sapMListTblHeaderCell .sapMText {
+    color: #3a5574;
+    font-weight: 700;
+    font-size: 0.78rem;
+}
+
+.designerTable .sapMInputBase,
+.designerTable .sapMSlt,
+.designerTable .sapMComboBox {
+    min-width: 100%;
+}
+
+.jouleChatButton {
+    position: fixed !important;
+    right: 2.25rem;
+    bottom: 4.5rem;
+    z-index: 1000;
+    width: 5.25rem;
+    height: 5.25rem;
+}
+
+.jouleChatButton.sapMBtnBase {
+    padding: 0 !important;
+}
+
+.jouleChatButton .sapMBtnInner {
+    width: 5.25rem;
+    height: 5.25rem;
+    min-width: 5.25rem;
+    border-radius: 50%;
+    border: 0 !important;
+    background: linear-gradient(180deg, #5a86f6 0%, #3d6fe0 100%) !important;
+    box-shadow: 0 0.75rem 1.5rem rgba(34, 72, 148, 0.28), 0 0.15rem 0.35rem rgba(0, 0, 0, 0.18);
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.jouleChatButton .sapMBtnIcon {
+    color: #ffffff !important;
+    font-size: 2.1rem !important;
+    line-height: 1 !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+}
+
+.jouleChatButton .sapMBtnContent {
+    color: #ffffff !important;
+}
+
+.jouleChatButton .sapMBtnInner:hover,
+.jouleChatButton .sapMBtnInner:focus {
+    background: linear-gradient(180deg, #6a92fb 0%, #4677e6 100%) !important;
+}
+
+.jouleChatButton .sapMBtnActive .sapMBtnInner,
+.jouleChatButton .sapMBtnInner.sapMBtnActive {
+    background: linear-gradient(180deg, #3f6ddd 0%, #305dc5 100%) !important;
+}
+
+@media (max-width: 768px) {
+    .workspaceShell {
+        padding: 0.75rem 0.75rem 1.5rem;
+    }
+
+    .heroPanel,
+    .controlCard,
+    .tableCard {
+        border-radius: 1rem;
+    }
+
+    .heroTitle.sapMTitle {
+        font-size: 1.4rem;
+    }
+
+    .statusChip {
+        min-width: 7.5rem;
+    }
+
+    .workspaceSearch {
+        min-width: 100%;
+    }
+
+    .jouleChatButton {
+        right: 1.25rem;
+        bottom: 3.75rem;
+        width: 4.5rem;
+        height: 4.5rem;
+    }
+
+    .jouleChatButton .sapMBtnInner {
+        width: 4.5rem;
+        height: 4.5rem;
+        min-width: 4.5rem;
+    }
+
+    .jouleChatButton .sapMBtnIcon {
+        font-size: 1.8rem !important;
+    }
+}

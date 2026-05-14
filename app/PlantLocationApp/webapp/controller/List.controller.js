@@ -8,9 +8,12 @@ sap.ui.define([
     "sap/m/ColumnListItem",
     "sap/m/Input",
     "sap/m/Label",
+    "sap/m/ComboBox",
+    "sap/m/Select",
     "sap/m/Text",
+    "sap/ui/core/Item",
     "sap/ui/layout/form/SimpleForm"
-], function (BaseController, JSONModel, Filter, FilterOperator, MessageBox, Column, ColumnListItem, Input, Label, Text, SimpleForm) {
+], function (BaseController, JSONModel, Filter, FilterOperator, MessageBox, Column, ColumnListItem, Input, Label, ComboBox, Select, Text, Item, SimpleForm) {
     "use strict";
 
         return BaseController.extend("dwcmission.plantlocationapp.controller.List", {
@@ -72,7 +75,13 @@ sap.ui.define([
                     tableType: "COLUMN",
                     tableComment: "",
                     fields: []
-                }
+                },
+                valueHelps: {},
+                semanticTypeSuggestions: [
+                    { key: "Plant", text: this.getText("semanticTypePlant") },
+                    { key: "Company Code", text: this.getText("semanticTypeCompanyCode") },
+                    { key: "Sales Org", text: this.getText("semanticTypeSalesOrg") }
+                ]
             }), "view");
 
             this._loadSchemas();
@@ -119,6 +128,10 @@ sap.ui.define([
                 }.bind(this));
         },
 
+        onOpenJouleChat: function () {
+            window.open("https://sgs-joule-dev.us21.sapdas.cloud.sap/webclient/standalone/da_agent", "_blank", "noopener,noreferrer");
+        },
+
         onSelectionChange: function () {
             this._updateSelectionState();
         },
@@ -142,8 +155,12 @@ sap.ui.define([
                 originalKeys: {}
             });
 
-            this._buildCreateEditForm();
-            this.byId("createEditDialog").open();
+            this._prepareValueHelps()
+                .then(function () {
+                    this._buildCreateEditForm();
+                    this.byId("createEditDialog").open();
+                }.bind(this))
+                .catch(this._handleActionError.bind(this, "createFailed"));
         },
 
         onCreateTableOpen: function () {
@@ -164,11 +181,16 @@ sap.ui.define([
             var aFields = this.getModel("view").getProperty("/createTable/fields") || [];
             aFields.push({
                 name: "",
+                semanticType: "",
                 type: "NVARCHAR",
                 length: 50,
                 scale: null,
                 isPrimary: false,
                 isNotNull: false,
+                referenceTable: "",
+                referenceColumn: "",
+                aliases: "",
+                valueHelpRequired: false,
                 defaultValue: "",
                 comment: ""
             });
@@ -203,9 +225,7 @@ sap.ui.define([
                 return;
             }
 
-            var bHasInvalidField = (oPayload.fields || []).some(function(f) { return !f.name; });
-            if (bHasInvalidField) {
-                this.showToast(this.getText("fieldNameRequired"));
+            if (!this._validateTableFields(oPayload.fields || [])) {
                 return;
             }
 
@@ -266,22 +286,27 @@ sap.ui.define([
             var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
             if (!sTableName) return;
 
-            var sUrl = "api/schema-browser/columns?tableName=" + encodeURIComponent(sTableName);
+            var sUrl = "api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/metadata";
             if (sSelectedSchema) {
-                sUrl += "&schemaName=" + encodeURIComponent(sSelectedSchema);
+                sUrl += "?schemaName=" + encodeURIComponent(sSelectedSchema);
             }
 
             this._setBusy(true);
             this._request(sUrl)
-                .then(function (aCols) {
-                    var aFields = aCols.map(function(c) {
+                .then(function (oMetadata) {
+                    var aFields = (oMetadata.columns || []).map(function(c) {
                         return {
-                            name: c.COLUMN_NAME,
-                            type: c.DATA_TYPE_NAME,
-                            length: c.LENGTH || null,
-                            scale: c.SCALE || null,
-                            isPrimary: false,
-                            isNotNull: c.IS_NULLABLE === "FALSE",
+                            name: c.name,
+                            semanticType: c.semanticType || "",
+                            type: c.type,
+                            length: c.length || null,
+                            scale: c.scale || null,
+                            isPrimary: !!c.key,
+                            isNotNull: !c.nullable,
+                            referenceTable: c.referenceTable || "",
+                            referenceColumn: c.referenceColumn || "",
+                            aliases: c.aliases || "",
+                            valueHelpRequired: !!c.valueHelpRequired,
                             defaultValue: c.DEFAULT_VALUE || "",
                             comment: "",
                             isExisting: true
@@ -304,11 +329,16 @@ sap.ui.define([
             var aFields = this.getModel("view").getProperty("/alterTable/fields") || [];
             aFields.push({
                 name: "",
+                semanticType: "",
                 type: "NVARCHAR",
                 length: 50,
                 scale: null,
                 isPrimary: false,
                 isNotNull: false,
+                referenceTable: "",
+                referenceColumn: "",
+                aliases: "",
+                valueHelpRequired: false,
                 defaultValue: "",
                 comment: "",
                 isExisting: false
@@ -338,9 +368,7 @@ sap.ui.define([
                 return;
             }
 
-            var bHasInvalidField = oPayload.fields.some(function(f) { return !f.name; });
-            if (bHasInvalidField) {
-                this.showToast(this.getText("fieldNameRequired"));
+            if (!this._validateTableFields(oPayload.fields)) {
                 return;
             }
 
@@ -358,8 +386,7 @@ sap.ui.define([
                 .then(function () {
                     this.byId("alterTableDialog").close();
                     this.showToast(this.getText("alterTableSuccess", [oPayload.tableName]));
-                    this._loadColumns(oPayload.tableName);
-                    this._loadData(oPayload.tableName);
+                    return this._loadSelectedTable();
                 }.bind(this))
                 .catch(this._handleActionError.bind(this, "alterTableFailed"))
                 .finally(function () {
@@ -384,8 +411,12 @@ sap.ui.define([
                 originalKeys: this._extractKeys(oRow)
             });
 
-            this._buildCreateEditForm();
-            this.byId("createEditDialog").open();
+            this._prepareValueHelps()
+                .then(function () {
+                    this._buildCreateEditForm();
+                    this.byId("createEditDialog").open();
+                }.bind(this))
+                .catch(this._handleActionError.bind(this, "updateFailed"));
         },
 
         onSaveCreateEdit: function () {
@@ -533,8 +564,12 @@ sap.ui.define([
                 values: oValues
             });
 
-            this._buildMultiUpdateForm();
-            this.byId("multiUpdateDialog").open();
+            this._prepareValueHelps()
+                .then(function () {
+                    this._buildMultiUpdateForm();
+                    this.byId("multiUpdateDialog").open();
+                }.bind(this))
+                .catch(this._handleActionError.bind(this, "multiUpdateFailed"));
         },
 
         onApplyMultiUpdate: function () {
@@ -603,7 +638,7 @@ sap.ui.define([
         },
 
         onDownloadTemplate: function () {
-            var sTemplate = this._getColumns().map(function (column) {
+            var sTemplate = this._getMassUploadColumns().map(function (column) {
                 return column.name;
             }).join(",") + "\n",
                 oBlob = new Blob([sTemplate], { type: "text/csv;charset=utf-8" }),
@@ -618,12 +653,10 @@ sap.ui.define([
 
         onStartMassUpload: function () {
             var aRows = this.getModel("view").getProperty("/upload/rows") || [],
-                aKeyColumns = this.getModel("view").getProperty("/keyColumns") || [],
+                aRequiredKeyColumns = this._getRequiredUploadKeyColumns(),
                 aValidRows = aRows.filter(function (row) {
-                    return aKeyColumns.every(function (key) {
-                        return !!row[key];
-                    });
-                }),
+                    return this._isMassUploadRowValid(row, aRequiredKeyColumns);
+                }.bind(this)),
                 sTableName = this._getSelectedTableName();
 
             if (!aValidRows.length) {
@@ -864,12 +897,49 @@ sap.ui.define([
                 }
 
                 oForm.addContent(new Label({ text: column.name }));
-                oForm.addContent(new Input({
-                    value: "{view>/createEdit/values/" + column.name + "}",
-                    editable: bCreate ? true : !column.key && !this._isManagedColumn(column.name)
-                }));
+                if (this._isValueHelpColumn(column)) {
+                    oForm.addContent(new Select({
+                        selectedKey: "{view>/createEdit/values/" + column.name + "}",
+                        enabled: bCreate ? true : !column.key && !this._isManagedColumn(column.name),
+                        forceSelection: false,
+                        change: this._onValueHelpSelectionChange.bind(this, "createEdit", column),
+                        items: {
+                            path: "view>/valueHelps/" + column.name,
+                            template: new Item({
+                                key: "{view>key}",
+                                text: "{view>text}"
+                            })
+                        }
+                    }));
+                } else {
+                    oForm.addContent(new Input({
+                        value: "{view>/createEdit/values/" + column.name + "}",
+                        editable: bCreate ? true : !column.key && !this._isManagedColumn(column.name)
+                    }));
+                }
             }.bind(this));
             oFormBox.addItem(oForm);
+        },
+
+        onFieldSemanticTypeChange: function (oEvent) {
+            var sSemanticType = String(oEvent.getSource().getValue ? oEvent.getSource().getValue() : oEvent.getSource().getSelectedKey() || "").trim(),
+                oContext = oEvent.getSource().getBindingContext("view"),
+                sBasePath = oContext && oContext.getPath(),
+                oPreset = this._getSemanticTypePreset(sSemanticType);
+
+            if (!sBasePath) {
+                return;
+            }
+
+            this.getModel("view").setProperty(sBasePath + "/semanticType", sSemanticType);
+
+            if (!sSemanticType) {
+                this.getModel("view").setProperty(sBasePath + "/valueHelpRequired", false);
+                return;
+            }
+
+            this._applySemanticTypeDefaults(sBasePath, sSemanticType, oPreset);
+            this._populateSchemaValueHelpMapping(sBasePath, sSemanticType);
         },
 
         _buildMultiUpdateForm: function () {
@@ -884,11 +954,211 @@ sap.ui.define([
             oFormBox.removeAllItems();
             this._getEditableColumns().forEach(function (column) {
                 oForm.addContent(new Label({ text: column.name }));
-                oForm.addContent(new Input({
-                    value: "{view>/multiUpdate/values/" + column.name + "}"
-                }));
+                if (this._isValueHelpColumn(column)) {
+                    oForm.addContent(new Select({
+                        selectedKey: "{view>/multiUpdate/values/" + column.name + "}",
+                        forceSelection: false,
+                        change: this._onValueHelpSelectionChange.bind(this, "multiUpdate", column),
+                        items: {
+                            path: "view>/valueHelps/" + column.name,
+                            template: new Item({
+                                key: "{view>key}",
+                                text: "{view>text}"
+                            })
+                        }
+                    }));
+                } else {
+                    oForm.addContent(new Input({
+                        value: "{view>/multiUpdate/values/" + column.name + "}"
+                    }));
+                }
             });
             oFormBox.addItem(oForm);
+        },
+
+        _prepareValueHelps: function () {
+            var oViewModel = this.getModel("view"),
+                aColumns = this._getColumns().filter(this._isValueHelpColumn.bind(this)),
+                oValueHelps = {};
+
+            if (!aColumns.length) {
+                oViewModel.setProperty("/valueHelps", {});
+                return Promise.resolve();
+            }
+
+            return Promise.all(aColumns.map(function (column) {
+                return this._requestValueHelpForColumn(column).then(function (aValues) {
+                    oValueHelps[column.name] = aValues;
+                });
+            }.bind(this))).then(function () {
+                oViewModel.setProperty("/valueHelps", oValueHelps);
+            });
+        },
+
+        _requestValueHelpForColumn: function (oColumn) {
+            var sTableName = this._getSelectedTableName(),
+                sSelectedSchema = this.getModel("view").getProperty("/selectedSchema"),
+                sUrl = "api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/value-help/" + encodeURIComponent(oColumn.name);
+
+            if (sSelectedSchema) {
+                sUrl += "?schemaName=" + encodeURIComponent(sSelectedSchema);
+            }
+
+            return this._request(sUrl).then(function (oResult) {
+                var aValues = [{ key: "", text: this.getText("valueHelpSelectEmpty") }].concat(oResult.values || []);
+
+                return aValues;
+            }.bind(this));
+        },
+
+        _isValueHelpColumn: function (oColumn) {
+            return !!(oColumn && oColumn.valueHelpRequired && oColumn.referenceTable && oColumn.referenceColumn);
+        },
+
+        _onValueHelpSelectionChange: function (sModelPath, oColumn, oEvent) {
+            var oSelectedItem = oEvent.getParameter("selectedItem"),
+                oSelectedContext = oSelectedItem && oSelectedItem.getBindingContext("view"),
+                oSelectedValue = oSelectedContext && oSelectedContext.getObject(),
+                sDescriptionTarget = this._findDescriptionTargetColumn(oColumn),
+                sTargetPath;
+
+            if (!sDescriptionTarget) {
+                return;
+            }
+
+            sTargetPath = "/" + sModelPath + "/values/" + sDescriptionTarget;
+            this.getModel("view").setProperty(sTargetPath, oSelectedValue && oSelectedValue.description ? oSelectedValue.description : "");
+        },
+
+        _findDescriptionTargetColumn: function (oColumn) {
+            var aColumns = this._getColumns(),
+                sName = String(oColumn && oColumn.name || "").toUpperCase(),
+                aCandidates = [
+                    sName + "_NAME",
+                    sName + "_DESC",
+                    sName + "_DESCRIPTION",
+                    sName.replace(/_CODE$/, "_NAME"),
+                    sName.replace(/_ID$/, "_NAME")
+                ];
+
+            return (aColumns.find(function (column) {
+                return aCandidates.indexOf(String(column.name || "").toUpperCase()) > -1;
+            }) || {}).name || "";
+        },
+
+        _validateTableFields: function (aFields) {
+            var bHasInvalidField = (aFields || []).some(function (field) {
+                return !field.name;
+            });
+
+            if (bHasInvalidField) {
+                this.showToast(this.getText("fieldNameRequired"));
+                return false;
+            }
+
+            var bHasInvalidReference = (aFields || []).some(function (field) {
+                return this._hasBusinessTypeMetadata(field) && (!field.referenceTable || !field.referenceColumn);
+            }.bind(this));
+
+            if (bHasInvalidReference) {
+                this.showToast(this.getText("fieldReferenceRequired"));
+                return false;
+            }
+
+            return true;
+        },
+
+        _hasBusinessTypeMetadata: function (oField) {
+            return !!String(oField.semanticType || oField.referenceTable || oField.referenceColumn || "").trim();
+        },
+
+        _getSemanticTypePreset: function (sSemanticType) {
+            var mPresets = {
+                PLANT: {
+                    name: "PLANT",
+                    type: "NVARCHAR",
+                    length: 4,
+                    scale: null,
+                    referenceColumn: "PLANT",
+                    comment: "Plant"
+                },
+                COMPANYCODE: {
+                    name: "COMPANY_CODE",
+                    type: "NVARCHAR",
+                    length: 4,
+                    scale: null,
+                    referenceColumn: "COMPANY_CODE",
+                    comment: "Company Code"
+                },
+                SALESORG: {
+                    name: "SALES_ORG",
+                    type: "NVARCHAR",
+                    length: 4,
+                    scale: null,
+                    referenceColumn: "SALES_ORG",
+                    comment: "Sales Organization"
+                }
+            };
+
+            return mPresets[this._getSemanticKey(sSemanticType)] || null;
+        },
+
+        _getSemanticKey: function (sSemanticType) {
+            return String(sSemanticType || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+        },
+
+        _getSemanticFieldName: function (sSemanticType) {
+            return String(sSemanticType || "")
+                .trim()
+                .toUpperCase()
+                .replace(/[^A-Z0-9]+/g, "_")
+                .replace(/^_+|_+$/g, "");
+        },
+
+        _applySemanticTypeDefaults: function (sBasePath, sSemanticType, oPreset) {
+            if (!oPreset) {
+                this.getModel("view").setProperty(sBasePath + "/name", this.getModel("view").getProperty(sBasePath + "/name") || this._getSemanticFieldName(sSemanticType));
+                this.getModel("view").setProperty(sBasePath + "/referenceColumn", this.getModel("view").getProperty(sBasePath + "/referenceColumn") || this._getSemanticFieldName(sSemanticType));
+                this.getModel("view").setProperty(sBasePath + "/aliases", this.getModel("view").getProperty(sBasePath + "/aliases") || this._getSemanticFieldName(sSemanticType));
+                this.getModel("view").setProperty(sBasePath + "/valueHelpRequired", true);
+                this.getModel("view").setProperty(sBasePath + "/comment", this.getModel("view").getProperty(sBasePath + "/comment") || sSemanticType);
+                return;
+            }
+
+            this.getModel("view").setProperty(sBasePath + "/name", this.getModel("view").getProperty(sBasePath + "/name") || oPreset.name);
+            this.getModel("view").setProperty(sBasePath + "/type", oPreset.type);
+            this.getModel("view").setProperty(sBasePath + "/length", oPreset.length);
+            this.getModel("view").setProperty(sBasePath + "/scale", oPreset.scale);
+            this.getModel("view").setProperty(sBasePath + "/referenceColumn", oPreset.referenceColumn);
+            this.getModel("view").setProperty(sBasePath + "/aliases", this.getModel("view").getProperty(sBasePath + "/aliases") || [oPreset.name, oPreset.referenceColumn].filter(Boolean).join(", "));
+            this.getModel("view").setProperty(sBasePath + "/valueHelpRequired", true);
+            this.getModel("view").setProperty(sBasePath + "/comment", this.getModel("view").getProperty(sBasePath + "/comment") || oPreset.comment);
+        },
+
+        _populateSchemaValueHelpMapping: function (sBasePath, sSemanticType) {
+            var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema"),
+                sUrl = "api/schema-browser/value-help-config/" + encodeURIComponent(sSemanticType);
+
+            if (sSelectedSchema) {
+                sUrl += "?schemaName=" + encodeURIComponent(sSelectedSchema);
+            }
+
+            this._request(sUrl)
+                .then(function (oConfig) {
+                    if (!oConfig || !oConfig.referenceTable || !oConfig.referenceColumn) {
+                        return;
+                    }
+
+                    this.getModel("view").setProperty(sBasePath + "/referenceTable", oConfig.referenceTable);
+                    this.getModel("view").setProperty(sBasePath + "/referenceColumn", oConfig.referenceColumn);
+
+                    if (oConfig.aliases) {
+                        this.getModel("view").setProperty(sBasePath + "/aliases", oConfig.aliases);
+                    }
+                }.bind(this))
+                .catch(function () {
+                    // Keep manual entry fallback when no schema-level mapping exists yet.
+                });
         },
 
         _deleteSelectedRows: function (aRows) {
@@ -977,6 +1247,33 @@ sap.ui.define([
             return this._getColumns().filter(function (column) {
                 return !column.key && !this._isManagedColumn(column.name);
             }.bind(this));
+        },
+
+        _getMassUploadColumns: function () {
+            return this._getColumns().filter(function (column) {
+                return !this._isManagedColumn(column.name);
+            }.bind(this));
+        },
+
+        _getRequiredUploadKeyColumns: function () {
+            return (this.getModel("view").getProperty("/keyColumns") || []).filter(function (key) {
+                return !this._isManagedColumn(key);
+            }.bind(this));
+        },
+
+        _isMassUploadRowValid: function (oRow, aRequiredKeyColumns) {
+            var aUploadColumns = this._getMassUploadColumns(),
+                fnHasValue = function (value) {
+                    return value !== undefined && value !== null && value !== "";
+                },
+                bHasRequiredKeys = (aRequiredKeyColumns || []).every(function (key) {
+                    return fnHasValue(oRow[key]);
+                }),
+                bHasData = aUploadColumns.some(function (column) {
+                    return fnHasValue(oRow[column.name]);
+                });
+
+            return bHasRequiredKeys && bHasData;
         },
 
         _isManagedColumn: function (sColumnName) {

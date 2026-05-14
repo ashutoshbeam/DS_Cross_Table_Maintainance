@@ -2,6 +2,9 @@ const cds = require("@sap/cds");
 const express = require("express");
 
 const ROW_LIMIT = 200;
+const FIELD_METADATA_TABLE = "ZSCHEMA_FIELD_METADATA";
+const VALUE_HELP_CONFIG_TABLE = "ZSCHEMA_VALUE_HELP_CONFIG";
+const VALUE_HELP_ALIAS_TABLE = "ZSCHEMA_VALUE_HELP_ALIAS";
 let dbPromise;
 
 const MANAGED_FIELD_NAMES = new Set([
@@ -97,6 +100,39 @@ const isBlankValue = (value) => value === undefined || value === null || value =
 
 const isManagedField = (name) => MANAGED_FIELD_NAMES.has(normalizeColumnName(name));
 
+const normalizeSemanticKey = (value) => String(value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+const getSemanticAliases = (value) => {
+    const normalized = normalizeSemanticKey(value);
+    return normalized ? [normalized] : [];
+};
+
+const getFieldMetadataPayload = (field = {}) => {
+    const semanticType = String(field.semanticType || "").trim();
+    const referenceTable = String(field.referenceTable || "").trim();
+    const referenceColumn = String(field.referenceColumn || "").trim();
+    const valueHelpRequired = field.valueHelpRequired === true
+        || field.valueHelpRequired === "true"
+        || !!semanticType
+        || !!referenceTable
+        || !!referenceColumn;
+
+    return {
+        semanticType,
+        referenceTable,
+        referenceColumn,
+        valueHelpRequired
+    };
+};
+
+const hasFieldMetadataPayload = (field = {}) => {
+    const metadata = getFieldMetadataPayload(field);
+    return metadata.valueHelpRequired
+        || !!metadata.semanticType
+        || !!metadata.referenceTable
+        || !!metadata.referenceColumn;
+};
+
 const getColumnByName = (definition, name) => {
     const normalized = normalizeColumnName(name);
     return (definition.columns || []).find((column) => normalizeColumnName(column.name) === normalized);
@@ -160,6 +196,315 @@ async function executeStatement(db, sql, values) {
 async function getCurrentSchema(db) {
     const [row] = await executeQuery(db, `SELECT CURRENT_SCHEMA AS "SCHEMA_NAME" FROM DUMMY`);
     return row && row.SCHEMA_NAME;
+}
+
+async function ensureFieldMetadataTable(db, schemaName) {
+    const rows = await executeQuery(db,
+        `SELECT TABLE_NAME
+           FROM SYS.TABLES
+          WHERE SCHEMA_NAME = ?
+            AND TABLE_NAME = ?`,
+        [schemaName, FIELD_METADATA_TABLE]
+    );
+
+    if (rows.length) {
+        return;
+    }
+
+    const sql = `CREATE COLUMN TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(FIELD_METADATA_TABLE)} (
+        "SCHEMA_NAME" NVARCHAR(256) NOT NULL,
+        "TABLE_NAME" NVARCHAR(256) NOT NULL,
+        "COLUMN_NAME" NVARCHAR(256) NOT NULL,
+        "SEMANTIC_TYPE" NVARCHAR(100),
+        "REFERENCE_TABLE" NVARCHAR(256),
+        "REFERENCE_COLUMN" NVARCHAR(256),
+        "VALUE_HELP_REQUIRED" BOOLEAN DEFAULT TRUE NOT NULL,
+        "UPDATED_AT" TIMESTAMP,
+        PRIMARY KEY ("SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME")
+    )`;
+
+    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+}
+
+async function ensureValueHelpConfigTable(db, schemaName) {
+    const rows = await executeQuery(db,
+        `SELECT TABLE_NAME
+           FROM SYS.TABLES
+          WHERE SCHEMA_NAME = ?
+            AND TABLE_NAME = ?`,
+        [schemaName, VALUE_HELP_CONFIG_TABLE]
+    );
+
+    if (rows.length) {
+        return;
+    }
+
+    const sql = `CREATE COLUMN TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALUE_HELP_CONFIG_TABLE)} (
+        "SCHEMA_NAME" NVARCHAR(256) NOT NULL,
+        "SEMANTIC_TYPE" NVARCHAR(100) NOT NULL,
+        "REFERENCE_TABLE" NVARCHAR(256) NOT NULL,
+        "REFERENCE_COLUMN" NVARCHAR(256) NOT NULL,
+        "UPDATED_AT" TIMESTAMP,
+        PRIMARY KEY ("SCHEMA_NAME", "SEMANTIC_TYPE")
+    )`;
+
+    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+}
+
+async function ensureValueHelpAliasTable(db, schemaName) {
+    const rows = await executeQuery(db,
+        `SELECT TABLE_NAME
+           FROM SYS.TABLES
+          WHERE SCHEMA_NAME = ?
+            AND TABLE_NAME = ?`,
+        [schemaName, VALUE_HELP_ALIAS_TABLE]
+    );
+
+    if (rows.length) {
+        return;
+    }
+
+    const sql = `CREATE COLUMN TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALUE_HELP_ALIAS_TABLE)} (
+        "SCHEMA_NAME" NVARCHAR(256) NOT NULL,
+        "SEMANTIC_TYPE" NVARCHAR(100) NOT NULL,
+        "ALIAS_NAME" NVARCHAR(256) NOT NULL,
+        "UPDATED_AT" TIMESTAMP,
+        PRIMARY KEY ("SCHEMA_NAME", "SEMANTIC_TYPE", "ALIAS_NAME")
+    )`;
+
+    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+}
+
+async function getFieldMetadataMap(db, schemaName, tableName) {
+    await ensureFieldMetadataTable(db, schemaName);
+
+    const rows = await executeQuery(db,
+        `SELECT COLUMN_NAME,
+                SEMANTIC_TYPE,
+                REFERENCE_TABLE,
+                REFERENCE_COLUMN,
+                VALUE_HELP_REQUIRED
+           FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(FIELD_METADATA_TABLE)}
+          WHERE SCHEMA_NAME = ?
+            AND TABLE_NAME = ?`,
+        [schemaName, tableName]
+    );
+
+    return rows.reduce((map, row) => {
+        map.set(row.COLUMN_NAME, {
+            semanticType: row.SEMANTIC_TYPE || "",
+            referenceTable: row.REFERENCE_TABLE || "",
+            referenceColumn: row.REFERENCE_COLUMN || "",
+            valueHelpRequired: row.VALUE_HELP_REQUIRED === true || row.VALUE_HELP_REQUIRED === "TRUE" || row.VALUE_HELP_REQUIRED === 1
+        });
+        return map;
+    }, new Map());
+}
+
+async function getSchemaValueHelpMap(db, schemaName) {
+    await ensureValueHelpConfigTable(db, schemaName);
+
+    const rows = await executeQuery(db,
+        `SELECT SEMANTIC_TYPE,
+                REFERENCE_TABLE,
+                REFERENCE_COLUMN
+           FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALUE_HELP_CONFIG_TABLE)}
+          WHERE SCHEMA_NAME = ?`,
+        [schemaName]
+    );
+
+    return rows.reduce((map, row) => {
+        map.set(normalizeSemanticKey(row.SEMANTIC_TYPE), {
+            semanticType: row.SEMANTIC_TYPE || "",
+            referenceTable: row.REFERENCE_TABLE || "",
+            referenceColumn: row.REFERENCE_COLUMN || "",
+            valueHelpRequired: true
+        });
+        return map;
+    }, new Map());
+}
+
+async function getSchemaValueHelpAliases(db, schemaName) {
+    await ensureValueHelpAliasTable(db, schemaName);
+
+    const rows = await executeQuery(db,
+        `SELECT SEMANTIC_TYPE,
+                ALIAS_NAME
+           FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALUE_HELP_ALIAS_TABLE)}
+          WHERE SCHEMA_NAME = ?`,
+        [schemaName]
+    );
+
+    return rows.reduce((map, row) => {
+        const semanticKey = normalizeSemanticKey(row.SEMANTIC_TYPE);
+        const aliasKey = normalizeSemanticKey(row.ALIAS_NAME);
+
+        if (!semanticKey || !aliasKey) {
+            return map;
+        }
+
+        if (!map.has(semanticKey)) {
+            map.set(semanticKey, new Set());
+        }
+
+        map.get(semanticKey).add(aliasKey);
+        return map;
+    }, new Map());
+}
+
+async function getSchemaValueHelpConfigBySemanticType(db, schemaName, semanticType) {
+    const semanticKey = normalizeSemanticKey(semanticType);
+
+    if (!semanticKey) {
+        return null;
+    }
+
+    const configMap = await getSchemaValueHelpMap(db, schemaName);
+    const aliasMap = await getSchemaValueHelpAliases(db, schemaName);
+    const aliases = Array.from(aliasMap.get(semanticKey) || []);
+    const config = configMap.get(semanticKey);
+
+    if (!config) {
+        return null;
+    }
+
+    return {
+        semanticType: config.semanticType || semanticType,
+        referenceTable: config.referenceTable || "",
+        referenceColumn: config.referenceColumn || "",
+        aliases: aliases.join(", ")
+    };
+}
+
+async function replaceFieldMetadata(db, schemaName, tableName, fields) {
+    await ensureFieldMetadataTable(db, schemaName);
+
+    await executeStatement(
+        db,
+        `DELETE FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(FIELD_METADATA_TABLE)}
+          WHERE SCHEMA_NAME = ?
+            AND TABLE_NAME = ?`,
+        [schemaName, tableName]
+    );
+
+    for (const field of fields || []) {
+        const metadata = getFieldMetadataPayload(field);
+
+        if (!hasFieldMetadataPayload(metadata)) {
+            continue;
+        }
+
+        await executeStatement(
+            db,
+            `INSERT INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(FIELD_METADATA_TABLE)}
+                ("SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME", "SEMANTIC_TYPE", "REFERENCE_TABLE", "REFERENCE_COLUMN", "VALUE_HELP_REQUIRED", "UPDATED_AT")
+             VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_UTCTIMESTAMP)`,
+            [
+                schemaName,
+                tableName,
+                field.name,
+                metadata.semanticType || null,
+                metadata.referenceTable || null,
+                metadata.referenceColumn || null,
+                metadata.valueHelpRequired
+            ]
+        );
+    }
+}
+
+async function upsertSchemaValueHelpConfig(db, schemaName, fields) {
+    await ensureValueHelpConfigTable(db, schemaName);
+
+    for (const field of fields || []) {
+        const metadata = getFieldMetadataPayload(field);
+        const semanticKey = normalizeSemanticKey(metadata.semanticType);
+
+        if (!semanticKey || !metadata.referenceTable || !metadata.referenceColumn) {
+            continue;
+        }
+
+        await executeStatement(
+            db,
+            `DELETE FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALUE_HELP_CONFIG_TABLE)}
+              WHERE SCHEMA_NAME = ?
+                AND SEMANTIC_TYPE = ?`,
+            [schemaName, semanticKey]
+        );
+
+        await executeStatement(
+            db,
+            `INSERT INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALUE_HELP_CONFIG_TABLE)}
+                ("SCHEMA_NAME", "SEMANTIC_TYPE", "REFERENCE_TABLE", "REFERENCE_COLUMN", "UPDATED_AT")
+             VALUES (?, ?, ?, ?, CURRENT_UTCTIMESTAMP)`,
+            [
+                schemaName,
+                semanticKey,
+                metadata.referenceTable,
+                metadata.referenceColumn
+            ]
+        );
+    }
+}
+
+async function upsertSchemaValueHelpAliases(db, schemaName, fields) {
+    await ensureValueHelpAliasTable(db, schemaName);
+
+    for (const field of fields || []) {
+        const metadata = getFieldMetadataPayload(field);
+        const semanticKey = normalizeSemanticKey(metadata.semanticType);
+        const aliasCandidates = new Set([
+            normalizeSemanticKey(field.name),
+            normalizeSemanticKey(metadata.referenceColumn),
+            ...String(field.aliases || "")
+                .split(",")
+                .map((entry) => normalizeSemanticKey(entry))
+                .filter(Boolean)
+        ]);
+
+        if (!semanticKey) {
+            continue;
+        }
+
+        for (const aliasKey of aliasCandidates) {
+            if (!aliasKey) {
+                continue;
+            }
+
+            const existing = await executeQuery(
+                db,
+                `SELECT ALIAS_NAME
+                   FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALUE_HELP_ALIAS_TABLE)}
+                  WHERE SCHEMA_NAME = ?
+                    AND SEMANTIC_TYPE = ?
+                    AND ALIAS_NAME = ?`,
+                [schemaName, semanticKey, aliasKey]
+            );
+
+            if (existing.length) {
+                continue;
+            }
+
+            await executeStatement(
+                db,
+                `INSERT INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALUE_HELP_ALIAS_TABLE)}
+                    ("SCHEMA_NAME", "SEMANTIC_TYPE", "ALIAS_NAME", "UPDATED_AT")
+                 VALUES (?, ?, ?, CURRENT_UTCTIMESTAMP)`,
+                [schemaName, semanticKey, aliasKey]
+            );
+        }
+    }
+}
+
+async function deleteFieldMetadata(db, schemaName, tableName) {
+    await ensureFieldMetadataTable(db, schemaName);
+
+    await executeStatement(
+        db,
+        `DELETE FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(FIELD_METADATA_TABLE)}
+          WHERE SCHEMA_NAME = ?
+            AND TABLE_NAME = ?`,
+        [schemaName, tableName]
+    );
 }
 
 async function getTables(db, schemaName) {
@@ -251,6 +596,9 @@ async function getTableDefinition(db, schemaName, tableName) {
 
     const columns = await getColumns(db, schemaName, tableName);
     const keyColumns = await getPrimaryKeys(db, schemaName, tableName, columns);
+    const fieldMetadata = await getFieldMetadataMap(db, schemaName, tableName);
+    const schemaValueHelpMap = await getSchemaValueHelpMap(db, schemaName);
+    const schemaValueHelpAliases = await getSchemaValueHelpAliases(db, schemaName);
 
     return {
         schemaName,
@@ -258,10 +606,107 @@ async function getTableDefinition(db, schemaName, tableName) {
         keyColumns,
         columns: columns.map((column) => ({
             ...column,
+            ...resolveColumnValueHelp(column, fieldMetadata.get(column.name), schemaValueHelpMap, schemaValueHelpAliases),
             key: keyColumns.includes(column.name),
             editable: !keyColumns.includes(column.name)
         }))
     };
+}
+
+function resolveColumnValueHelp(column, explicitMetadata, schemaValueHelpMap, schemaValueHelpAliases) {
+    const directMetadata = explicitMetadata && explicitMetadata.valueHelpRequired
+        ? explicitMetadata
+        : null;
+    const columnKey = normalizeSemanticKey(column?.name);
+    const explicitSemanticKey = normalizeSemanticKey(explicitMetadata?.semanticType);
+    const inheritedSemanticKey = explicitSemanticKey
+        || Array.from(schemaValueHelpAliases.entries()).find(function ([, aliases]) {
+            return aliases.has(columnKey);
+        })?.[0]
+        || columnKey;
+    const semanticCandidates = getSemanticAliases(inheritedSemanticKey);
+    const inheritedMetadata = semanticCandidates
+        .map((candidate) => schemaValueHelpMap.get(candidate))
+        .find(Boolean);
+    const resolved = directMetadata || inheritedMetadata || explicitMetadata || {};
+
+    return {
+        semanticType: resolved.semanticType || explicitMetadata?.semanticType || inheritedSemanticKey || "",
+        referenceTable: resolved.referenceTable || "",
+        referenceColumn: resolved.referenceColumn || "",
+        valueHelpRequired: !!(resolved.referenceTable && resolved.referenceColumn && (resolved.valueHelpRequired === true || inheritedMetadata))
+    };
+}
+
+async function validateFieldMetadataConfiguration(db, schemaName, fields) {
+    for (const field of fields || []) {
+        const metadata = getFieldMetadataPayload(field);
+        const wantsValueHelp = hasFieldMetadataPayload(field);
+
+        field.semanticType = metadata.semanticType;
+        field.referenceTable = metadata.referenceTable;
+        field.referenceColumn = metadata.referenceColumn;
+        field.valueHelpRequired = metadata.valueHelpRequired;
+
+        if (!wantsValueHelp) {
+            continue;
+        }
+
+        if (!field.referenceTable || !field.referenceColumn) {
+            throw new Error(`Reference table and reference column are required for field ${field.name}.`);
+        }
+
+        const referenceColumns = await getColumns(db, schemaName, field.referenceTable);
+
+        if (!referenceColumns.length) {
+            throw new Error(`Reference table ${field.referenceTable} was not found in schema ${schemaName}.`);
+        }
+
+        if (!referenceColumns.some((column) => normalizeColumnName(column.name) === normalizeColumnName(field.referenceColumn))) {
+            throw new Error(`Reference column ${field.referenceColumn} was not found in ${field.referenceTable}.`);
+        }
+    }
+}
+
+async function validateValueHelpValues(db, definition, payload) {
+    for (const column of definition.columns || []) {
+        if (!column.valueHelpRequired || !column.referenceTable || !column.referenceColumn) {
+            continue;
+        }
+
+        if (!Object.prototype.hasOwnProperty.call(payload, column.name) || isBlankValue(payload[column.name])) {
+            continue;
+        }
+
+        const rows = await executeQuery(
+            db,
+            `SELECT ${quoteIdentifier(column.referenceColumn)} AS "VALUE"
+               FROM ${quoteIdentifier(definition.schemaName)}.${quoteIdentifier(column.referenceTable)}
+              WHERE ${quoteIdentifier(column.referenceColumn)} = ?
+              LIMIT 1`,
+            [payload[column.name]]
+        );
+
+        if (!rows.length) {
+            throw new Error(`Value "${payload[column.name]}" is not valid for ${column.name}. Use the available value help.`);
+        }
+    }
+}
+
+function findValueHelpDescriptionColumn(referenceColumns, referenceColumn) {
+    const normalizedReference = normalizeColumnName(referenceColumn);
+    const baseCandidates = [
+        `${normalizedReference}_NAME`,
+        `${normalizedReference}_DESC`,
+        `${normalizedReference}_DESCRIPTION`,
+        normalizedReference.replace(/_CODE$/, "_NAME"),
+        normalizedReference.replace(/_ID$/, "_NAME"),
+        "NAME",
+        "DESCR",
+        "DESCRIPTION"
+    ];
+
+    return referenceColumns.find((column) => baseCandidates.includes(normalizeColumnName(column.name))) || null;
 }
 
 async function readRows(db, definition, search) {
@@ -328,6 +773,8 @@ async function insertRow(db, definition, payload, req) {
         row[modifiedByColumn.name] = user;
     }
 
+    await validateValueHelpValues(db, definition, row);
+
     const validColumns = definition.columns
         .filter((column) => row[column.name] !== undefined)
         .map((column) => ({
@@ -368,6 +815,8 @@ async function updateRow(db, definition, keys, changes, req) {
     if (modifiedByColumn) {
         payload[modifiedByColumn.name] = user;
     }
+
+    await validateValueHelpValues(db, definition, payload);
 
     const editableColumns = definition.columns
         .filter((column) => !column.key && (!isManagedField(column.name) || SYSTEM_TIMESTAMPS.has(normalizeColumnName(column.name)) || SYSTEM_USERS.has(normalizeColumnName(column.name))) && payload[column.name] !== undefined)
@@ -678,6 +1127,8 @@ cds.on("bootstrap", (app) => {
                 const schemaName = requestedSchema || await getCurrentSchema(db);
                 const isRowStore = String(tableType || "").toUpperCase() === "ROW";
                 const createPrefix = isRowStore ? "CREATE ROW TABLE" : "CREATE COLUMN TABLE";
+
+                await validateFieldMetadataConfiguration(db, schemaName, processedFields);
                 
                 const columnDefs = processedFields.map(f => {
                     let colDef = `${quoteIdentifier(f.name)} ${f.type}`;
@@ -717,6 +1168,10 @@ cds.on("bootstrap", (app) => {
                         await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [`COMMENT ON COLUMN ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}.${quoteIdentifier(f.name)} IS '${String(f.comment).replace(/'/g, "''")}'`]);
                     }
                 }
+
+                await replaceFieldMetadata(db, schemaName, tableName, processedFields);
+                await upsertSchemaValueHelpConfig(db, schemaName, processedFields);
+                await upsertSchemaValueHelpAliases(db, schemaName, processedFields);
             });
 
             res.json({ success: true, message: "Table created successfully" });
@@ -734,6 +1189,7 @@ cds.on("bootstrap", (app) => {
                 const schemaName = requestedSchema || await getCurrentSchema(db);
                 const sql = `DROP TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}`;
                 await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+                await deleteFieldMetadata(db, schemaName, tableName);
             });
             res.json({ success: true, message: "Table dropped successfully" });
         } catch (err) {
@@ -754,6 +1210,8 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
+
+                await validateFieldMetadataConfiguration(db, schemaName, fields);
                 
                 const currentColsSql = `
                     SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE
@@ -816,6 +1274,10 @@ cds.on("bootstrap", (app) => {
                         await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
                     }
                 }
+
+                await replaceFieldMetadata(db, schemaName, tableName, fields);
+                await upsertSchemaValueHelpConfig(db, schemaName, fields);
+                await upsertSchemaValueHelpAliases(db, schemaName, fields);
             });
 
             res.json({ success: true, message: "Table altered successfully" });
@@ -836,6 +1298,66 @@ cds.on("bootstrap", (app) => {
             });
         } catch (error) {
             console.error("schema-browser/metadata failed:", error);
+            res.status(400).json({ error: error.message });
+        }
+    });
+
+    app.get("/api/schema-browser/value-help-config/:semanticType", async (req, res) => {
+        try {
+            await withDbClient(async (db) => {
+                const requestedSchema = req.query.schemaName || req.body.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                const config = await getSchemaValueHelpConfigBySemanticType(db, schemaName, req.params.semanticType);
+
+                res.json(config || {});
+            });
+        } catch (error) {
+            console.error("schema-browser/value-help-config failed:", error);
+            res.status(400).json({ error: error.message });
+        }
+    });
+
+    app.get("/api/schema-browser/tables/:table/value-help/:column", async (req, res) => {
+        try {
+            await withDbClient(async (db) => {
+                const requestedSchema = req.query.schemaName || req.body.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                const definition = await getTableDefinition(db, schemaName, req.params.table);
+                const column = (definition.columns || []).find((entry) => normalizeColumnName(entry.name) === normalizeColumnName(req.params.column));
+
+                if (!column || !column.valueHelpRequired || !column.referenceTable || !column.referenceColumn) {
+                    return res.json({ values: [] });
+                }
+
+                const referenceColumns = await getColumns(db, schemaName, column.referenceTable);
+                const descriptionColumn = findValueHelpDescriptionColumn(referenceColumns, column.referenceColumn);
+                const descriptionSelect = descriptionColumn
+                    ? `, ${quoteIdentifier(descriptionColumn.name)} AS "DESCRIPTION"`
+                    : "";
+                const orderBy = descriptionColumn
+                    ? `${quoteIdentifier(column.referenceColumn)}, ${quoteIdentifier(descriptionColumn.name)}`
+                    : `${quoteIdentifier(column.referenceColumn)}`;
+
+                const rows = await executeQuery(
+                    db,
+                    `SELECT DISTINCT ${quoteIdentifier(column.referenceColumn)} AS "VALUE"${descriptionSelect}
+                       FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(column.referenceTable)}
+                      WHERE ${quoteIdentifier(column.referenceColumn)} IS NOT NULL
+                      ORDER BY ${orderBy}`,
+                    []
+                );
+
+                res.json({
+                    values: rows.map((row) => ({
+                        key: String(row.VALUE),
+                        text: row.DESCRIPTION ? `${row.VALUE} - ${row.DESCRIPTION}` : String(row.VALUE),
+                        description: row.DESCRIPTION ? String(row.DESCRIPTION) : ""
+                    })),
+                    descriptionColumn: descriptionColumn ? descriptionColumn.name : ""
+                });
+            });
+        } catch (error) {
+            console.error("schema-browser/value-help failed:", error);
             res.status(400).json({ error: error.message });
         }
     });
@@ -913,7 +1435,8 @@ cds.on("bootstrap", (app) => {
             const changes = req.body.data || {};
 
             await withDbClient(async (db) => {
-                const schemaName = await getCurrentSchema(db);
+                const requestedSchema = req.query.schemaName || req.body.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
 
                 for (const keys of rows) {
@@ -933,7 +1456,8 @@ cds.on("bootstrap", (app) => {
             const rows = Array.isArray(req.body.rows) ? req.body.rows : [];
 
             await withDbClient(async (db) => {
-                const schemaName = await getCurrentSchema(db);
+                const requestedSchema = req.query.schemaName || req.body.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
 
                 for (const row of rows) {

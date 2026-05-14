@@ -3,109 +3,157 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:core="sap.ui.core">
-    <Page title="{i18n>appTitle}" busy="{view>/busy}">
+    <Page busy="{view>/busy}" class="workspacePage">
         <content>
-            <VBox class="sapUiSmallMargin">
-                <OverflowToolbar>
-                    <Title text="{view>/tableTitle}" level="H2" />
-                    <ToolbarSpacer />
-                    <Label text="{i18n>templateRoleSelectLabel}" />
-                    <Select
-                        width="12rem"
-                        forceSelection="false"
-                        selectedKey="{view>/selectedTemplateRole}"
-                        change=".onTemplateRoleChange"
-                        items="{view>/templateRoleItems}">
-                        <core:Item key="{view>key}" text="{view>text}" />
-                    </Select>
-                    <Label text="{i18n>schemaSelectLabel}" />
-                    <ComboBox
-                        width="12rem"
-                        value="{view>/selectedSchema}"
-                        change=".onSchemaChange"
-                        items="{view>/schemaSelectItems}">
-                        <core:Item key="{view>name}" text="{view>name}" />
-                    </ComboBox>
-                    <Label text="{i18n>tableSelectLabel}" />
-                    <Select
-                        width="16rem"
-                        forceSelection="false"
-                        selectedKey="{view>/selectedTable}"
-                        change=".onTableChange"
-                        items="{view>/tableSelectItems}">
-                        <core:Item key="{view>key}" text="{view>text}" />
-                    </Select>
-                    <ToolbarSeparator />
-                    <Button
-                        icon="sap-icon://add-document"
-                        text="{i18n>createTable}"
-                        type="Transparent"
-                        press=".onCreateTableOpen" />
-                    <Button
-                        icon="sap-icon://edit"
-                        text="{i18n>alterTable}"
-                        type="Transparent"
-                        enabled="{= !!${view>/selectedTable} }"
-                        press=".onAlterTableOpen" />
-                    <Button
-                        icon="sap-icon://delete"
-                        text="{i18n>dropTable}"
-                        type="Transparent"
-                        enabled="{= !!${view>/selectedTable} }"
-                        press=".onDeleteTable" />
-                </OverflowToolbar>
-                <OverflowToolbar>
-                    <Button
-                        icon="sap-icon://add"
-                        type="Emphasized"
-                        tooltip="{i18n>create}"
-                        enabled="{= !!${view>/selectedTable} }"
-                        press=".onCreate" />
-                    <Button
-                        icon="sap-icon://edit"
-                        tooltip="{i18n>edit}"
-                        enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
-                        press=".onEdit" />
-                    <Button
-                        icon="sap-icon://delete"
-                        text="{i18n>delete}"
-                        enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} > 0 }"
-                        press=".onDelete" />
-                    <Button
-                        icon="sap-icon://history"
-                        text="{i18n>changeHistoryButton}"
-                        enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
-                        press=".onOpenChangeHistory" />
-                    <Button
-                        icon="sap-icon://multi-select"
-                        text="{i18n>multiUpdate}"
-                        enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} > 1 }"
-                        press=".onOpenMultiUpdate" />
-                    <Button
-                        icon="sap-icon://upload"
-                        text="{i18n>massUpload}"
-                        enabled="{= !!${view>/selectedTable} }"
-                        press=".onOpenMassUpload" />
-                    <ToolbarSpacer />
-                    <Text text="{i18n>selectedCountLabel}: {view>/selectedCount}" />
-                    <ToolbarSeparator />
-                    <SearchField
-                        width="18rem"
-                        placeholder="{i18n>searchPlaceholder}"
-                        liveChange=".onSearch" />
-                    <Button
-                        icon="sap-icon://refresh"
-                        text="{i18n>refresh}"
-                        press=".onRefresh" />
-                </OverflowToolbar>
-                <Table
-                    id="plantTable"
-                    width="auto"
-                    growing="true"
-                    growingScrollToLoad="true"
-                    mode="MultiSelect"
-                    selectionChange=".onSelectionChange"
-                    noDataText="{i18n>noTableData}" />
+            <VBox class="workspaceShell">
+                <VBox class="heroPanel">
+                    <HBox justifyContent="SpaceBetween" alignItems="Start" wrap="Wrap" class="heroPanelRow">
+                        <VBox class="heroCopy">
+                            <Title text="{i18n>appTitle}" level="H1" class="heroTitle" />
+                            <Text text="{view>/tableTitle}" class="heroSubtitle" />
+                        </VBox>
+                        <HBox wrap="Wrap" class="heroStatusRow">
+                            <VBox class="statusChip">
+                                <Text text="{i18n>schemaSelectLabel}" class="statusChipLabel" />
+                                <ObjectStatus text="{view>/selectedSchema}" state="None" />
+                            </VBox>
+                            <VBox class="statusChip">
+                                <Text text="{i18n>tableSelectLabel}" class="statusChipLabel" />
+                                <ObjectStatus text="{view>/selectedTable}" state="None" />
+                            </VBox>
+                            <VBox class="statusChip">
+                                <Text text="{i18n>selectedCountLabel}" class="statusChipLabel" />
+                                <ObjectStatus text="{view>/selectedCount}" state="None" />
+                            </VBox>
+                        </HBox>
+                    </HBox>
+                </VBox>
+
+                <VBox class="controlCard">
+                    <OverflowToolbar class="workspaceToolbar workspaceToolbarPrimary">
+                        <Title text="{i18n>templateRoleSelectLabel}" level="H4" class="toolbarTitle" />
+                        <ToolbarSpacer />
+                        <Label text="{i18n>templateRoleSelectLabel}" />
+                        <Select
+                            width="12rem"
+                            forceSelection="false"
+                            selectedKey="{view>/selectedTemplateRole}"
+                            change=".onTemplateRoleChange"
+                            items="{view>/templateRoleItems}">
+                            <core:Item key="{view>key}" text="{view>text}" />
+                        </Select>
+                        <Label text="{i18n>schemaSelectLabel}" />
+                        <ComboBox
+                            width="12rem"
+                            value="{view>/selectedSchema}"
+                            change=".onSchemaChange"
+                            items="{view>/schemaSelectItems}">
+                            <core:Item key="{view>name}" text="{view>name}" />
+                        </ComboBox>
+                        <Label text="{i18n>tableSelectLabel}" />
+                        <Select
+                            width="16rem"
+                            forceSelection="false"
+                            selectedKey="{view>/selectedTable}"
+                            change=".onTableChange"
+                            items="{view>/tableSelectItems}">
+                            <core:Item key="{view>key}" text="{view>text}" />
+                        </Select>
+                        <ToolbarSeparator />
+                        <Button
+                            icon="sap-icon://add-document"
+                            text="{i18n>createTable}"
+                            type="Transparent"
+                            class="workspaceActionButton"
+                            press=".onCreateTableOpen" />
+                        <Button
+                            icon="sap-icon://edit"
+                            text="{i18n>alterTable}"
+                            type="Transparent"
+                            class="workspaceActionButton"
+                            enabled="{= !!${view>/selectedTable} }"
+                            press=".onAlterTableOpen" />
+                        <Button
+                            icon="sap-icon://delete"
+                            text="{i18n>dropTable}"
+                            type="Transparent"
+                            class="workspaceActionButton workspaceDangerButton"
+                            enabled="{= !!${view>/selectedTable} }"
+                            press=".onDeleteTable" />
+                    </OverflowToolbar>
+
+                    <OverflowToolbar class="workspaceToolbar workspaceToolbarSecondary">
+                        <Title text="{i18n>tableTitle}" level="H4" class="toolbarTitle" />
+                        <Button
+                            icon="sap-icon://add"
+                            text="{i18n>create}"
+                            type="Emphasized"
+                            enabled="{= !!${view>/selectedTable} }"
+                            press=".onCreate" />
+                        <Button
+                            icon="sap-icon://edit"
+                            text="{i18n>edit}"
+                            enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
+                            press=".onEdit" />
+                        <Button
+                            icon="sap-icon://delete"
+                            text="{i18n>delete}"
+                            enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} > 0 }"
+                            press=".onDelete" />
+                        <Button
+                            icon="sap-icon://history"
+                            text="{i18n>changeHistoryButton}"
+                            enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
+                            press=".onOpenChangeHistory" />
+                        <Button
+                            icon="sap-icon://multi-select"
+                            text="{i18n>multiUpdate}"
+                            enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} > 1 }"
+                            press=".onOpenMultiUpdate" />
+                        <Button
+                            icon="sap-icon://upload"
+                            text="{i18n>massUpload}"
+                            enabled="{= !!${view>/selectedTable} }"
+                            press=".onOpenMassUpload" />
+                        <ToolbarSpacer />
+                        <SearchField
+                            width="18rem"
+                            class="workspaceSearch"
+                            placeholder="{i18n>searchPlaceholder}"
+                            liveChange=".onSearch" />
+                        <Button
+                            icon="sap-icon://refresh"
+                            text="{i18n>refresh}"
+                            press=".onRefresh" />
+                    </OverflowToolbar>
+                </VBox>
+
+                <VBox class="tableCard">
+                    <HBox justifyContent="SpaceBetween" alignItems="Center" class="tableCardHeader">
+                        <VBox>
+                            <Title text="{view>/tableTitle}" level="H3" class="tableCardTitle" />
+                            <Text text="{i18n>noTableData}" visible="{= !${view>/selectedTable} }" class="tableCardHint" />
+                        </VBox>
+                        <ObjectStatus text="{i18n>selectedCountLabel}: {view>/selectedCount}" state="Information" class="selectionBadge" />
+                    </HBox>
+                    <Table
+                        id="plantTable"
+                        width="auto"
+                        class="workspaceTable"
+                        growing="true"
+                        growingScrollToLoad="true"
+                        mode="MultiSelect"
+                        selectionChange=".onSelectionChange"
+                        noDataText="{i18n>noTableData}" />
+                </VBox>
+
+                <Button
+                    id="jouleChatButton"
+                    icon="sap-icon://customer-and-contacts"
+                    type="Emphasized"
+                    tooltip="{i18n>jouleChatTooltip}"
+                    press=".onOpenJouleChat"
+                    class="jouleChatButton" />
             </VBox>
         </content>
 
