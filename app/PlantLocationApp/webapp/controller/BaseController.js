@@ -73,6 +73,40 @@ sap.ui.define([
                         }).join("\n"));
                     }
                 }.bind(this));
+        },
+
+        _setBusy: function (bBusy) {
+            var oViewModel = this.getModel("view");
+            if (oViewModel) {
+                oViewModel.setProperty("/busy", bBusy);
+            }
+        },
+
+        _request: function (sUrl, oOptions) {
+            var oRequestOptions = Object.assign({
+                headers: {
+                    "Accept": "application/json"
+                }
+            }, oOptions || {});
+
+            if (oRequestOptions.body) {
+                oRequestOptions.headers["Content-Type"] = "application/json";
+            }
+
+            return fetch(sUrl, oRequestOptions).then(function (response) {
+                return response.json().catch(function () {
+                    return {};
+                }).then(function (payload) {
+                    if (!response.ok) {
+                        throw new Error(payload.error || response.statusText);
+                    }
+                    return payload;
+                });
+            });
+        },
+
+        _handleActionError: function (sMessageKey, oError) {
+            this.showError(this.getText(sMessageKey), oError && (oError.message || oError.toString()));
         }
     });
 });

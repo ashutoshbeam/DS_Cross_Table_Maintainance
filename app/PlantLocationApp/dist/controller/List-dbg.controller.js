@@ -12,8 +12,9 @@ sap.ui.define([
     "sap/m/Select",
     "sap/m/Text",
     "sap/ui/core/Item",
-    "sap/ui/layout/form/SimpleForm"
-], function (BaseController, JSONModel, Filter, FilterOperator, MessageBox, Column, ColumnListItem, Input, Label, ComboBox, Select, Text, Item, SimpleForm) {
+    "sap/ui/layout/form/SimpleForm",
+    "sap/ui/export/Spreadsheet"
+], function (BaseController, JSONModel, Filter, FilterOperator, MessageBox, Column, ColumnListItem, Input, Label, ComboBox, Select, Text, Item, SimpleForm, Spreadsheet) {
     "use strict";
 
         return BaseController.extend("dwcmission.plantlocationapp.controller.List", {
@@ -111,6 +112,30 @@ sap.ui.define([
                 }.bind(this));
         },
 
+        onTableValueHelp: function () {
+            var sTemplateRole = this.getModel("view").getProperty("/selectedTemplateRole");
+            if (!sTemplateRole) {
+                sap.m.MessageBox.error("Please select a Template Role first.");
+                return;
+            }
+            this.byId("tableSelectDialog").open();
+        },
+
+        onTableSelectSearch: function (oEvent) {
+            var sValue = oEvent.getParameter("value");
+            var oFilter = new Filter("text", FilterOperator.Contains, sValue);
+            var oBinding = oEvent.getParameter("itemsBinding");
+            oBinding.filter([oFilter]);
+        },
+
+        onTableSelectConfirm: function (oEvent) {
+            var oSelectedItem = oEvent.getParameter("selectedItem");
+            if (oSelectedItem) {
+                this.getModel("view").setProperty("/selectedTable", oSelectedItem.getDescription());
+                this.onTableChange();
+            }
+        },
+
         onSearch: function (oEvent) {
             this.getModel("view").setProperty("/search", oEvent.getParameter("newValue") || "");
             this._applyFilters();
@@ -126,6 +151,33 @@ sap.ui.define([
                 .finally(function () {
                     this._setBusy(false);
                 }.bind(this));
+        },
+
+        onExportExcel: function () {
+            var aCols = [],
+                aRows = this.getModel("view").getProperty("/filteredRows") || [],
+                sTableName = this._getSelectedTableName();
+
+            if (!aRows.length) {
+                this.showToast(this.getText("noDataToExport"));
+                return;
+            }
+
+            this._getColumns().forEach(function (col) {
+                aCols.push({
+                    label: col.name,
+                    property: col.name,
+                    type: "string"
+                });
+            });
+
+            var oSettings = {
+                workbook: { columns: aCols },
+                dataSource: aRows,
+                fileName: (sTableName || "Export") + ".xlsx"
+            };
+
+            new Spreadsheet(oSettings).build();
         },
 
         onOpenJouleChat: function () {
@@ -163,92 +215,89 @@ sap.ui.define([
                 .catch(this._handleActionError.bind(this, "createFailed"));
         },
 
-        onCreateTableOpen: function () {
-            this.getModel("view").setProperty("/createTable", {
-                tableName: "",
-                tableType: "COLUMN",
-                tableComment: "",
-                includeCuid: true,
-                includeManaged: true,
-                includeTemporal: false,
-                includeCodeList: false,
-                fields: []
+        onDuplicate: function () {
+            var aRows = this._getSelectedRows(),
+                oValues = {};
+
+            if (aRows.length !== 1) {
+                this.showToast(this.getText("selectSingleRecord"));
+                return;
+            }
+
+            var oRow = aRows[0];
+
+            this._getColumns().forEach(function (column) {
+                if (!this._isManagedColumn(column.name)) {
+                    oValues[column.name] = oRow[column.name];
+                }
+            }.bind(this));
+
+            this.getModel("view").setProperty("/createEdit", {
+                mode: "create",
+                title: this.getText("duplicateDialogTitleGeneric", [this._getSelectedTableName()]),
+                values: oValues,
+                originalKeys: {}
             });
-            this.byId("createTableDialog").open();
-        },
 
-        onAddTableColumn: function () {
-            var aFields = this.getModel("view").getProperty("/createTable/fields") || [];
-            aFields.push({
-                name: "",
-                semanticType: "",
-                type: "NVARCHAR",
-                length: 50,
-                scale: null,
-                isPrimary: false,
-                isNotNull: false,
-                referenceTable: "",
-                referenceColumn: "",
-                aliases: "",
-                valueHelpRequired: false,
-                defaultValue: "",
-                comment: ""
-            });
-            this.getModel("view").setProperty("/createTable/fields", aFields);
-        },
-
-        onRemoveTableColumn: function (oEvent) {
-            var oItem = oEvent.getParameter("listItem"),
-                sPath = oItem.getBindingContext("view").getPath(),
-                iIndex = parseInt(sPath.split("/").pop(), 10),
-                aFields = this.getModel("view").getProperty("/createTable/fields") || [];
-                
-            aFields.splice(iIndex, 1);
-            this.getModel("view").setProperty("/createTable/fields", aFields);
-        },
-
-        onCancelNewTable: function () {
-            this.byId("createTableDialog").close();
-        },
-
-        onSaveNewTable: function () {
-            var oPayload = this.getModel("view").getProperty("/createTable");
-
-            if (!oPayload.tableName) {
-                this.showToast(this.getText("tableNameRequired"));
-                return;
-            }
-
-            // We no longer strictly require fields if they checked a CAP aspect like cuid or CodeList
-            if ((!oPayload.fields || !oPayload.fields.length) && !oPayload.includeCuid && !oPayload.includeManaged && !oPayload.includeTemporal && !oPayload.includeCodeList) {
-                this.showToast(this.getText("createTableNoFields"));
-                return;
-            }
-
-            if (!this._validateTableFields(oPayload.fields || [])) {
-                return;
-            }
-
-            var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
-            if (sSelectedSchema) {
-                oPayload.schemaName = sSelectedSchema;
-            }
-
-            this._setBusy(true);
-            this._request("api/schema-browser/tables", {
-                method: "POST",
-                body: JSON.stringify(oPayload)
-            })
+            this._prepareValueHelps()
                 .then(function () {
-                    this.byId("createTableDialog").close();
-                    this.showToast(this.getText("createTableSuccess", [oPayload.tableName]));
-                    return this._loadTables();
+                    this._buildCreateEditForm();
+                    this.byId("createEditDialog").open();
                 }.bind(this))
-                .catch(this._handleActionError.bind(this, "createTableFailed"))
-                .finally(function () {
-                    this._setBusy(false);
-                }.bind(this));
+                .catch(this._handleActionError.bind(this, "createFailed"));
         },
+
+        onOpenPersonalization: function () {
+            if (!this.byId("personalizationDialog")) {
+                sap.ui.core.Fragment.load({
+                    id: this.getView().getId(),
+                    name: "dwcmission.plantlocationapp.fragment.PersonalizationDialog",
+                    controller: this
+                }).then(function (oDialog) {
+                    this.getView().addDependent(oDialog);
+                    this._openPersonalizationDialog();
+                }.bind(this));
+            } else {
+                this._openPersonalizationDialog();
+            }
+        },
+
+        _openPersonalizationDialog: function () {
+            var oList = this.byId("personalizationList");
+            var aHiddenColumns = this.getModel("view").getProperty("/hiddenColumns") || [];
+            
+            oList.getItems().forEach(function (oItem) {
+                var sColName = oItem.getBindingContext("view").getProperty("name");
+                oItem.setSelected(aHiddenColumns.indexOf(sColName) === -1);
+            });
+            
+            this.byId("personalizationDialog").open();
+        },
+
+        onPersonalizationApply: function () {
+            var oList = this.byId("personalizationList");
+            var aHiddenColumns = [];
+            
+            oList.getItems().forEach(function (oItem) {
+                if (!oItem.getSelected()) {
+                    aHiddenColumns.push(oItem.getBindingContext("view").getProperty("name"));
+                }
+            });
+            
+            this.getModel("view").setProperty("/hiddenColumns", aHiddenColumns);
+            this.byId("personalizationDialog").close();
+            this._rebuildTable();
+        },
+
+        onPersonalizationCancel: function () {
+            this.byId("personalizationDialog").close();
+        },
+
+        onCreateTableOpen: function () {
+            this.getOwnerComponent().getRouter().navTo("CreateTable");
+        },
+
+
 
         onDeleteTable: function () {
             var sTableName = this.getModel("view").getProperty("/selectedTable");
@@ -283,116 +332,14 @@ sap.ui.define([
 
         onAlterTableOpen: function () {
             var sTableName = this.getModel("view").getProperty("/selectedTable");
-            var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
             if (!sTableName) return;
-
-            var sUrl = "api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/metadata";
-            if (sSelectedSchema) {
-                sUrl += "?schemaName=" + encodeURIComponent(sSelectedSchema);
-            }
-
-            this._setBusy(true);
-            this._request(sUrl)
-                .then(function (oMetadata) {
-                    var aFields = (oMetadata.columns || []).map(function(c) {
-                        return {
-                            name: c.name,
-                            semanticType: c.semanticType || "",
-                            type: c.type,
-                            length: c.length || null,
-                            scale: c.scale || null,
-                            isPrimary: !!c.key,
-                            isNotNull: !c.nullable,
-                            referenceTable: c.referenceTable || "",
-                            referenceColumn: c.referenceColumn || "",
-                            aliases: c.aliases || "",
-                            valueHelpRequired: !!c.valueHelpRequired,
-                            defaultValue: c.DEFAULT_VALUE || "",
-                            comment: "",
-                            isExisting: true
-                        };
-                    });
-
-                    this.getModel("view").setProperty("/alterTable", {
-                        tableName: sTableName,
-                        fields: aFields
-                    });
-                    this.byId("alterTableDialog").open();
-                }.bind(this))
-                .catch(this._handleActionError.bind(this, "loadColumnsFailed"))
-                .finally(function () {
-                    this._setBusy(false);
-                }.bind(this));
-        },
-
-        onAddAlterTableColumn: function () {
-            var aFields = this.getModel("view").getProperty("/alterTable/fields") || [];
-            aFields.push({
-                name: "",
-                semanticType: "",
-                type: "NVARCHAR",
-                length: 50,
-                scale: null,
-                isPrimary: false,
-                isNotNull: false,
-                referenceTable: "",
-                referenceColumn: "",
-                aliases: "",
-                valueHelpRequired: false,
-                defaultValue: "",
-                comment: "",
-                isExisting: false
+            
+            this.getOwnerComponent().getRouter().navTo("AlterTable", {
+                table: sTableName
             });
-            this.getModel("view").setProperty("/alterTable/fields", aFields);
         },
 
-        onRemoveAlterTableColumn: function (oEvent) {
-            var oItem = oEvent.getParameter("listItem"),
-                sPath = oItem.getBindingContext("view").getPath(),
-                iIndex = parseInt(sPath.split("/").pop(), 10),
-                aFields = this.getModel("view").getProperty("/alterTable/fields") || [];
-                
-            aFields.splice(iIndex, 1);
-            this.getModel("view").setProperty("/alterTable/fields", aFields);
-        },
 
-        onCancelAlterTable: function () {
-            this.byId("alterTableDialog").close();
-        },
-
-        onSaveAlterTable: function () {
-            var oPayload = this.getModel("view").getProperty("/alterTable");
-
-            if (!oPayload.fields || !oPayload.fields.length) {
-                this.showToast(this.getText("createTableNoFields"));
-                return;
-            }
-
-            if (!this._validateTableFields(oPayload.fields)) {
-                return;
-            }
-
-            var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
-            var oBody = { fields: oPayload.fields };
-            if (sSelectedSchema) {
-                oBody.schemaName = sSelectedSchema;
-            }
-
-            this._setBusy(true);
-            this._request("api/schema-browser/tables/" + encodeURIComponent(oPayload.tableName), {
-                method: "PATCH",
-                body: JSON.stringify(oBody)
-            })
-                .then(function () {
-                    this.byId("alterTableDialog").close();
-                    this.showToast(this.getText("alterTableSuccess", [oPayload.tableName]));
-                    return this._loadSelectedTable();
-                }.bind(this))
-                .catch(this._handleActionError.bind(this, "alterTableFailed"))
-                .finally(function () {
-                    this._setBusy(false);
-                }.bind(this));
-        },
 
         onEdit: function () {
             var aRows = this._getSelectedRows(),
@@ -487,7 +434,15 @@ sap.ui.define([
                 return;
             }
 
-            MessageBox.confirm(this.getText("deleteConfirmGeneric", [aRows.length, sTableName]), {
+            var sMessage;
+            if (aRows.length === 1) {
+                var sEntityKey = this._getTrackedEntityKeyValue(aRows[0]) || this._getEntityKeyString(aRows[0]);
+                sMessage = this.getText("deleteConfirmSingle", [sEntityKey, sTableName]);
+            } else {
+                sMessage = this.getText("deleteConfirmGeneric", [aRows.length, sTableName]);
+            }
+
+            MessageBox.confirm(sMessage, {
                 actions: [MessageBox.Action.DELETE, MessageBox.Action.CANCEL],
                 emphasizedAction: MessageBox.Action.DELETE,
                 onClose: function (sAction) {
@@ -582,6 +537,30 @@ sap.ui.define([
                 return;
             }
 
+            var aColumns = this._getEditableColumns();
+            var bValidationError = false;
+            var oValueHelps = this.getModel("view").getProperty("/valueHelps");
+
+            aColumns.forEach(function (column) {
+                if (this._isValueHelpColumn(column)) {
+                    var sEnteredValue = oValues[column.name];
+                    if (sEnteredValue) {
+                        var aValidValues = oValueHelps[column.name] || [];
+                        var bIsValid = aValidValues.some(function (v) {
+                            return String(v.key) === String(sEnteredValue);
+                        });
+                        if (!bIsValid) {
+                            MessageBox.error("Invalid value '" + sEnteredValue + "' for column '" + column.name + "'. Please select a valid option from the dropdown list.");
+                            bValidationError = true;
+                        }
+                    }
+                }
+            }.bind(this));
+
+            if (bValidationError) {
+                return;
+            }
+
             this._setBusy(true);
             this._request("api/schema-browser/tables/" + encodeURIComponent(sTableName) + "/mass-update", {
                 method: "POST",
@@ -612,7 +591,11 @@ sap.ui.define([
                 previewText: "",
                 instructions: this.getText("uploadInstructionsGeneric")
             });
-            this.byId("massUploadDialog").open();
+            this._prepareValueHelps()
+                .then(function () {
+                    this.byId("massUploadDialog").open();
+                }.bind(this))
+                .catch(this._handleActionError.bind(this, "uploadFailed"));
         },
 
         onMassUploadFileChange: function (oEvent) {
@@ -661,6 +644,34 @@ sap.ui.define([
 
             if (!aValidRows.length) {
                 this.showToast(this.getText("uploadNoRows"));
+                return;
+            }
+
+            var aColumns = this._getMassUploadColumns();
+            var bValidationError = false;
+            var oValueHelps = this.getModel("view").getProperty("/valueHelps");
+
+            aValidRows.forEach(function (row) {
+                if (bValidationError) return;
+                aColumns.forEach(function (column) {
+                    if (bValidationError) return;
+                    if (this._isValueHelpColumn(column)) {
+                        var sEnteredValue = row[column.name];
+                        if (sEnteredValue) {
+                            var aValidValues = oValueHelps[column.name] || [];
+                            var bIsValid = aValidValues.some(function (v) {
+                                return String(v.key) === String(sEnteredValue);
+                            });
+                            if (!bIsValid) {
+                                bValidationError = true;
+                                MessageBox.error("Invalid value '" + sEnteredValue + "' for column '" + column.name + "'. Please provide a valid value according to the check table configuration.");
+                            }
+                        }
+                    }
+                }.bind(this));
+            }.bind(this));
+
+            if (bValidationError) {
                 return;
             }
 
@@ -819,13 +830,18 @@ sap.ui.define([
         _rebuildTable: function () {
             var oTable = this.byId("plantTable"),
                 aColumns = this._getColumns(),
+                aHiddenColumns = this.getModel("view").getProperty("/hiddenColumns") || [],
                 oTemplate;
 
             oTable.removeSelections(true);
             oTable.destroyColumns();
             oTable.unbindItems();
+            
+            var aVisibleColumns = aColumns.filter(function (col) {
+                return aHiddenColumns.indexOf(col.name) === -1;
+            });
 
-            aColumns.forEach(function (column) {
+            aVisibleColumns.forEach(function (column) {
                 oTable.addColumn(new Column({
                     header: new Text({
                         text: column.name
@@ -835,7 +851,7 @@ sap.ui.define([
 
             oTemplate = new ColumnListItem({
                 type: "Inactive",
-                cells: aColumns.map(function (column) {
+                cells: aVisibleColumns.map(function (column) {
                     return new Text({
                         text: {
                             path: "view>" + column.name,
@@ -886,8 +902,17 @@ sap.ui.define([
                 oForm = new SimpleForm({
                     editable: true,
                     layout: "ResponsiveGridLayout",
-                    columnsM: 1,
-                    columnsL: 1
+                    labelSpanXL: 12,
+                    labelSpanL: 12,
+                    labelSpanM: 12,
+                    labelSpanS: 12,
+                    emptySpanXL: 0,
+                    emptySpanL: 0,
+                    emptySpanM: 0,
+                    emptySpanS: 0,
+                    columnsXL: 3,
+                    columnsL: 2,
+                    columnsM: 2
                 });
 
             oFormBox.removeAllItems();
@@ -972,7 +997,7 @@ sap.ui.define([
                         value: "{view>/multiUpdate/values/" + column.name + "}"
                     }));
                 }
-            });
+            }.bind(this));
             oFormBox.addItem(oForm);
         },
 

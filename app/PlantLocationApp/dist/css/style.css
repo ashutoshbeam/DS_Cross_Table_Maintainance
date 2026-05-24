@@ -172,6 +172,10 @@
     border-bottom: 1px solid rgba(148, 173, 214, 0.24);
 }
 
+.wideTable {
+    min-width: 95rem;
+}
+
 .workspaceTable .sapMListTblHeaderCell .sapMText,
 .workspaceTable .sapMColumnHeader .sapMText {
     color: #35506e;

@@ -3,37 +3,14 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:core="sap.ui.core">
-    <Page busy="{view>/busy}" class="workspacePage">
+    <Page title="{i18n>appTitle}" busy="{view>/busy}" class="workspacePage">
         <content>
             <VBox class="workspaceShell">
-                <VBox class="heroPanel">
-                    <HBox justifyContent="SpaceBetween" alignItems="Start" wrap="Wrap" class="heroPanelRow">
-                        <VBox class="heroCopy">
-                            <Title text="{i18n>appTitle}" level="H1" class="heroTitle" />
-                            <Text text="{view>/tableTitle}" class="heroSubtitle" />
-                        </VBox>
-                        <HBox wrap="Wrap" class="heroStatusRow">
-                            <VBox class="statusChip">
-                                <Text text="{i18n>schemaSelectLabel}" class="statusChipLabel" />
-                                <ObjectStatus text="{view>/selectedSchema}" state="None" />
-                            </VBox>
-                            <VBox class="statusChip">
-                                <Text text="{i18n>tableSelectLabel}" class="statusChipLabel" />
-                                <ObjectStatus text="{view>/selectedTable}" state="None" />
-                            </VBox>
-                            <VBox class="statusChip">
-                                <Text text="{i18n>selectedCountLabel}" class="statusChipLabel" />
-                                <ObjectStatus text="{view>/selectedCount}" state="None" />
-                            </VBox>
-                        </HBox>
-                    </HBox>
-                </VBox>
+
 
                 <VBox class="controlCard">
                     <OverflowToolbar class="workspaceToolbar workspaceToolbarPrimary">
-                        <Title text="{i18n>templateRoleSelectLabel}" level="H4" class="toolbarTitle" />
-                        <ToolbarSpacer />
-                        <Label text="{i18n>templateRoleSelectLabel}" />
+                        <Label text="Select Template Role" />
                         <Select
                             width="12rem"
                             forceSelection="false"
@@ -51,14 +28,14 @@
                             <core:Item key="{view>name}" text="{view>name}" />
                         </ComboBox>
                         <Label text="{i18n>tableSelectLabel}" />
-                        <Select
+                        <Input
                             width="16rem"
-                            forceSelection="false"
-                            selectedKey="{view>/selectedTable}"
+                            value="{view>/selectedTable}"
+                            showValueHelp="true"
+                            valueHelpRequest=".onTableValueHelp"
                             change=".onTableChange"
-                            items="{view>/tableSelectItems}">
-                            <core:Item key="{view>key}" text="{view>text}" />
-                        </Select>
+                            enabled="{= !!${view>/selectedTemplateRole} }"
+                            placeholder="{i18n>tableSelectPlaceholder}" />
                         <ToolbarSeparator />
                         <Button
                             icon="sap-icon://add-document"
@@ -81,9 +58,8 @@
                             enabled="{= !!${view>/selectedTable} }"
                             press=".onDeleteTable" />
                     </OverflowToolbar>
-
                     <OverflowToolbar class="workspaceToolbar workspaceToolbarSecondary">
-                        <Title text="{i18n>tableTitle}" level="H4" class="toolbarTitle" />
+                        <ToolbarSpacer />
                         <Button
                             icon="sap-icon://add"
                             text="{i18n>create}"
@@ -95,6 +71,11 @@
                             text="{i18n>edit}"
                             enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
                             press=".onEdit" />
+                        <Button
+                            icon="sap-icon://duplicate"
+                            text="{i18n>duplicate}"
+                            enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
+                            press=".onDuplicate" />
                         <Button
                             icon="sap-icon://delete"
                             text="{i18n>delete}"
@@ -115,26 +96,43 @@
                             text="{i18n>massUpload}"
                             enabled="{= !!${view>/selectedTable} }"
                             press=".onOpenMassUpload" />
-                        <ToolbarSpacer />
-                        <SearchField
-                            width="18rem"
-                            class="workspaceSearch"
-                            placeholder="{i18n>searchPlaceholder}"
-                            liveChange=".onSearch" />
-                        <Button
-                            icon="sap-icon://refresh"
-                            text="{i18n>refresh}"
-                            press=".onRefresh" />
                     </OverflowToolbar>
                 </VBox>
 
                 <VBox class="tableCard">
-                    <HBox justifyContent="SpaceBetween" alignItems="Center" class="tableCardHeader">
+                    <HBox justifyContent="SpaceBetween" alignItems="Center" class="tableCardHeader" width="100%">
                         <VBox>
                             <Title text="{view>/tableTitle}" level="H3" class="tableCardTitle" />
                             <Text text="{i18n>noTableData}" visible="{= !${view>/selectedTable} }" class="tableCardHint" />
                         </VBox>
-                        <ObjectStatus text="{i18n>selectedCountLabel}: {view>/selectedCount}" state="Information" class="selectionBadge" />
+                        <HBox alignItems="Center">
+                            <SearchField
+                                width="18rem"
+                                class="workspaceSearch sapUiTinyMarginEnd"
+                                placeholder="{i18n>searchPlaceholder}"
+                                liveChange=".onSearch" />
+                            <Button
+                                icon="sap-icon://refresh"
+                                text="{i18n>refresh}"
+                                class="sapUiTinyMarginEnd"
+                                type="Transparent"
+                                press=".onRefresh" />
+                            <Button
+                                icon="sap-icon://action-settings"
+                                tooltip="{i18n>personalization}"
+                                enabled="{= !!${view>/selectedTable} }"
+                                class="sapUiTinyMarginEnd"
+                                type="Transparent"
+                                press=".onOpenPersonalization" />
+                            <Button
+                                icon="sap-icon://excel-attachment"
+                                text="{i18n>exportExcel}"
+                                enabled="{= !!${view>/selectedTable} }"
+                                class="sapUiTinyMarginEnd"
+                                type="Transparent"
+                                press=".onExportExcel" />
+                            <ObjectStatus text="{i18n>selectedCountLabel}: {view>/selectedCount}" state="Information" class="selectionBadge sapUiSmallMarginBegin" />
+                        </HBox>
                     </HBox>
                     <Table
                         id="plantTable"
@@ -158,11 +156,10 @@
         </content>
 
         <dependents>
+            <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.TableSelectDialog" type="XML" />
             <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.CreateEditDialog" type="XML" />
             <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.MultiUpdateDialog" type="XML" />
             <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.MassUploadDialog" type="XML" />
-            <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.CreateTableDialog" type="XML" />
-            <core:Fragment fragmentName="dwcmission.plantlocationapp.fragment.AlterTableDialog" type="XML" />
         </dependents>
     </Page>
 </mvc:View>

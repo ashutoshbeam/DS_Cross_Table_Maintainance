@@ -45,7 +45,8 @@
         "sap.m": {},
         "sap.ui.core": {},
         "sap.ui.layout": {},
-        "sap.ui.unified": {}
+        "sap.ui.unified": {},
+        "sap.ui.export": {}
       }
     },
     "contentDensities": {
@@ -106,6 +107,16 @@
           "pattern": "PlantLocation/{plant}/changes",
           "name": "PlantLocationChangeHistory",
           "target": "PlantLocationChangeHistory"
+        },
+        {
+          "pattern": "create-table",
+          "name": "CreateTable",
+          "target": "CreateTable"
+        },
+        {
+          "pattern": "alter-table/{table}",
+          "name": "AlterTable",
+          "target": "AlterTable"
         }
       ],
       "targets": {
@@ -120,6 +131,14 @@
         "PlantLocationChangeHistory": {
           "viewName": "ChangeHistory",
           "viewId": "PlantLocationChangeHistory"
+        },
+        "CreateTable": {
+          "viewName": "CreateTable",
+          "viewId": "CreateTable"
+        },
+        "AlterTable": {
+          "viewName": "AlterTable",
+          "viewId": "AlterTable"
         }
       }
     }
