@@ -1,7 +1,7 @@
 {
-  "namespace": "dwcmission.farm",
+  "namespace": "ztablemaintenance.farm",
   "definitions": {
-    "dwcmission.farm.TankVolumes_M": {
+    "ztablemaintenance.farm.TankVolumes_M": {
       "kind": "entity",
       "includes": [
         "managed"
@@ -94,7 +94,7 @@
       },
       "change-tracking-isRootEntity": true
     },
-    "dwcmission.farm.ZPLANT_LOCATION": {
+    "ztablemaintenance.farm.ZPLANT_LOCATION": {
       "kind": "entity",
       "includes": [
         "managed"
@@ -182,20 +182,30 @@
       },
       "change-tracking-isRootEntity": true
     },
-    "FarmTankService": {
+    "DSTableMaintenanceService": {
       "@source": "srv/cap-service.cds",
       "kind": "service",
-      "@path": "/odata/v4/farm-tank"
+      "@path": "/odata/v4/ds-table-maintenance"
     },
-    "FarmTankService.TankVolumes": {
+    "DSTableMaintenanceService.TankVolumes": {
       "kind": "entity",
       "@restrict": [
+        {
+          "grant": [
+            "READ"
+          ],
+          "to": [
+            "ZTM_Display"
+          ]
+        },
         {
           "grant": [
             "*"
           ],
           "to": [
-            "FieldTechnician"
+            "ZTM_DataSteward",
+            "ZTM_DataEngineer",
+            "ZTM_Admin"
           ]
         }
       ],
@@ -207,7 +217,7 @@
       "projection": {
         "from": {
           "ref": [
-            "dwcmission.farm.TankVolumes_M"
+            "ztablemaintenance.farm.TankVolumes_M"
           ]
         },
         "columns": [
@@ -331,8 +341,28 @@
       },
       "change-tracking-isRootEntity": true
     },
-    "FarmTankService.PlantLocation": {
+    "DSTableMaintenanceService.PlantLocation": {
       "kind": "entity",
+      "@restrict": [
+        {
+          "grant": [
+            "READ"
+          ],
+          "to": [
+            "ZTM_Display"
+          ]
+        },
+        {
+          "grant": [
+            "*"
+          ],
+          "to": [
+            "ZTM_DataSteward",
+            "ZTM_DataEngineer",
+            "ZTM_Admin"
+          ]
+        }
+      ],
       "@changelog": [
         {
           "=": "PLANT"
@@ -511,7 +541,7 @@
       "projection": {
         "from": {
           "ref": [
-            "dwcmission.farm.ZPLANT_LOCATION"
+            "ztablemaintenance.farm.ZPLANT_LOCATION"
           ]
         },
         "columns": [
@@ -635,7 +665,7 @@
       },
       "change-tracking-isRootEntity": true
     },
-    "FarmTankService.ChangeView": {
+    "DSTableMaintenanceService.ChangeView": {
       "kind": "entity",
       "@readonly": true,
       "@UI.PresentationVariant.Visualizations": [

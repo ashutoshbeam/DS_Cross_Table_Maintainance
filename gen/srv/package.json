@@ -1,5 +1,5 @@
 {
-  "name": "FarmTankCAPProxy",
+  "name": "ZTableMaintenance",
   "version": "1.0.0",
   "description": "A simple CAP project.",
   "repository": "<Add your repository here>",
@@ -24,8 +24,8 @@
   },
   "scripts": {
     "start": "npx cds-serve",
-    "watch-PlantLocationApp": "cds watch --open PlantLocationApp/webapp/index.html?sap-ui-xx-viewCache=false --livereload false",
-    "undeploy": "cf undeploy FarmTankCAPProxy --delete-services --delete-service-keys --delete-service-brokers",
+    "watch-TableMaintenanceApp": "cds watch --open TableMaintenanceApp/webapp/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "undeploy": "cf undeploy ZTableMaintenance --delete-services --delete-service-keys --delete-service-brokers",
     "build": "npx rimraf resources mta_archives && mbt build --mtar archive",
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
   },
@@ -71,6 +71,6 @@
     }
   },
   "sapux": [
-    "app/PlantLocationApp"
+    "app/TableMaintenanceApp"
   ]
 }

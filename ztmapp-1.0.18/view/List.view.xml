@@ -1,0 +1,165 @@
+<mvc:View
+    controllerName="ztm.app.controller.List"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Page title="{i18n>appTitle}" busy="{view>/busy}" class="workspacePage">
+        <content>
+            <VBox class="workspaceShell">
+
+
+                <VBox class="controlCard">
+                    <OverflowToolbar class="workspaceToolbar workspaceToolbarPrimary">
+                        <Label text="Select Template Role" />
+                        <Select
+                            width="12rem"
+                            forceSelection="false"
+                            selectedKey="{view>/selectedTemplateRole}"
+                            change=".onTemplateRoleChange"
+                            items="{view>/templateRoleItems}">
+                            <core:Item key="{view>key}" text="{view>text}" />
+                        </Select>
+                        <Label text="{i18n>schemaSelectLabel}" />
+                        <ComboBox
+                            width="12rem"
+                            value="{view>/selectedSchema}"
+                            change=".onSchemaChange"
+                            items="{view>/schemaSelectItems}">
+                            <core:Item key="{view>name}" text="{view>name}" />
+                        </ComboBox>
+                        <Label text="{i18n>tableSelectLabel}" />
+                        <Input
+                            width="16rem"
+                            value="{view>/selectedTable}"
+                            showValueHelp="true"
+                            valueHelpRequest=".onTableValueHelp"
+                            change=".onTableChange"
+                            enabled="{= !!${view>/selectedTemplateRole} }"
+                            placeholder="{i18n>tableSelectPlaceholder}" />
+                        <ToolbarSeparator />
+                        <Button
+                            icon="sap-icon://add-document"
+                            text="{i18n>createTable}"
+                            type="Transparent"
+                            class="workspaceActionButton"
+                            press=".onCreateTableOpen" />
+                        <Button
+                            icon="sap-icon://edit"
+                            text="{i18n>alterTable}"
+                            type="Transparent"
+                            class="workspaceActionButton"
+                            enabled="{= !!${view>/selectedTable} }"
+                            press=".onAlterTableOpen" />
+                        <Button
+                            icon="sap-icon://delete"
+                            text="{i18n>dropTable}"
+                            type="Transparent"
+                            class="workspaceActionButton workspaceDangerButton"
+                            enabled="{= !!${view>/selectedTable} }"
+                            press=".onDeleteTable" />
+                    </OverflowToolbar>
+                    <OverflowToolbar class="workspaceToolbar workspaceToolbarSecondary">
+                        <ToolbarSpacer />
+                        <Button
+                            icon="sap-icon://add"
+                            text="{i18n>create}"
+                            type="Emphasized"
+                            enabled="{= !!${view>/selectedTable} }"
+                            press=".onCreate" />
+                        <Button
+                            icon="sap-icon://edit"
+                            text="{i18n>edit}"
+                            enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
+                            press=".onEdit" />
+                        <Button
+                            icon="sap-icon://duplicate"
+                            text="{i18n>duplicate}"
+                            enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
+                            press=".onDuplicate" />
+                        <Button
+                            icon="sap-icon://delete"
+                            text="{i18n>delete}"
+                            enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} > 0 }"
+                            press=".onDelete" />
+                        <Button
+                            icon="sap-icon://history"
+                            text="{i18n>changeHistoryButton}"
+                            enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
+                            press=".onOpenChangeHistory" />
+                        <Button
+                            icon="sap-icon://multi-select"
+                            text="{i18n>multiUpdate}"
+                            enabled="{= !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} > 1 }"
+                            press=".onOpenMultiUpdate" />
+                        <Button
+                            icon="sap-icon://upload"
+                            text="{i18n>massUpload}"
+                            enabled="{= !!${view>/selectedTable} }"
+                            press=".onOpenMassUpload" />
+                    </OverflowToolbar>
+                </VBox>
+
+                <VBox class="tableCard">
+                    <HBox justifyContent="SpaceBetween" alignItems="Center" class="tableCardHeader" width="100%">
+                        <VBox>
+                            <Title text="{view>/tableTitle}" level="H3" class="tableCardTitle" />
+                            <Text text="{i18n>noTableData}" visible="{= !${view>/selectedTable} }" class="tableCardHint" />
+                        </VBox>
+                        <HBox alignItems="Center">
+                            <SearchField
+                                width="18rem"
+                                class="workspaceSearch sapUiTinyMarginEnd"
+                                placeholder="{i18n>searchPlaceholder}"
+                                liveChange=".onSearch" />
+                            <Button
+                                icon="sap-icon://refresh"
+                                text="{i18n>refresh}"
+                                class="sapUiTinyMarginEnd"
+                                type="Transparent"
+                                press=".onRefresh" />
+                            <Button
+                                icon="sap-icon://action-settings"
+                                tooltip="{i18n>personalization}"
+                                enabled="{= !!${view>/selectedTable} }"
+                                class="sapUiTinyMarginEnd"
+                                type="Transparent"
+                                press=".onOpenPersonalization" />
+                            <Button
+                                icon="sap-icon://excel-attachment"
+                                text="{i18n>exportExcel}"
+                                enabled="{= !!${view>/selectedTable} }"
+                                class="sapUiTinyMarginEnd"
+                                type="Transparent"
+                                press=".onExportExcel" />
+                            <ObjectStatus text="{i18n>selectedCountLabel}: {view>/selectedCount}" state="Information" class="selectionBadge sapUiSmallMarginBegin" />
+                        </HBox>
+                    </HBox>
+                    <Table
+                        id="plantTable"
+                        width="auto"
+                        class="workspaceTable"
+                        growing="true"
+                        growingScrollToLoad="true"
+                        mode="MultiSelect"
+                        selectionChange=".onSelectionChange"
+                        noDataText="{i18n>noTableData}" />
+                </VBox>
+
+                <Button
+                    id="jouleChatButton"
+                    icon="sap-icon://customer-and-contacts"
+                    type="Emphasized"
+                    tooltip="{i18n>jouleChatTooltip}"
+                    press=".onOpenJouleChat"
+                    class="jouleChatButton" />
+            </VBox>
+        </content>
+
+        <dependents>
+            <core:Fragment fragmentName="ztm.app.fragment.TableSelectDialog" type="XML" />
+            <core:Fragment fragmentName="ztm.app.fragment.CreateEditDialog" type="XML" />
+            <core:Fragment fragmentName="ztm.app.fragment.MultiUpdateDialog" type="XML" />
+            <core:Fragment fragmentName="ztm.app.fragment.MassUploadDialog" type="XML" />
+        </dependents>
+    </Page>
+</mvc:View>

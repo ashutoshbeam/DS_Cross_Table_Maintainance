@@ -1,15 +1,15 @@
 _schema-version: "3.1"
-ID: FarmTankCAPProxy
+ID: tmapp
 description: A simple CAP project.
 version: 1.1.5
 modules:
-- name: FarmTankCAPProxy-srv
+- name: ZTableMaintenance-srv
   type: nodejs
   path: gen/srv
   requires:
   - name: training-hdi
   - name: ups-btp-dwc-service
-  - name: FarmTankCAPProxy-auth
+  - name: ZTableMaintenance-auth
   provides:
   - name: srv-api
     properties:
@@ -26,39 +26,43 @@ modules:
   - name: ups-btp-dwc-service
   parameters:
     buildpack: nodejs_buildpack
-- name: FarmTankCAPProxy-app-content
+- name: ZTableMaintenance-app-content
   type: com.sap.application.content
   path: .
   requires:
-  - name: FarmTankCAPProxy-repo-host
+  - name: ZTableMaintenance-repo-host
     parameters:
       service-key:
-        name: FarmTankCAPProxy-repo-host-key
+        name: ZTableMaintenance-repo-host-key
       content-target: true
   build-parameters:
     build-result: resources
     requires:
     - artifacts:
-      - PlantLocationApp.zip
-      name: PlantLocationApp
+      - tmapp.zip
+      name: tmapp
       target-path: resources/
-- name: FarmTankCAPProxy-destination-content
+- name: ZTableMaintenance-destination-content
   type: com.sap.application.content
   build-parameters:
     no-source: true
   requires:
-  - name: FarmTankCAPProxy-destination-service
+  - name: ZTableMaintenance-destination-service
     parameters:
       content-target: true
-  - name: FarmTankCAPProxy-repo-runtime
+  - name: ZTableMaintenance-repo-runtime
     parameters:
       service-key:
-        name: FarmTankCAPProxy-repo-runtime-key
-  - name: FarmTankCAPProxy-auth
+        name: ZTableMaintenance-repo-runtime-key
+  - name: ZTableMaintenance-auth
     parameters:
       service-key:
-        name: FarmTankCAPProxy-auth-key
+        name: ZTableMaintenance-auth-key
   - name: srv-api
+  - name: ZTableMaintenance-repo-host
+    parameters:
+      service-key:
+        name: ZTableMaintenance-repo-host-key
   parameters:
     content:
       instance:
@@ -66,17 +70,21 @@ modules:
         destinations:
         - Name: srv-api
           Authentication: OAuth2UserTokenExchange
-          ServiceInstanceName: FarmTankCAPProxy-auth
-          ServiceKeyName: FarmTankCAPProxy-auth-key
+          ServiceInstanceName: ZTableMaintenance-auth
+          ServiceKeyName: ZTableMaintenance-auth-key
           URL: ~{srv-api/srv-url}
           HTML5.DynamicDestination: true
-        - Name: farmtankcapproxy
-          ServiceInstanceName: FarmTankCAPProxy-html5-runtime-service
-          ServiceKeyName: FarmTankCAPProxy-repo-runtime-key
-          sap.cloud.service: farmtankcapproxy
-- name: PlantLocationApp
+        - Name: tmapp
+          ServiceInstanceName: ZTableMaintenance-html5-runtime-service
+          ServiceKeyName: ZTableMaintenance-repo-runtime-key
+          sap.cloud.service: tmapp
+        - Name: tmapp-html5-runtime
+          ServiceInstanceName: ZTableMaintenance-html5-service
+          ServiceKeyName: ZTableMaintenance-repo-host-key
+          sap.cloud.service: tmapp
+- name: tmapp
   type: com.sap.application.content
-  path: app/PlantLocationApp
+  path: app/TableMaintenanceApp
   build-parameters:
     build-result: dist
     builder: custom
@@ -101,19 +109,19 @@ resources:
     service-name: DS_INTEGRATION
   properties:
     the-service-name: ${service-name}
-- name: FarmTankCAPProxy-repo-host
+- name: ZTableMaintenance-repo-host
   type: org.cloudfoundry.managed-service
   parameters:
     service: html5-apps-repo
-    service-name: FarmTankCAPProxy-html5-service
+    service-name: ZTableMaintenance-html5-service
     service-plan: app-host
-- name: FarmTankCAPProxy-repo-runtime
+- name: ZTableMaintenance-repo-runtime
   type: org.cloudfoundry.managed-service
   parameters:
     service: html5-apps-repo
-    service-name: FarmTankCAPProxy-html5-runtime-service
+    service-name: ZTableMaintenance-html5-runtime-service
     service-plan: app-runtime
-- name: FarmTankCAPProxy-destination-service
+- name: ZTableMaintenance-destination-service
   type: org.cloudfoundry.managed-service
   parameters:
     config:
@@ -129,19 +137,19 @@ resources:
           existing_destinations_policy: update
       version: 1.0.0
     service: destination
-    service-name: FarmTankCAPProxy-destination-service
+    service-name: ZTableMaintenance-destination-service
     service-plan: lite
-- name: FarmTankCAPProxy-auth
+- name: ZTableMaintenance-auth
   type: org.cloudfoundry.managed-service
   parameters:
     path: ./xs-security.json
     service: xsuaa
-    service-name: FarmTankCAPProxy-auth
+    service-name: ZTableMaintenance-auth
     service-plan: application
 parameters:
   deploy_mode: html5-repo
   enable-parallel-deployments: true
-  sap.cloud.service: farmtankcapproxy
+  sap.cloud.service: tmapp
 build-parameters:
   before-all:
   - builder: custom

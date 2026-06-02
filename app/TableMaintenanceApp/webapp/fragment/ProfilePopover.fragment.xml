@@ -1,0 +1,46 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Popover
+        placement="Bottom"
+        contentWidth="320px"
+        showHeader="false"
+        class="profilePopover">
+        <content>
+            <VBox class="profilePopoverContent sapUiContentPadding" alignItems="Center">
+                <!-- Close/Header Area -->
+                <HBox width="100%" justifyContent="End" class="profilePopoverCloseHeader">
+                    <Button icon="sap-icon://decline" type="Transparent" press=".onProfilePopoverClose" />
+                </HBox>
+                
+                <!-- User Avatar Container -->
+                <VBox class="profileAvatarContainer sapUiSmallMarginBottom">
+                    <Avatar
+                        src="sap-icon://person-placeholder"
+                        displaySize="L"
+                        displayShape="Circle"
+                        class="profileAvatar" />
+                </VBox>
+                
+                <!-- User Details -->
+                <Title text="{view>/displayName}" level="H4" class="profileNameText sapUiTinyMarginBottom" wrapping="true" />
+                <Text text="{view>/userEmail}" class="profileEmailText sapUiSmallMarginBottom" wrapping="true" />
+                
+                <!-- Role Status Chip -->
+                <ObjectStatus text="{view>/activeRoleLabel}" state="{view>/activeRoleState}" class="profileRoleStatus" />
+                
+                <!-- Divider -->
+                <core:HTML content="&lt;hr class='profileDivider' /&gt;" />
+                
+                <!-- Sign Out Button -->
+                <Button
+                    text="Sign Out"
+                    type="Reject"
+                    icon="sap-icon://log"
+                    class="profileLogoutButton"
+                    width="100%"
+                    press=".onLogoutPress" />
+            </VBox>
+        </content>
+    </Popover>
+</core:FragmentDefinition>

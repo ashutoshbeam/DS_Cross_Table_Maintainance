@@ -1,0 +1,119 @@
+<mvc:View
+    controllerName="ztm.app.controller.CreateTable"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout">
+    <Page
+        id="createTablePage"
+        title="{i18n>createTableDialogTitle}"
+        showNavButton="true"
+        navButtonPress=".onNavBack"
+        class="workspacePage">
+        <content>
+            <VBox class="workspaceShell">
+                <VBox class="controlCard sapUiSmallMarginBottom">
+                    <f:SimpleForm editable="true" layout="ColumnLayout" columnsM="2" columnsL="3" columnsXL="4">
+                        <f:content>
+                            <Label text="{i18n>tableNameLabel}" required="true" />
+                            <Input value="{view>/createTable/tableName}" />
+
+                            <Label text="{i18n>templateRoleSelectLabel}" required="true" />
+                            <Select selectedKey="{view>/createTable/templateRole}" forceSelection="false" items="{view>/templateRoles}">
+                                <core:Item key="{view>key}" text="{view>text}" />
+                            </Select>
+
+                            <Label text="{i18n>tableTypeLabel}" />
+                            <Select selectedKey="{view>/createTable/tableType}">
+                                <core:Item key="COLUMN" text="{i18n>columnStore}" />
+                                <core:Item key="ROW" text="{i18n>rowStore}" />
+                            </Select>
+
+                            <Label text="{i18n>tableCommentLabel}" />
+                            <Input value="{view>/createTable/tableComment}" />
+
+                            <Label text="{i18n>includeCuidLabel}" />
+                            <CheckBox selected="{view>/createTable/includeCuid}" />
+                            
+                            <Label text="{i18n>includeManagedLabel}" />
+                            <CheckBox selected="{view>/createTable/includeManaged}" />
+
+                            <Label text="{i18n>includeTemporalLabel}" />
+                            <CheckBox selected="{view>/createTable/includeTemporal}" />
+
+                            <Label text="{i18n>includeCodeListLabel}" />
+                            <CheckBox selected="{view>/createTable/includeCodeList}" />
+                        </f:content>
+                    </f:SimpleForm>
+                </VBox>
+
+                <VBox class="tableCard">
+                    <OverflowToolbar class="fieldsHeaderToolbar">
+                        <Title text="{i18n>fieldsTitle}" level="H3" class="dialogSectionTitle" />
+                        <ToolbarSpacer />
+                        <Button icon="sap-icon://add" text="{i18n>addField}" type="Emphasized" press=".onAddTableColumn" />
+                    </OverflowToolbar>
+
+                    <ScrollContainer width="100%" horizontal="true" vertical="false" class="sapUiSmallMarginBottom">
+                        <Table
+                            class="workspaceTable wideTable"
+                            items="{view>/createTable/fields}"
+                            mode="Delete"
+                            delete=".onRemoveTableColumn">
+                            <columns>
+                                <Column width="10rem"><Text text="{i18n>fieldNameLabel}" /></Column>
+                                <Column width="9rem"><Text text="{i18n>fieldSemanticTypeLabel}" /></Column>
+                                <Column width="8rem"><Text text="{i18n>fieldTypeLabel}" /></Column>
+                                <Column width="4.5rem"><Text text="{i18n>fieldLengthLabel}" /></Column>
+                                <Column width="4.5rem"><Text text="{i18n>fieldScaleLabel}" /></Column>
+                                <Column width="4.5rem"><Text text="{i18n>fieldPrimaryKeyLabel}" /></Column>
+                                <Column width="4.5rem"><Text text="{i18n>fieldNotNullLabel}" /></Column>
+                                <Column width="9rem"><Text text="{i18n>fieldReferenceTableLabel}" /></Column>
+                                <Column width="9rem"><Text text="{i18n>fieldReferenceColumnLabel}" /></Column>
+                                <Column width="9rem"><Text text="{i18n>fieldAliasesLabel}" /></Column>
+                                <Column width="6rem"><Text text="{i18n>fieldDefaultLabel}" /></Column>
+                                <Column width="8rem"><Text text="{i18n>fieldCommentLabel}" /></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem vAlign="Middle">
+                                    <cells>
+                                        <Input value="{view>name}" />
+                                        <ComboBox value="{view>semanticType}" change=".onFieldSemanticTypeChange" items="{view>/semanticTypeSuggestions}">
+                                            <core:Item key="{view>key}" text="{view>text}" />
+                                        </ComboBox>
+                                        <Select selectedKey="{view>type}">
+                                            <core:Item key="NVARCHAR" text="NVARCHAR" />
+                                            <core:Item key="INTEGER" text="INTEGER" />
+                                            <core:Item key="DECIMAL" text="DECIMAL" />
+                                            <core:Item key="BOOLEAN" text="BOOLEAN" />
+                                            <core:Item key="DATE" text="DATE" />
+                                            <core:Item key="TIMESTAMP" text="TIMESTAMP" />
+                                            <core:Item key="DOUBLE" text="DOUBLE" />
+                                        </Select>
+                                        <Input value="{view>length}" type="Number" enabled="{= ${view>type} === 'NVARCHAR' || ${view>type} === 'DECIMAL' }" />
+                                        <Input value="{view>scale}" type="Number" enabled="{= ${view>type} === 'DECIMAL' }" />
+                                        <CheckBox selected="{view>isPrimary}" />
+                                        <CheckBox selected="{view>isNotNull}" enabled="{= !${view>isPrimary} }" />
+                                        <Input value="{view>referenceTable}" />
+                                        <Input value="{view>referenceColumn}" />
+                                        <Input value="{view>aliases}" />
+                                        <Input value="{view>defaultValue}" />
+                                        <Input value="{view>comment}" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </ScrollContainer>
+                </VBox>
+            </VBox>
+        </content>
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer />
+                <Button text="{i18n>save}" type="Emphasized" press=".onSaveNewTable" />
+                <Button text="{i18n>cancel}" press=".onNavBack" />
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>

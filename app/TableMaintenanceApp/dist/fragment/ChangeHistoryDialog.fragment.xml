@@ -1,0 +1,132 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:mc="sap.suite.ui.microchart">
+    <Dialog
+        id="changeHistoryDialog"
+        title="{i18n>changeHistoryPageTitle}"
+        contentWidth="82rem"
+        contentHeight="36rem"
+        draggable="true"
+        resizable="true"
+        class="sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer">
+        <content>
+            <IconTabBar id="changeHistoryTabBar" expandable="false" class="sapUiResponsiveContentPadding">
+                <items>
+                    <IconTabFilter text="{i18n>changeHistoryTabTable}" icon="sap-icon://table-view">
+                        <VBox class="sapUiSmallMarginTopBottom">
+                            <Toolbar design="Transparent">
+                                <Title text="{i18n>changeHistoryTitle}" level="H3" />
+                                <ToolbarSpacer />
+                                <Text text="{= ${view>/plant} ? ${view>/plant} : '' }" />
+                                <ToolbarSpacer />
+                                <SearchField
+                                    width="20rem"
+                                    placeholder="{i18n>changeHistorySearchPlaceholder}"
+                                    liveChange=".onSearchChangeHistory" />
+                            </Toolbar>
+
+                            <Table
+                                id="changeHistoryTable"
+                                items="{view>/filteredHistory}"
+                                busy="{view>/historyBusy}"
+                                growing="true"
+                                growingScrollToLoad="true"
+                                noDataText="{i18n>changeHistoryNoData}">
+                                <columns>
+                                    <Column width="8rem">
+                                        <Text text="{i18n>changeHistoryModification}" />
+                                    </Column>
+                                    <Column width="10rem">
+                                        <Text text="{i18n>changeHistoryCreatedAt}" />
+                                    </Column>
+                                    <Column width="10rem">
+                                        <Text text="{i18n>changeHistoryCreatedBy}" />
+                                    </Column>
+                                    <Column width="12rem">
+                                        <Text text="{i18n>changeHistoryEntity}" />
+                                    </Column>
+                                    <Column width="12rem">
+                                        <Text text="{i18n>changeHistoryObjectId}" />
+                                    </Column>
+                                    <Column width="12rem">
+                                        <Text text="{i18n>changeHistoryField}" />
+                                    </Column>
+                                    <Column width="18rem">
+                                        <Text text="{i18n>changeHistoryNewValue}" />
+                                    </Column>
+                                    <Column width="18rem">
+                                        <Text text="{i18n>changeHistoryOldValue}" />
+                                    </Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <cells>
+                                            <ObjectStatus text="{view>modification}" />
+                                            <Text text="{view>createdAt}" />
+                                            <Text text="{view>createdBy}" />
+                                            <Text text="{view>entity}" />
+                                            <Text text="{view>objectID}" />
+                                            <Text text="{view>attribute}" />
+                                            <Text text="{view>valueChangedTo}" wrapping="true" />
+                                            <Text text="{view>valueChangedFrom}" wrapping="true" />
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </VBox>
+                    </IconTabFilter>
+                    
+                    <IconTabFilter text="{i18n>changeHistoryTabAnalytics}" icon="sap-icon://analytics">
+                        <VBox class="sapUiMediumMargin">
+                            <HBox wrap="Wrap" justifyContent="SpaceBetween">
+                                <!-- Users Analytics -->
+                                <VBox width="48%" class="sapUiSmallMarginBottom">
+                                    <Title text="{i18n>analyticsUserTitle}" level="H4" class="sapUiTinyMarginBottom" />
+                                    <FlexBox height="180px" alignItems="Center" justifyContent="Center" class="dashboardCard">
+                                        <items>
+                                            <mc:InteractiveDonutChart
+                                                segments="{view>/historyAnalytics/users}">
+                                                <mc:InteractiveDonutChartSegment value="{view>value}" label="{view>label}" displayedValue="{view>value}" />
+                                            </mc:InteractiveDonutChart>
+                                        </items>
+                                    </FlexBox>
+                                </VBox>
+                                
+                                <!-- Fields Analytics -->
+                                <VBox width="48%" class="sapUiSmallMarginBottom">
+                                    <Title text="{i18n>analyticsFieldTitle}" level="H4" class="sapUiTinyMarginBottom" />
+                                    <FlexBox height="180px" alignItems="Center" justifyContent="Center" class="dashboardCard">
+                                        <items>
+                                            <mc:InteractiveBarChart
+                                                bars="{view>/historyAnalytics/fields}">
+                                                <mc:InteractiveBarChartBar value="{view>value}" label="{view>label}" displayedValue="{view>value}" />
+                                            </mc:InteractiveBarChart>
+                                        </items>
+                                    </FlexBox>
+                                </VBox>
+                            </HBox>
+                            
+                            <VBox class="sapUiSmallMarginTop">
+                                <Title text="{i18n>analyticsTrendTitle}" level="H4" class="sapUiTinyMarginBottom" />
+                                <FlexBox height="160px" alignItems="Center" justifyContent="Center" class="dashboardCard" width="100%">
+                                    <items>
+                                        <mc:InteractiveLineChart
+                                            points="{view>/historyAnalytics/trend}">
+                                            <mc:InteractiveLineChartPoint value="{view>value}" label="{view>label}" />
+                                        </mc:InteractiveLineChart>
+                                    </items>
+                                </FlexBox>
+                            </VBox>
+                        </VBox>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        <endButton>
+            <Button
+                text="{i18n>cancel}"
+                press=".onCloseChangeHistory" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

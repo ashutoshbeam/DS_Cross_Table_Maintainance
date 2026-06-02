@@ -1,7 +1,7 @@
 {
   "_version": "1.83.0",
   "sap.app": {
-    "id": "upsonly.plantlocationapp",
+    "id": "upsonly.tablemaintenanceapp",
     "type": "application",
     "i18n": {
       "bundleUrl": "i18n/i18n.properties",
@@ -34,7 +34,7 @@
   },
   "sap.ui5": {
     "rootView": {
-      "viewName": "upsonly.plantlocationapp.view.App",
+      "viewName": "upsonly.tablemaintenanceapp.view.App",
       "type": "XML",
       "async": true,
       "id": "app"
@@ -55,7 +55,7 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "upsonly.plantlocationapp.i18n.i18n"
+          "bundleName": "upsonly.tablemaintenanceapp.i18n.i18n"
         }
       },
       "": {
@@ -78,7 +78,7 @@
       "config": {
         "routerClass": "sap.m.routing.Router",
         "viewType": "XML",
-        "viewPath": "upsonly.plantlocationapp.view",
+        "viewPath": "upsonly.tablemaintenanceapp.view",
         "controlId": "app",
         "controlAggregation": "pages",
         "async": true

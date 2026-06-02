@@ -1,0 +1,66 @@
+<mvc:View
+    controllerName="ztm.tmapp.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:tnt="sap.tnt"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <tnt:ToolPage id="toolPage">
+        <tnt:header>
+            <tnt:ToolHeader>
+                <Button
+                    id="sideNavigationToggleButton"
+                    icon="sap-icon://menu2"
+                    type="Transparent"
+                    press=".onSideNavCollapsePress"
+                    tooltip="Toggle Menu" />
+                <Image src="https://www.sap.com/dam/application/shared/logos/sap-logo-svg.svg" height="20px" class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiHideOnPhone" />
+                <Title text="DS Table Master App" level="H1" class="sapUiHideOnPhone" />
+                <ToolbarSpacer />
+                
+                <Label text="Simulate BTP Role:" class="sapUiTinyMarginEnd" visible="{view>/hasMultipleRoles}" />
+                <Select
+                    width="15rem"
+                    selectedKey="{view>/activeRoleProfile}"
+                    change=".onRoleProfileChange"
+                    class="sapUiMediumMarginEnd"
+                    visible="{view>/hasMultipleRoles}"
+                    items="{view>/availableRoleProfiles}">
+                    <core:Item key="{view>key}" text="{view>text}" />
+                </Select>
+
+                <tnt:ToolHeaderUtilitySeparator />
+                <ObjectStatus text="{view>/activeRoleLabel}" state="{view>/activeRoleState}" class="sapUiSmallMarginEnd" />
+                <Avatar
+                    id="profileAvatar"
+                    src="sap-icon://person-placeholder"
+                    displaySize="XS"
+                    displayShape="Circle"
+                    class="sapUiTinyMarginEnd cursorPointer"
+                    active="true"
+                    press=".onProfilePress" />
+            </tnt:ToolHeader>
+        </tnt:header>
+        <tnt:sideContent>
+            <tnt:SideNavigation id="sideNavigation" expanded="false" selectedKey="{view>/selectedModule}">
+                <tnt:NavigationList itemSelect=".onModuleSelect">
+                    <tnt:NavigationListItem text="Data Maintenance" icon="sap-icon://table-view" key="DataMaintenance" visible="{view>/hasAppAccess}" />
+                    <tnt:NavigationListItem text="Table Designer" icon="sap-icon://excel-attachment" key="TableDesigner" visible="{view>/isDataEngineer}" />
+                    <tnt:NavigationListItem text="Admin Console" icon="sap-icon://key-user-settings" key="AdminConsole" visible="{view>/isAdmin}" />
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+        <tnt:mainContents>
+            <App id="app" visible="{view>/hasAppAccess}" />
+            <VBox 
+                visible="{= !${view>/hasAppAccess} }"
+                alignItems="Center"
+                justifyContent="Center"
+                class="sapUiLargeMarginTop sapUiLargePaddingTop">
+                <IllustratedMessage 
+                    illustrationType="sapIll-NoActivities" 
+                    title="No Access" 
+                    description="You do not have any roles assigned to access this application. Please contact your administrator." />
+            </VBox>
+        </tnt:mainContents>
+    </tnt:ToolPage>
+</mvc:View>

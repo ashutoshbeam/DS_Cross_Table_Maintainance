@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run DWCMission-1",
+      "name": "Run ZTableMaintenance-1",
       "runtimeExecutable": "cds",
       "request": "launch",
       "killBehavior": "polite",
@@ -14,10 +14,10 @@
       "internalConsoleOptions": "openOnSessionStart",
       "type": "pwa-node",
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "PreLaunchTask for Run DWCMission-1",
+      "preLaunchTask": "PreLaunchTask for Run ZTableMaintenance-1",
       "envFile": "${workspaceFolder}/env/.env1",
       "env": {
-        "run.config": "{\"handlerId\":\"lcap_run_config_handler_id\",\"runnableId\":\"{\\\"projectPath\\\":\\\"/home/user/projects/DWCMission\\\",\\\"profileName\\\":\\\"\\\"}\"}",
+        "run.config": "{\"handlerId\":\"lcap_run_config_handler_id\",\"runnableId\":\"{\\\"projectPath\\\":\\\"/home/user/projects/ZTableMaintenance\\\",\\\"profileName\\\":\\\"\\\"}\"}",
         "runConfigurations": "{\"dbBinding\":{\"type\":\"SAP HANA Cloud\",\"dbName\":\"training-hdi\"}}"
       }
     }

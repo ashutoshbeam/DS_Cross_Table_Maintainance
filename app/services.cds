@@ -1,2 +1,2 @@
 
-using from './plantlocation-annotations';
+using from './tablemaintenance-annotations';

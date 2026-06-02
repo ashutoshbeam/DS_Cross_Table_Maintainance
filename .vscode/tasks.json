@@ -64,7 +64,7 @@
       }
     },
     {
-      "label": "PreLaunchTask for Run DWCMission-1",
+      "label": "PreLaunchTask for Run ZTableMaintenance-1",
       "type": "process",
       "command": "npx",
       "args": [

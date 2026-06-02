@@ -1,0 +1,86 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Dialog
+        id="validationRulesDialog"
+        title="{i18n>validationRulesDialogTitle}"
+        contentWidth="58rem"
+        contentHeight="30rem"
+        draggable="true"
+        resizable="true"
+        class="sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer">
+        <content>
+            <VBox class="sapUiSmallMarginTopBottom">
+                <OverflowToolbar class="fieldsHeaderToolbar">
+                    <Title text="{i18n>validationRulesTitle}" level="H3" class="dialogSectionTitle" />
+                    <ToolbarSpacer />
+                    <Button
+                        icon="sap-icon://add"
+                        text="{i18n>addRuleButton}"
+                        type="Transparent"
+                        press=".onAddValidationRule" />
+                </OverflowToolbar>
+
+                <Table
+                    id="validationRulesTable"
+                    items="{view>/validationRules}"
+                    mode="Delete"
+                    delete=".onDeleteValidationRule"
+                    noDataText="{i18n>validationRulesNoData}">
+                    <columns>
+                        <Column width="12rem">
+                            <Text text="{i18n>validationRuleColumn}" />
+                        </Column>
+                        <Column width="10rem">
+                            <Text text="{i18n>validationRuleType}" />
+                        </Column>
+                        <Column width="14rem">
+                            <Text text="{i18n>validationRuleValue}" />
+                        </Column>
+                        <Column width="22rem">
+                            <Text text="{i18n>validationRuleErrorMsg}" />
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem vAlign="Middle">
+                            <cells>
+                                <Select
+                                    selectedKey="{view>columnName}"
+                                    items="{view>/columns}"
+                                    width="100%">
+                                    <core:Item key="{view>name}" text="{view>name}" />
+                                </Select>
+                                <Select
+                                    selectedKey="{view>ruleType}"
+                                    width="100%">
+                                    <core:Item key="MANDATORY" text="{i18n>validationTypeMandatory}" />
+                                    <core:Item key="REGEX" text="{i18n>validationTypeRegex}" />
+                                    <core:Item key="RANGE" text="{i18n>validationTypeRange}" />
+                                    <core:Item key="VALUE_LIST" text="{i18n>validationTypeValueList}" />
+                                </Select>
+                                <Input
+                                    value="{view>ruleValue}"
+                                    placeholder="{i18n>validationValuePlaceholder}"
+                                    enabled="{= ${view>ruleType} !== 'MANDATORY' }" />
+                                <Input
+                                    value="{view>errorMessage}"
+                                    placeholder="{i18n>validationErrorPlaceholder}" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+        <beginButton>
+            <Button
+                type="Emphasized"
+                text="{i18n>save}"
+                press=".onSaveValidationRules" />
+        </beginButton>
+        <endButton>
+            <Button
+                text="{i18n>cancel}"
+                press=".onCloseValidationRules" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

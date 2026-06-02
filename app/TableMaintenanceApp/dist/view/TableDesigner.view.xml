@@ -1,0 +1,130 @@
+<mvc:View
+    controllerName="ztm.tmapp.controller.TableDesigner"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Page title="Table Designer" busy="{view>/busy}" class="workspacePage">
+        <content>
+            <VBox class="workspaceShell designerWorkspace" fitContainer="true">
+                <VBox class="controlCard designerTopBar">
+                    <FlexBox wrap="Wrap" alignItems="End" class="designerCompactBar">
+                        <VBox class="designerCompactField">
+                            <Label text="Schema" labelFor="schemaSelectCombo" class="sapUiTinyMarginBottom" />
+                            <ComboBox
+                                id="schemaSelectCombo"
+                                width="100%"
+                                value="{view>/selectedSchema}"
+                                change=".onSchemaChange"
+                                items="{view>/schemaSelectItems}">
+                                <core:Item key="{view>name}" text="{view>name}" />
+                            </ComboBox>
+                        </VBox>
+                        <VBox class="designerCompactField designerCompactFieldWide">
+                            <Label text="Select Table" labelFor="selectedTableInput" class="sapUiTinyMarginBottom" />
+                            <Input
+                                id="selectedTableInput"
+                                width="100%"
+                                value="{view>/selectedTable}"
+                                showValueHelp="true"
+                                valueHelpOnly="true"
+                                valueHelpRequest=".onTableValueHelp"
+                                placeholder="Press F4 to choose a table" />
+                        </VBox>
+                        <HBox class="designerCompactActions" alignItems="End">
+                            <Button
+                                icon="sap-icon://add"
+                                text="Create Table"
+                                type="Emphasized"
+                                press=".onCreateTablePress" />
+                            <Button
+                                icon="sap-icon://edit"
+                                text="Alter Structure"
+                                enabled="{= !!${view>/selectedTable} }"
+                                press=".onAlterTablePress" />
+                            <Button
+                                icon="sap-icon://duplicate"
+                                text="Duplicate"
+                                enabled="{= !!${view>/selectedTable} }"
+                                press=".onDuplicateTablePress" />
+                            <Button
+                                icon="sap-icon://delete"
+                                text="Delete"
+                                type="Reject"
+                                enabled="{= !!${view>/selectedTable} }"
+                                press=".onDeleteTablePress" />
+                        </HBox>
+                    </FlexBox>
+                </VBox>
+
+                <VBox class="tableCard designerDetailCard designerDetailCardFull" width="100%" height="100%" visible="{= !!${view>/selectedTable} }">
+                    <HBox justifyContent="SpaceBetween" alignItems="Center" class="tableCardHeader designerDetailHeader" width="100%" wrap="Wrap">
+                        <VBox>
+                            <Title text="{view>/selectedTable}" level="H2" class="tableCardTitle designerDetailTitle" />
+                            <Text text="Structure definition, keys, semantic hints, and validation mapping." class="tableCardHint" />
+                        </VBox>
+                        <ObjectStatus text="{= (${view>/columns}.length || 0) + ' fields' }" state="Information" class="selectionBadge" />
+                    </HBox>
+
+                    <Table
+                        id="metadataTable"
+                        width="100%"
+                        class="workspaceTable designerMetadataTable"
+                        growing="true"
+                        growingScrollToLoad="true"
+                        items="{view>/columns}">
+                        <columns>
+                            <Column width="13rem"><Text text="Field Name" /></Column>
+                            <Column width="10rem"><Text text="Data Type" /></Column>
+                            <Column width="6rem"><Text text="Length" /></Column>
+                            <Column width="7rem" hAlign="Center"><Text text="Primary Key" /></Column>
+                            <Column width="7rem" hAlign="Center"><Text text="Nullable" /></Column>
+                            <Column width="12rem"><Text text="Semantic Type" /></Column>
+                            <Column width="14rem"><Text text="Validation Rule Assignment" /></Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem vAlign="Middle">
+                                <cells>
+                                    <Text text="{view>name}" />
+                                    <ObjectStatus text="{view>type}" state="Information" />
+                                    <Text text="{= ${view>length} ? ${view>length} : '-' }" />
+                                    <core:Icon
+                                        src="{= ${view>key} ? 'sap-icon://accept' : '' }"
+                                        color="Positive"
+                                        visible="{view>key}" />
+                                    <core:Icon
+                                        src="{= ${view>nullable} ? 'sap-icon://accept' : 'sap-icon://decline' }"
+                                        color="{= ${view>nullable} ? 'Neutral' : 'Negative' }" />
+                                    <Text text="{= ${view>semanticType} ? ${view>semanticType} : '-' }" />
+                                    <Text text="{= ${view>valueHelpRequired} ? 'Value Help Lookup' : 'No Validation Rules' }" wrapping="true" />
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </VBox>
+
+                <VBox class="tableCard designerEmptyState designerEmptyStateWide" width="100%" height="100%" justifyContent="Center" alignItems="Center" visible="{= !${view>/selectedTable} }">
+                    <VBox class="designerEmptyBadge">
+                        <core:Icon src="sap-icon://table-view" size="3rem" color="#204a87" />
+                    </VBox>
+                    <Title text="Choose A Table" level="H2" class="designerEmptyTitle" />
+                    <Text text="Use the schema selector and F4 help to open a table, or create a new one from here." class="designerEmptyText" />
+                    <FlexBox wrap="Wrap" justifyContent="Center" class="designerEmptyActions">
+                        <Button
+                            icon="sap-icon://value-help"
+                            text="Open Table Help"
+                            press=".onTableValueHelp" />
+                        <Button
+                            icon="sap-icon://add"
+                            text="Create New Table"
+                            type="Emphasized"
+                            press=".onCreateTablePress" />
+                    </FlexBox>
+                </VBox>
+            </VBox>
+        </content>
+
+        <dependents>
+            <core:Fragment fragmentName="ztm.tmapp.fragment.TableSelectDialog" type="XML" />
+        </dependents>
+    </Page>
+</mvc:View>

@@ -1,0 +1,82 @@
+<mvc:View
+    controllerName="ztm.tmapp.controller.Detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form">
+    <Page
+        title="{PLANT}"
+        showNavButton="true"
+        navButtonPress=".onNavBack">
+        <subHeader>
+            <OverflowToolbar>
+                <Title text="{PLANT}" level="H3" />
+                <ToolbarSpacer />
+                <Button
+                    icon="sap-icon://edit"
+                    tooltip="{i18n>edit}"
+                    visible="{= !${view>/editMode} &amp;&amp; ${view>/canMaintain} }"
+                    press=".onEdit" />
+                <Button
+                    icon="sap-icon://save"
+                    text="{i18n>update}"
+                    visible="{= ${view>/editMode} &amp;&amp; ${view>/canMaintain} }"
+                    type="Emphasized"
+                    press=".onUpdate" />
+                <Button
+                    text="{i18n>cancel}"
+                    visible="{= ${view>/editMode} &amp;&amp; ${view>/canMaintain} }"
+                    press=".onCancelEdit" />
+                <Button
+                    icon="sap-icon://delete"
+                    text="{i18n>delete}"
+                    visible="{view>/canMaintain}"
+                    press=".onDelete" />
+                <Button
+                    icon="sap-icon://history"
+                    text="{i18n>changeHistoryButton}"
+                    press=".onOpenChangeHistory" />
+            </OverflowToolbar>
+        </subHeader>
+        <content>
+            <VBox class="sapUiSmallMargin" busy="{view>/busy}">
+                <MessageStrip
+                    text="{i18n>displayModeHint}"
+                    type="Information"
+                    showIcon="true"
+                    visible="{view>/isReadOnlyRole}"
+                    class="sapUiTinyMarginBottom" />
+                <Panel
+                    headerText="{i18n>GeneralInformation}"
+                    class="sapUiTinyMarginTop">
+                    <content>
+                        <form:SimpleForm
+                            editable="{view>/editMode}"
+                            layout="ResponsiveGridLayout">
+                            <Label text="{i18n>Plant}" />
+                            <Input value="{PLANT}" editable="false" />
+                            <Label text="{i18n>Location}" />
+                            <Input value="{LOCATION}" editable="{view>/editMode}" />
+                            <Label text="{i18n>LocationType}" />
+                            <Input value="{LOCATION_TYPE}" editable="{view>/editMode}" />
+                        </form:SimpleForm>
+                    </content>
+                </Panel>
+
+                <Panel
+                    headerText="{i18n>OrganizationalInformation}"
+                    class="sapUiTinyMarginTop">
+                    <content>
+                        <form:SimpleForm
+                            editable="{view>/editMode}"
+                            layout="ResponsiveGridLayout">
+                            <Label text="{i18n>CompanyCode}" />
+                            <Input value="{COMPANY_CODE}" editable="{view>/editMode}" />
+                            <Label text="{i18n>Region}" />
+                            <Input value="{REGION}" editable="{view>/editMode}" />
+                        </form:SimpleForm>
+                    </content>
+                </Panel>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

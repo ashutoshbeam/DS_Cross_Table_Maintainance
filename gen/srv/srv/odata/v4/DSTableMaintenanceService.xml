@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Capabilities.V1.xml">
+    <edmx:Include Alias="Capabilities" Namespace="Org.OData.Capabilities.V1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+    <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+    <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/HTML5.xml">
+    <edmx:Include Alias="HTML5" Namespace="com.sap.vocabularies.HTML5.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+    <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Validation.V1.xml">
+    <edmx:Include Alias="Validation" Namespace="Org.OData.Validation.V1"/>
+  </edmx:Reference>
+  <edmx:DataServices>
+    <Schema Namespace="DSTableMaintenanceService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <Annotation Term="Core.Links">
+        <Collection>
+          <Record>
+            <PropertyValue Property="rel" String="author"/>
+            <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+          </Record>
+        </Collection>
+      </Annotation>
+      <EntityContainer Name="EntityContainer">
+        <EntitySet Name="TankVolumes" EntityType="DSTableMaintenanceService.TankVolumes">
+          <NavigationPropertyBinding Path="changes" Target="ChangeView"/>
+        </EntitySet>
+        <EntitySet Name="PlantLocation" EntityType="DSTableMaintenanceService.PlantLocation">
+          <NavigationPropertyBinding Path="changes" Target="ChangeView"/>
+        </EntitySet>
+        <EntitySet Name="ChangeView" EntityType="DSTableMaintenanceService.ChangeView"/>
+      </EntityContainer>
+      <EntityType Name="TankVolumes">
+        <Key>
+          <PropertyRef Name="TANK_ID"/>
+        </Key>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="TANK_ID" Type="Edm.String" MaxLength="30" Nullable="false"/>
+        <Property Name="ID" Type="Edm.Guid"/>
+        <Property Name="VOLUME" Type="Edm.Decimal" Scale="variable"/>
+        <Property Name="UOM" Type="Edm.String" MaxLength="3"/>
+        <Property Name="TIME_STAMP" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="COMMENT" Type="Edm.String" MaxLength="50"/>
+        <Property Name="SOURCE" Type="Edm.String" MaxLength="1" DefaultValue="M"/>
+        <NavigationProperty Name="changes" Type="Collection(DSTableMaintenanceService.ChangeView)"/>
+      </EntityType>
+      <EntityType Name="PlantLocation">
+        <Key>
+          <PropertyRef Name="PLANT"/>
+        </Key>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="PLANT" Type="Edm.String" MaxLength="4" Nullable="false"/>
+        <Property Name="ID" Type="Edm.Guid"/>
+        <Property Name="COMPANY_CODE" Type="Edm.String" MaxLength="4"/>
+        <Property Name="LOCATION" Type="Edm.String" MaxLength="10"/>
+        <Property Name="LOCATION_TYPE" Type="Edm.String" MaxLength="10"/>
+        <Property Name="REGION" Type="Edm.String" MaxLength="10"/>
+        <NavigationProperty Name="changes" Type="Collection(DSTableMaintenanceService.ChangeView)"/>
+      </EntityType>
+      <EntityType Name="ChangeView">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="keys" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="attribute" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="valueChangedFrom" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="valueChangedTo" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="entity" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="serviceEntity" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="parentKey" Type="Edm.String"/>
+        <Property Name="serviceEntityPath" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="modification" Type="Edm.String"/>
+        <Property Name="valueDataType" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="changeLog_ID" Type="Edm.Guid"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="objectID" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="parentObjectID" Type="Edm.String" MaxLength="5000"/>
+        <Property Name="entityKey" Type="Edm.String"/>
+      </EntityType>
+      <Annotations Target="DSTableMaintenanceService.TankVolumes/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.TankVolumes/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.TankVolumes/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.TankVolumes/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.TankVolumes/ID">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.PlantLocation">
+        <Annotation Term="Common.SemanticKey">
+          <Collection>
+            <PropertyPath>PLANT</PropertyPath>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.HeaderInfo">
+          <Record Type="UI.HeaderInfoType">
+            <PropertyValue Property="TypeName" String="{i18n>PlantLocationTypeName}"/>
+            <PropertyValue Property="TypeNamePlural" String="{i18n>PlantLocationTypeNamePlural}"/>
+            <PropertyValue Property="Title">
+              <Record Type="UI.DataField">
+                <PropertyValue Property="Value" Path="PLANT"/>
+              </Record>
+            </PropertyValue>
+            <PropertyValue Property="Description">
+              <Record Type="UI.DataField">
+                <PropertyValue Property="Value" Path="LOCATION"/>
+              </Record>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.SelectionFields">
+          <Collection>
+            <PropertyPath>PLANT</PropertyPath>
+            <PropertyPath>COMPANY_CODE</PropertyPath>
+            <PropertyPath>LOCATION</PropertyPath>
+            <PropertyPath>LOCATION_TYPE</PropertyPath>
+            <PropertyPath>REGION</PropertyPath>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.PresentationVariant">
+          <Record Type="UI.PresentationVariantType">
+            <PropertyValue Property="SortOrder">
+              <Collection>
+                <Record Type="Common.SortOrderType">
+                  <PropertyValue Property="Property" PropertyPath="PLANT"/>
+                  <PropertyValue Property="Descending" Bool="false"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="Visualizations">
+              <Collection>
+                <AnnotationPath>@UI.LineItem</AnnotationPath>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="PLANT"/>
+              <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="LOCATION"/>
+              <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="COMPANY_CODE"/>
+              <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/Medium"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="LOCATION_TYPE"/>
+              <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/Medium"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="REGION"/>
+              <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/Low"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="PLANT"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="LOCATION"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="COMPANY_CODE"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="General">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="PLANT"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="LOCATION"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="LOCATION_TYPE"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="Organizational">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="COMPANY_CODE"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="REGION"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.Facets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="GeneralFacet"/>
+              <PropertyValue Property="Label" String="{i18n>GeneralInformation}"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#General"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="OrganizationalFacet"/>
+              <PropertyValue Property="Label" String="{i18n>OrganizationalInformation}"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Organizational"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="ChangeHistoryFacet"/>
+              <PropertyValue Property="Label" String="{i18n>ChangeHistory}"/>
+              <PropertyValue Property="Target" AnnotationPath="changes/@UI.PresentationVariant"/>
+              <Annotation Term="UI.PartOfPreview" Bool="false"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.EntityContainer/PlantLocation">
+        <Annotation Term="UI.PresentationVariant">
+          <Record Type="UI.PresentationVariantType">
+            <PropertyValue Property="SortOrder">
+              <Collection>
+                <Record Type="Common.SortOrderType">
+                  <PropertyValue Property="Property" PropertyPath="PLANT"/>
+                  <PropertyValue Property="Descending" Bool="false"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="Visualizations">
+              <Collection>
+                <AnnotationPath>@UI.LineItem</AnnotationPath>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Capabilities.InsertRestrictions">
+          <Record Type="Capabilities.InsertRestrictionsType">
+            <PropertyValue Property="Insertable" Bool="true"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Capabilities.UpdateRestrictions">
+          <Record Type="Capabilities.UpdateRestrictionsType">
+            <PropertyValue Property="Updatable" Bool="true"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Capabilities.DeleteRestrictions">
+          <Record Type="Capabilities.DeleteRestrictionsType">
+            <PropertyValue Property="Deletable" Bool="true"/>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.PlantLocation/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.PlantLocation/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.PlantLocation/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.PlantLocation/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.PlantLocation/PLANT">
+        <Annotation Term="Common.Label" String="{i18n>Plant}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.PlantLocation/ID">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.PlantLocation/COMPANY_CODE">
+        <Annotation Term="Common.Label" String="{i18n>CompanyCode}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.PlantLocation/LOCATION">
+        <Annotation Term="Common.Label" String="{i18n>Location}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.PlantLocation/LOCATION_TYPE">
+        <Annotation Term="Common.Label" String="{i18n>LocationType}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.PlantLocation/REGION">
+        <Annotation Term="Common.Label" String="{i18n>Region}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView">
+        <Annotation Term="UI.PresentationVariant">
+          <Record Type="UI.PresentationVariantType">
+            <PropertyValue Property="Visualizations">
+              <Collection>
+                <AnnotationPath>@UI.LineItem</AnnotationPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="RequestAtLeast">
+              <Collection>
+                <PropertyPath>parentKey</PropertyPath>
+                <PropertyPath>serviceEntity</PropertyPath>
+                <PropertyPath>serviceEntityPath</PropertyPath>
+                <PropertyPath>valueDataType</PropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="SortOrder">
+              <Collection>
+                <Record Type="Common.SortOrderType">
+                  <PropertyValue Property="Property" PropertyPath="createdAt"/>
+                  <PropertyValue Property="Descending" Bool="true"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="modification"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="9%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="createdAt"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="12%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="createdBy"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="9%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="entity"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="11%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="objectID"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="14%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="attribute"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="9%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="valueChangedTo"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="11%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="valueChangedFrom"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="11%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="parentObjectID"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="14%"/>
+                </Record>
+              </Annotation>
+              <Annotation Term="UI.Hidden" Bool="true"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.DeleteHidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.EntityContainer/ChangeView">
+        <Annotation Term="UI.PresentationVariant">
+          <Record Type="UI.PresentationVariantType">
+            <PropertyValue Property="Visualizations">
+              <Collection>
+                <AnnotationPath>@UI.LineItem</AnnotationPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="RequestAtLeast">
+              <Collection>
+                <PropertyPath>parentKey</PropertyPath>
+                <PropertyPath>serviceEntity</PropertyPath>
+                <PropertyPath>serviceEntityPath</PropertyPath>
+                <PropertyPath>valueDataType</PropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="SortOrder">
+              <Collection>
+                <Record Type="Common.SortOrderType">
+                  <PropertyValue Property="Property" PropertyPath="createdAt"/>
+                  <PropertyValue Property="Descending" Bool="true"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.DeleteHidden" Bool="true"/>
+        <Annotation Term="Capabilities.DeleteRestrictions">
+          <Record Type="Capabilities.DeleteRestrictionsType">
+            <PropertyValue Property="Deletable" Bool="false"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Capabilities.InsertRestrictions">
+          <Record Type="Capabilities.InsertRestrictionsType">
+            <PropertyValue Property="Insertable" Bool="false"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Capabilities.UpdateRestrictions">
+          <Record Type="Capabilities.UpdateRestrictionsType">
+            <PropertyValue Property="Updatable" Bool="false"/>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/ID">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/keys">
+        <Annotation Term="Common.Label" String="{i18n>Changes.keys}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/attribute">
+        <Annotation Term="Common.Label" String="{i18n>Changes.attribute}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/valueChangedFrom">
+        <Annotation Term="UI.MultiLineText" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>Changes.valueChangedFrom}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/valueChangedTo">
+        <Annotation Term="UI.MultiLineText" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>Changes.valueChangedTo}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/entity">
+        <Annotation Term="Common.Label" String="{i18n>Changes.entity}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/serviceEntity">
+        <Annotation Term="Common.Label" String="{i18n>Changes.serviceEntity}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/parentKey">
+        <Annotation Term="Common.Label" String="{i18n>Changes.parentKey}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/serviceEntityPath">
+        <Annotation Term="Common.Label" String="{i18n>Changes.serviceEntityPath}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/modification">
+        <Annotation Term="Common.Label" String="{i18n>Changes.modification}"/>
+        <Annotation Term="Validation.AllowedValues">
+          <Collection>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="Create"/>
+              <PropertyValue Property="Value" String="create"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="Update"/>
+              <PropertyValue Property="Value" String="update"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="Delete"/>
+              <PropertyValue Property="Value" String="delete"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/valueDataType">
+        <Annotation Term="Common.Label" String="{i18n>Changes.valueDataType}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/changeLog_ID">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangeLog.ID}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangeLog.createdAt}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangeLog.createdBy}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/objectID">
+        <Annotation Term="Common.Label" String="{i18n>Changes.entityID}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/parentObjectID">
+        <Annotation Term="Common.Label" String="{i18n>Changes.parentEntityID}"/>
+      </Annotations>
+      <Annotations Target="DSTableMaintenanceService.ChangeView/entityKey">
+        <Annotation Term="Common.Label" String="{i18n>ChangeLog.entityKey}"/>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

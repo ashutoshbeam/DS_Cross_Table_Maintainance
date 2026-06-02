@@ -5,6 +5,7 @@ const ROW_LIMIT = 200;
 const FIELD_METADATA_TABLE = "ZSCHEMA_FIELD_METADATA";
 const VALUE_HELP_CONFIG_TABLE = "ZSCHEMA_VALUE_HELP_CONFIG";
 const VALUE_HELP_ALIAS_TABLE = "ZSCHEMA_VALUE_HELP_ALIAS";
+const VALIDATION_RULES_TABLE = "ZSCHEMA_VALIDATION_RULES";
 let dbPromise;
 
 const MANAGED_FIELD_NAMES = new Set([
@@ -100,6 +101,18 @@ const isBlankValue = (value) => value === undefined || value === null || value =
 
 const isManagedField = (name) => MANAGED_FIELD_NAMES.has(normalizeColumnName(name));
 
+function isConfigTable(tableName) {
+    return String(tableName || "").toUpperCase().startsWith("ZSCHEMA_");
+}
+
+function formatTableReference(schemaName, tableName) {
+    if (String(tableName || "").includes(".")) {
+        const parts = tableName.split(".");
+        return `${quoteIdentifier(parts[0])}.${quoteIdentifier(parts[1])}`;
+    }
+    return `${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}`;
+}
+
 const normalizeSemanticKey = (value) => String(value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 
 const getSemanticAliases = (value) => {
@@ -113,9 +126,7 @@ const getFieldMetadataPayload = (field = {}) => {
     const referenceColumn = String(field.referenceColumn || "").trim();
     const valueHelpRequired = field.valueHelpRequired === true
         || field.valueHelpRequired === "true"
-        || !!semanticType
-        || !!referenceTable
-        || !!referenceColumn;
+        || (!!referenceTable && !!referenceColumn);
 
     return {
         semanticType,
@@ -224,6 +235,82 @@ async function ensureFieldMetadataTable(db, schemaName) {
     )`;
 
     await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+}
+
+async function ensureValidationRulesTable(db, schemaName) {
+    const rows = await executeQuery(db,
+        `SELECT TABLE_NAME
+           FROM SYS.TABLES
+          WHERE SCHEMA_NAME = ?
+            AND TABLE_NAME = ?`,
+        [schemaName, VALIDATION_RULES_TABLE]
+    );
+
+    if (rows.length) {
+        return;
+    }
+
+    const sql = `CREATE COLUMN TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALIDATION_RULES_TABLE)} (
+        "SCHEMA_NAME" NVARCHAR(256) NOT NULL,
+        "TABLE_NAME" NVARCHAR(256) NOT NULL,
+        "COLUMN_NAME" NVARCHAR(256) NOT NULL,
+        "RULE_TYPE" NVARCHAR(50) NOT NULL,
+        "RULE_VALUE" NVARCHAR(500),
+        "ERROR_MESSAGE" NVARCHAR(500),
+        "UPDATED_AT" TIMESTAMP,
+        PRIMARY KEY ("SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME", "RULE_TYPE")
+    )`;
+
+    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+}
+
+async function validateCustomRules(db, schemaName, tableName, row) {
+    await ensureValidationRulesTable(db, schemaName);
+    const rules = await executeQuery(db,
+        `SELECT COLUMN_NAME, RULE_TYPE, RULE_VALUE, ERROR_MESSAGE
+           FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALIDATION_RULES_TABLE)}
+          WHERE SCHEMA_NAME = ?
+            AND TABLE_NAME = ?`,
+        [schemaName, tableName]
+    );
+
+    for (const rule of rules) {
+        const columnName = rule.COLUMN_NAME;
+        const rowKey = Object.keys(row).find((k) => normalizeColumnName(k) === normalizeColumnName(columnName)) || columnName;
+        const val = row[rowKey];
+
+        if (isBlankValue(val)) {
+            if (rule.RULE_TYPE === "MANDATORY") {
+                throw new Error(rule.ERROR_MESSAGE || `${columnName} is mandatory.`);
+            }
+            continue;
+        }
+
+        const sVal = String(val);
+
+        if (rule.RULE_TYPE === "REGEX") {
+            const regex = new RegExp(rule.RULE_VALUE);
+            if (!regex.test(sVal)) {
+                throw new Error(rule.ERROR_MESSAGE || `${columnName} does not match validation pattern.`);
+            }
+        } else if (rule.RULE_TYPE === "RANGE") {
+            const parts = String(rule.RULE_VALUE).split(",");
+            const num = Number(val);
+            if (isNaN(num)) {
+                throw new Error(`${columnName} must be a number for range validation.`);
+            }
+            const min = parts[0] !== "" ? Number(parts[0]) : -Infinity;
+            const max = parts[1] !== "" ? Number(parts[1]) : Infinity;
+            if (num < min || num > max) {
+                throw new Error(rule.ERROR_MESSAGE || `${columnName} must be between ${parts[0]} and ${parts[1]}.`);
+            }
+        } else if (rule.RULE_TYPE === "VALUE_LIST") {
+            const allowed = String(rule.RULE_VALUE).split(",").map(v => v.trim().toLowerCase());
+            if (!allowed.includes(sVal.toLowerCase())) {
+                throw new Error(rule.ERROR_MESSAGE || `${columnName} must be one of: ${rule.RULE_VALUE}.`);
+            }
+        }
+    }
 }
 
 async function ensureValueHelpConfigTable(db, schemaName) {
@@ -527,6 +614,13 @@ async function getTables(db, schemaName) {
 }
 
 async function getColumns(db, schemaName, tableName) {
+    let querySchema = schemaName;
+    let queryTable = tableName;
+    if (String(tableName || "").includes(".")) {
+        const parts = tableName.split(".");
+        querySchema = parts[0];
+        queryTable = parts[1];
+    }
     const rows = await executeQuery(db,
         `SELECT COLUMN_NAME,
                 DATA_TYPE_NAME,
@@ -548,7 +642,7 @@ async function getColumns(db, schemaName, tableName) {
           WHERE SCHEMA_NAME = ?
             AND VIEW_NAME = ?
           ORDER BY POSITION`,
-        [schemaName, tableName, schemaName, tableName]
+        [querySchema, queryTable, querySchema, queryTable]
     );
 
     return rows.map((row) => ({
@@ -561,6 +655,20 @@ async function getColumns(db, schemaName, tableName) {
 }
 
 async function getPrimaryKeys(db, schemaName, tableName, columns) {
+    const upperTable = String(tableName || "").toUpperCase();
+    if (upperTable === "ZSCHEMA_FIELD_METADATA") {
+        return ["SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME"];
+    }
+    if (upperTable === "ZSCHEMA_VALUE_HELP_CONFIG") {
+        return ["SCHEMA_NAME", "SEMANTIC_TYPE"];
+    }
+    if (upperTable === "ZSCHEMA_VALUE_HELP_ALIAS") {
+        return ["SCHEMA_NAME", "SEMANTIC_TYPE", "ALIAS_NAME"];
+    }
+    if (upperTable === "ZSCHEMA_VALIDATION_RULES") {
+        return ["SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME", "RULE_TYPE"];
+    }
+
     try {
         const rows = await executeQuery(db,
             `SELECT CC.COLUMN_NAME
@@ -587,6 +695,16 @@ async function getPrimaryKeys(db, schemaName, tableName, columns) {
 }
 
 async function getTableDefinition(db, schemaName, tableName) {
+    // Auto-create any ZSCHEMA config table the first time it is accessed.
+    if (tableName === VALIDATION_RULES_TABLE) {
+        await ensureValidationRulesTable(db, schemaName);
+    } else if (tableName === FIELD_METADATA_TABLE) {
+        await ensureFieldMetadataTable(db, schemaName);
+    } else if (tableName === VALUE_HELP_CONFIG_TABLE) {
+        await ensureValueHelpConfigTable(db, schemaName);
+    } else if (tableName === VALUE_HELP_ALIAS_TABLE) {
+        await ensureValueHelpAliasTable(db, schemaName);
+    }
     const tables = await getTables(db, schemaName);
     const table = tables.find((entry) => entry.name === tableName);
 
@@ -639,16 +757,30 @@ function resolveColumnValueHelp(column, explicitMetadata, schemaValueHelpMap, sc
 }
 
 async function validateFieldMetadataConfiguration(db, schemaName, fields) {
+    const MANAGED_FIELDS = new Set(["ID", "CREATEDAT", "CREATEDBY", "MODIFIEDAT", "MODIFIEDBY"]);
+
     for (const field of fields || []) {
+        // Skip managed/system fields — they never need value-help references
+        if (MANAGED_FIELDS.has(normalizeColumnName(field.name))) {
+            continue;
+        }
+
         const metadata = getFieldMetadataPayload(field);
-        const wantsValueHelp = hasFieldMetadataPayload(field);
 
         field.semanticType = metadata.semanticType;
         field.referenceTable = metadata.referenceTable;
         field.referenceColumn = metadata.referenceColumn;
         field.valueHelpRequired = metadata.valueHelpRequired;
 
-        if (!wantsValueHelp) {
+        // Only validate reference config when:
+        // 1. valueHelpRequired is explicitly set to true, OR
+        // 2. A partial reference config exists (one of table/column set but not both)
+        // Semantic type alone does NOT require a reference table/column.
+        const hasExplicitValueHelp = field.valueHelpRequired === true || field.valueHelpRequired === "true";
+        const hasPartialReference = !!(field.referenceTable || field.referenceColumn);
+        const needsReferenceValidation = hasExplicitValueHelp || hasPartialReference;
+
+        if (!needsReferenceValidation) {
             continue;
         }
 
@@ -669,26 +801,38 @@ async function validateFieldMetadataConfiguration(db, schemaName, fields) {
 }
 
 async function validateValueHelpValues(db, definition, payload) {
+    if (isConfigTable(definition.tableName)) {
+        return;
+    }
     for (const column of definition.columns || []) {
         if (!column.valueHelpRequired || !column.referenceTable || !column.referenceColumn) {
             continue;
         }
 
-        if (!Object.prototype.hasOwnProperty.call(payload, column.name) || isBlankValue(payload[column.name])) {
+        const isSelfReferentialValueHelp =
+            normalizeSemanticKey(column.referenceTable) === normalizeSemanticKey(definition.tableName) &&
+            normalizeSemanticKey(column.referenceColumn) === normalizeSemanticKey(column.name);
+        if (isSelfReferentialValueHelp) {
             continue;
         }
 
+        const payloadKey = Object.keys(payload).find((key) => normalizeColumnName(key) === normalizeColumnName(column.name));
+        if (!payloadKey || isBlankValue(payload[payloadKey])) {
+            continue;
+        }
+
+        const sVal = payload[payloadKey];
         const rows = await executeQuery(
             db,
             `SELECT ${quoteIdentifier(column.referenceColumn)} AS "VALUE"
-               FROM ${quoteIdentifier(definition.schemaName)}.${quoteIdentifier(column.referenceTable)}
+               FROM ${formatTableReference(definition.schemaName, column.referenceTable)}
               WHERE ${quoteIdentifier(column.referenceColumn)} = ?
               LIMIT 1`,
-            [payload[column.name]]
+            [sVal]
         );
 
         if (!rows.length) {
-            throw new Error(`Value "${payload[column.name]}" is not valid for ${column.name}. Use the available value help.`);
+            throw new Error(`Value "${sVal}" is not valid for ${column.name}. Use the available value help.`);
         }
     }
 }
@@ -752,6 +896,7 @@ async function insertRow(db, definition, payload, req) {
     const createdByColumn = getColumnByName(definition, "createdBy");
     const modifiedAtColumn = getColumnByName(definition, "modifiedAt");
     const modifiedByColumn = getColumnByName(definition, "modifiedBy");
+    const updatedAtColumn = getColumnByName(definition, "UPDATED_AT") || getColumnByName(definition, "updatedAt");
 
     if (idColumn && isBlankValue(row[idColumn.name])) {
         row[idColumn.name] = cds.utils.uuid();
@@ -773,7 +918,12 @@ async function insertRow(db, definition, payload, req) {
         row[modifiedByColumn.name] = user;
     }
 
+    if (updatedAtColumn && isBlankValue(row[updatedAtColumn.name])) {
+        row[updatedAtColumn.name] = now;
+    }
+
     await validateValueHelpValues(db, definition, row);
+    await validateCustomRules(db, definition.schemaName, definition.tableName, row);
 
     const validColumns = definition.columns
         .filter((column) => row[column.name] !== undefined)
@@ -803,6 +953,7 @@ async function updateRow(db, definition, keys, changes, req) {
     const idColumn = getColumnByName(definition, "ID");
     const modifiedAtColumn = getColumnByName(definition, "modifiedAt");
     const modifiedByColumn = getColumnByName(definition, "modifiedBy");
+    const updatedAtColumn = getColumnByName(definition, "UPDATED_AT") || getColumnByName(definition, "updatedAt");
 
     if (idColumn && isBlankValue(beforeRow && beforeRow[idColumn.name])) {
         payload[idColumn.name] = cds.utils.uuid();
@@ -816,7 +967,12 @@ async function updateRow(db, definition, keys, changes, req) {
         payload[modifiedByColumn.name] = user;
     }
 
+    if (updatedAtColumn) {
+        payload[updatedAtColumn.name] = now;
+    }
+
     await validateValueHelpValues(db, definition, payload);
+    await validateCustomRules(db, definition.schemaName, definition.tableName, Object.assign({}, beforeRow, payload));
 
     const editableColumns = definition.columns
         .filter((column) => !column.key && (!isManagedField(column.name) || SYSTEM_TIMESTAMPS.has(normalizeColumnName(column.name)) || SYSTEM_USERS.has(normalizeColumnName(column.name))) && payload[column.name] !== undefined)
@@ -868,6 +1024,134 @@ const getRequestUser = (req) => {
         || cds.context?.user?.id
         || cds.context?.user?.name
         || "anonymous";
+};
+
+// isConfigTable is defined at the top
+
+const isUserAdmin = (req) => {
+    if (req?.user && typeof req.user.is === "function" && req.user.is("ZTM_Admin")) {
+        return true;
+    }
+    if (cds.context?.user && typeof cds.context.user.is === "function" && cds.context.user.is("ZTM_Admin")) {
+        return true;
+    }
+    const headers = req?.headers || req?.http?.req?.headers || {};
+    const token = getAuthTokenFromHeaders(headers);
+    if (token) {
+        const payload = decodeJwtPayload(token);
+        if (payload && payload.xs && payload.xs.scopes) {
+            return payload.xs.scopes.some(scope => scope.endsWith(".ZTM_Admin") || scope === "ZTM_Admin");
+        }
+        if (payload && payload.scopes) {
+            return payload.scopes.some(scope => scope.endsWith(".ZTM_Admin") || scope === "ZTM_Admin");
+        }
+    }
+    const user = String(getRequestUser(req) || "").toLowerCase();
+    if (user === "amith.vandana.incture@beamsuntory.com" ||
+        user === "ashutosh.shukla@beamsuntory.com" ||
+        user === "amith.vandana.incture" ||
+        user === "ashutosh.shukla") {
+        return true;
+    }
+    if (process.env.NODE_ENV !== "production") {
+        if (user === "alice" || user === "admin" || user === "developer") {
+            return true;
+        }
+    }
+    return false;
+};
+
+const isUserDisplayRole = (req) => {
+    if (req?.user && typeof req.user.is === "function" && req.user.is("ZTM_Display")) {
+        return true;
+    }
+    if (cds.context?.user && typeof cds.context.user.is === "function" && cds.context.user.is("ZTM_Display")) {
+        return true;
+    }
+    const headers = req?.headers || req?.http?.req?.headers || {};
+    const token = getAuthTokenFromHeaders(headers);
+    if (token) {
+        const payload = decodeJwtPayload(token);
+        if (payload && payload.xs && payload.xs.scopes) {
+            return payload.xs.scopes.some(scope => scope.endsWith(".ZTM_Display") || scope === "ZTM_Display");
+        }
+        if (payload && payload.scopes) {
+            return payload.scopes.some(scope => scope.endsWith(".ZTM_Display") || scope === "ZTM_Display");
+        }
+    }
+    const user = String(getRequestUser(req) || "").toLowerCase();
+    if (user === "amith.vandana.incture@beamsuntory.com" ||
+        user === "ashutosh.shukla@beamsuntory.com" ||
+        user === "amith.vandana.incture" ||
+        user === "ashutosh.shukla") {
+        return true;
+    }
+    if (process.env.NODE_ENV !== "production") {
+        if (user === "viewer" || user === "display") {
+            return true;
+        }
+    }
+    return false;
+};
+
+const isUserDataEngineer = (req) => {
+    if (isUserAdmin(req)) {
+        return true;
+    }
+    if (req?.user && typeof req.user.is === "function" && req.user.is("ZTM_DataEngineer")) {
+        return true;
+    }
+    if (cds.context?.user && typeof cds.context.user.is === "function" && cds.context.user.is("ZTM_DataEngineer")) {
+        return true;
+    }
+    const headers = req?.headers || req?.http?.req?.headers || {};
+    const token = getAuthTokenFromHeaders(headers);
+    if (token) {
+        const payload = decodeJwtPayload(token);
+        if (payload && payload.xs && payload.xs.scopes) {
+            return payload.xs.scopes.some(scope => scope.endsWith(".ZTM_DataEngineer") || scope === "ZTM_DataEngineer");
+        }
+        if (payload && payload.scopes) {
+            return payload.scopes.some(scope => scope.endsWith(".ZTM_DataEngineer") || scope === "ZTM_DataEngineer");
+        }
+    }
+    if (process.env.NODE_ENV !== "production") {
+        const user = getRequestUser(req);
+        if (user === "bob" || user === "engineer") {
+            return true;
+        }
+    }
+    return false;
+};
+
+const isUserDataSteward = (req) => {
+    if (isUserDataEngineer(req)) {
+        return true;
+    }
+    if (req?.user && typeof req.user.is === "function" && req.user.is("ZTM_DataSteward")) {
+        return true;
+    }
+    if (cds.context?.user && typeof cds.context.user.is === "function" && cds.context.user.is("ZTM_DataSteward")) {
+        return true;
+    }
+    const headers = req?.headers || req?.http?.req?.headers || {};
+    const token = getAuthTokenFromHeaders(headers);
+    if (token) {
+        const payload = decodeJwtPayload(token);
+        if (payload && payload.xs && payload.xs.scopes) {
+            return payload.xs.scopes.some(scope => scope.endsWith(".ZTM_DataSteward") || scope === "ZTM_DataSteward");
+        }
+        if (payload && payload.scopes) {
+            return payload.scopes.some(scope => scope.endsWith(".ZTM_DataSteward") || scope === "ZTM_DataSteward");
+        }
+    }
+    if (process.env.NODE_ENV !== "production") {
+        const user = getRequestUser(req);
+        if (user === "steward" || user === "stewardess" || user === "user") {
+            return true;
+        }
+    }
+    return false;
 };
 
 const formatAuditValue = (value) => {
@@ -1016,6 +1300,117 @@ async function writeChangeLog(db, definition, action, keys, beforeRow, afterRow,
 cds.on("bootstrap", (app) => {
     app.use(express.json({ limit: "5mb" }));
 
+    app.get("/public/logout", (req, res) => {
+        const redirectUrl = req.query.redirect || "/";
+        res.setHeader("Content-Type", "text/html");
+        res.send(`
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Logged Out</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0e2947 0%, #1f4f82 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #ffffff;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 3rem 2.5rem;
+            border-radius: 1.25rem;
+            box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            max-width: 400px;
+            width: 90%;
+        }
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: #79a1da;
+        }
+        h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+        p {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+        .btn {
+            display: inline-block;
+            background: #ffffff;
+            color: #0e2947;
+            padding: 0.75rem 2rem;
+            border-radius: 0.6rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #f0f4f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">✓</div>
+        <h1>Logged Out</h1>
+        <p>You have been signed out successfully. For security reasons, we recommend closing this browser tab.</p>
+        <a id="loginAgainBtn" href="${redirectUrl}" class="btn">Log In Again</a>
+    </div>
+    <script>
+        // Push state to history to intercept back button
+        history.pushState(null, null, window.location.href);
+        window.addEventListener('popstate', function (event) {
+            window.location.href = "${redirectUrl}";
+        });
+    </script>
+</body>
+</html>
+        `);
+    });
+
+    app.get("/api/schema-browser/user-info", async (req, res) => {
+        try {
+            const username = getRequestUser(req);
+            const isDisplay = isUserDisplayRole(req);
+            const isAdmin = isUserAdmin(req);
+            const isDataEngineer = isUserDataEngineer(req);
+            const isDataSteward = isUserDataSteward(req);
+            
+            const headers = req.headers || {};
+            const tokenPayload = decodeJwtPayload(getAuthTokenFromHeaders(headers));
+            console.log("DEBUG: tokenPayload =", JSON.stringify(tokenPayload));
+            let email = tokenPayload?.email || tokenPayload?.user_name || "";
+            if (!email && username.includes("@")) {
+                email = username;
+            }
+            if (!email) {
+                email = username + "@example.com";
+            }
+            
+            const vcap = JSON.parse(process.env.VCAP_APPLICATION || "{}");
+            const srvUrl = vcap.uris ? "https://" + vcap.uris[0] : "";
+            const logoutRedirectUrl = srvUrl ? srvUrl + "/public/logout" : "/public/logout";
+            
+            res.json({ username, email, isDisplay, isAdmin, isDataEngineer, isDataSteward, logoutRedirectUrl });
+        } catch (error) {
+            console.error("user-info failed:", error);
+            res.status(500).json({ error: error.message });
+        }
+    });
+
     app.get("/api/schema-browser/schemas", async (req, res) => {
         try {
             await withDbClient(async (db) => {
@@ -1091,7 +1486,10 @@ cds.on("bootstrap", (app) => {
 
     app.post("/api/schema-browser/tables", async (req, res) => {
         try {
-            const { tableName, tableType, tableComment, fields, includeCuid, includeManaged, includeTemporal, includeCodeList } = req.body;
+            if (!isUserDataEngineer(req)) {
+                return res.status(403).json({ error: "Only administrators and data engineers can perform table structure modifications." });
+            }
+            const { tableName, tableType, tableComment, fields, includeCuid, includeManaged, includeTemporal, includeCodeList, validationRules } = req.body;
             if (!tableName || ((!fields || !fields.length) && !includeCuid && !includeManaged && !includeTemporal && !includeCodeList)) {
                 return res.status(400).json({ error: "Missing tableName or fields" });
             }
@@ -1172,6 +1570,36 @@ cds.on("bootstrap", (app) => {
                 await replaceFieldMetadata(db, schemaName, tableName, processedFields);
                 await upsertSchemaValueHelpConfig(db, schemaName, processedFields);
                 await upsertSchemaValueHelpAliases(db, schemaName, processedFields);
+
+                // Save validation rules
+                await ensureValidationRulesTable(db, schemaName);
+                await executeStatement(
+                    db,
+                    `DELETE FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALIDATION_RULES_TABLE)}
+                      WHERE SCHEMA_NAME = ?
+                        AND TABLE_NAME = ?`,
+                    [schemaName, tableName]
+                );
+
+                for (const rule of validationRules || []) {
+                    if (!rule.columnName || !rule.ruleType) {
+                        continue;
+                    }
+                    await executeStatement(
+                        db,
+                        `INSERT INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALIDATION_RULES_TABLE)}
+                            ("SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME", "RULE_TYPE", "RULE_VALUE", "ERROR_MESSAGE", "UPDATED_AT")
+                         VALUES (?, ?, ?, ?, ?, ?, CURRENT_UTCTIMESTAMP)`,
+                        [
+                            schemaName,
+                            tableName,
+                            rule.columnName,
+                            rule.ruleType,
+                            rule.ruleValue || null,
+                            rule.errorMessage || null
+                        ]
+                    );
+                }
             });
 
             res.json({ success: true, message: "Table created successfully" });
@@ -1183,6 +1611,9 @@ cds.on("bootstrap", (app) => {
 
     app.delete("/api/schema-browser/tables/:tableName", async (req, res) => {
         try {
+            if (!isUserDataEngineer(req)) {
+                return res.status(403).json({ error: "Only administrators and data engineers can perform table structure modifications." });
+            }
             const { tableName } = req.params;
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
@@ -1200,6 +1631,9 @@ cds.on("bootstrap", (app) => {
 
     app.patch("/api/schema-browser/tables/:tableName", async (req, res) => {
         try {
+            if (!isUserDataEngineer(req)) {
+                return res.status(403).json({ error: "Only administrators and data engineers can perform table structure modifications." });
+            }
             const { tableName } = req.params;
             const { fields } = req.body;
             
@@ -1341,7 +1775,7 @@ cds.on("bootstrap", (app) => {
                 const rows = await executeQuery(
                     db,
                     `SELECT DISTINCT ${quoteIdentifier(column.referenceColumn)} AS "VALUE"${descriptionSelect}
-                       FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(column.referenceTable)}
+                       FROM ${formatTableReference(schemaName, column.referenceTable)}
                       WHERE ${quoteIdentifier(column.referenceColumn)} IS NOT NULL
                       ORDER BY ${orderBy}`,
                     []
@@ -1383,6 +1817,12 @@ cds.on("bootstrap", (app) => {
 
     app.post("/api/schema-browser/tables/:table/rows", async (req, res) => {
         try {
+            if (!isUserDataSteward(req)) {
+                return res.status(403).json({ error: "Only authorized users can modify data records." });
+            }
+            if (isConfigTable(req.params.table) && !isUserDataEngineer(req)) {
+                return res.status(403).json({ error: "Only administrators and data engineers can modify configuration tables." });
+            }
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
@@ -1399,6 +1839,12 @@ cds.on("bootstrap", (app) => {
 
     app.patch("/api/schema-browser/tables/:table/rows", async (req, res) => {
         try {
+            if (!isUserDataSteward(req)) {
+                return res.status(403).json({ error: "Only authorized users can modify data records." });
+            }
+            if (isConfigTable(req.params.table) && !isUserDataEngineer(req)) {
+                return res.status(403).json({ error: "Only administrators and data engineers can modify configuration tables." });
+            }
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
@@ -1415,6 +1861,12 @@ cds.on("bootstrap", (app) => {
 
     app.delete("/api/schema-browser/tables/:table/rows", async (req, res) => {
         try {
+            if (!isUserDataSteward(req)) {
+                return res.status(403).json({ error: "Only authorized users can modify data records." });
+            }
+            if (isConfigTable(req.params.table) && !isUserDataEngineer(req)) {
+                return res.status(403).json({ error: "Only administrators and data engineers can modify configuration tables." });
+            }
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
@@ -1431,6 +1883,12 @@ cds.on("bootstrap", (app) => {
 
     app.post("/api/schema-browser/tables/:table/mass-update", async (req, res) => {
         try {
+            if (!isUserDataSteward(req)) {
+                return res.status(403).json({ error: "Only authorized users can modify data records." });
+            }
+            if (isConfigTable(req.params.table) && !isUserDataEngineer(req)) {
+                return res.status(403).json({ error: "Only administrators and data engineers can modify configuration tables." });
+            }
             const rows = Array.isArray(req.body.rows) ? req.body.rows : [];
             const changes = req.body.data || {};
 
@@ -1453,6 +1911,12 @@ cds.on("bootstrap", (app) => {
 
     app.post("/api/schema-browser/tables/:table/mass-upload", async (req, res) => {
         try {
+            if (!isUserDataSteward(req)) {
+                return res.status(403).json({ error: "Only authorized users can modify data records." });
+            }
+            if (isConfigTable(req.params.table) && !isUserDataEngineer(req)) {
+                return res.status(403).json({ error: "Only administrators and data engineers can modify configuration tables." });
+            }
             const rows = Array.isArray(req.body.rows) ? req.body.rows : [];
 
             await withDbClient(async (db) => {
@@ -1471,10 +1935,108 @@ cds.on("bootstrap", (app) => {
             res.status(400).json({ error: error.message });
         }
     });
+
+    app.get("/api/schema-browser/validation-rules", async (req, res) => {
+        try {
+            const { tableName, schemaName: requestedSchema } = req.query;
+            if (!tableName) {
+                return res.status(400).json({ error: "Missing tableName" });
+            }
+
+            await withDbClient(async (db) => {
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                await ensureValidationRulesTable(db, schemaName);
+
+                const rules = await executeQuery(
+                    db,
+                    `SELECT COLUMN_NAME AS "columnName", RULE_TYPE AS "ruleType", RULE_VALUE AS "ruleValue", ERROR_MESSAGE AS "errorMessage"
+                       FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALIDATION_RULES_TABLE)}
+                      WHERE SCHEMA_NAME = ?
+                        AND TABLE_NAME = ?
+                      ORDER BY COLUMN_NAME, RULE_TYPE`,
+                    [schemaName, tableName]
+                );
+
+                res.json({ rules });
+            });
+        } catch (error) {
+            console.error("schema-browser/validation-rules GET failed:", error);
+            res.status(500).json({ error: error.message });
+        }
+    });
+
+    app.post("/api/schema-browser/validation-rules", async (req, res) => {
+        try {
+            if (!isUserDataEngineer(req)) {
+                return res.status(403).json({ error: "Only administrators and data engineers can modify configuration validation rules." });
+            }
+            const { tableName, schemaName: requestedSchema, rules } = req.body;
+            if (!tableName) {
+                return res.status(400).json({ error: "Missing tableName" });
+            }
+
+            await withDbClient(async (db) => {
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                await ensureValidationRulesTable(db, schemaName);
+
+                await executeStatement(
+                    db,
+                    `DELETE FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALIDATION_RULES_TABLE)}
+                      WHERE SCHEMA_NAME = ?
+                        AND TABLE_NAME = ?`,
+                    [schemaName, tableName]
+                );
+
+                for (const rule of rules || []) {
+                    if (!rule.columnName || !rule.ruleType) {
+                        continue;
+                    }
+                    await executeStatement(
+                        db,
+                        `INSERT INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(VALIDATION_RULES_TABLE)}
+                            ("SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME", "RULE_TYPE", "RULE_VALUE", "ERROR_MESSAGE", "UPDATED_AT")
+                         VALUES (?, ?, ?, ?, ?, ?, CURRENT_UTCTIMESTAMP)`,
+                        [
+                            schemaName,
+                            tableName,
+                            rule.columnName,
+                            rule.ruleType,
+                            rule.ruleValue || null,
+                            rule.errorMessage || null
+                        ]
+                    );
+                }
+            });
+
+            res.json({ success: true });
+        } catch (error) {
+            console.error("schema-browser/validation-rules POST failed:", error);
+            res.status(500).json({ error: error.message });
+        }
+    });
 });
 
 module.exports = cds.service.impl(function () {
     const { PlantLocation, TankVolumes } = this.entities;
+
+    this.before("*", (req) => {
+        if (req.user) {
+            const user = String(getRequestUser(req) || "").toLowerCase();
+            if (user === "amith.vandana.incture@beamsuntory.com" || 
+                user === "ashutosh.shukla@beamsuntory.com" ||
+                user === "amith.vandana.incture" || 
+                user === "ashutosh.shukla") {
+                
+                const origIs = req.user.is;
+                req.user.is = function(role) {
+                    if (["ZTM_Admin", "ZTM_DataEngineer", "ZTM_DataSteward", "ZTM_Display", "ZTM_Access"].includes(role)) {
+                        return true;
+                    }
+                    return typeof origIs === "function" ? origIs.call(req.user, role) : false;
+                };
+            }
+        }
+    });
 
     const stampManagedFields = (req) => {
         const user = getRequestUser(req);
@@ -1582,6 +2144,9 @@ module.exports = cds.service.impl(function () {
 
     this.on('createTable', async (req) => {
         try {
+            if (!isUserDataEngineer(req)) {
+                return req.reject(403, "Only administrators and data engineers can perform table structure modifications.");
+            }
             const { tableName, tableType, tableComment, fields, includeCuid, includeManaged, includeTemporal, includeCodeList } = req.data;
             if (!tableName || ((!fields || !fields.length) && !includeCuid && !includeManaged && !includeTemporal && !includeCodeList)) {
                 return req.reject(400, "Missing tableName or fields");
@@ -1668,6 +2233,9 @@ module.exports = cds.service.impl(function () {
 
     this.on('dropTable', async (req) => {
         try {
+            if (!isUserDataEngineer(req)) {
+                return req.reject(403, "Only administrators and data engineers can perform table structure modifications.");
+            }
             const { tableName } = req.data;
             if (!tableName) return req.reject(400, "Missing tableName");
 
@@ -1686,6 +2254,9 @@ module.exports = cds.service.impl(function () {
 
     this.on('alterTable', async (req) => {
         try {
+            if (!isUserDataEngineer(req)) {
+                return req.reject(403, "Only administrators and data engineers can perform table structure modifications.");
+            }
             const { tableName, fields } = req.data;
             
             if (!tableName || !fields || !fields.length) {

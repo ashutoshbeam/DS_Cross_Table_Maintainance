@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Maintenance Smoke Test</title>
+    <script
+        id="sap-ui-bootstrap"
+        src="https://ui5.sap.com/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_fiori_3"
+        data-sap-ui-async="true"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-libs="sap.m">
+    </script>
+    <script>
+        sap.ui.getCore().attachInit(function () {
+            "use strict";
+
+            var oModel = new sap.ui.model.odata.v4.ODataModel({
+                serviceUrl: "odata/v4/farm-tank/",
+                synchronizationMode: "None",
+                operationMode: "Server",
+                autoExpandSelect: true
+            });
+
+            var oTable = new sap.m.Table({
+                growing: true,
+                growingScrollToLoad: true,
+                inset: false,
+                columns: [
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Plant" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Company Code" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Location" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Location Type" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Region" }) })
+                ]
+            });
+
+            oTable.setModel(oModel);
+            oTable.bindItems({
+                path: "/PlantLocation",
+                template: new sap.m.ColumnListItem({
+                    cells: [
+                        new sap.m.Text({ text: "{PLANT}" }),
+                        new sap.m.Text({ text: "{COMPANY_CODE}" }),
+                        new sap.m.Text({ text: "{LOCATION}" }),
+                        new sap.m.Text({ text: "{LOCATION_TYPE}" }),
+                        new sap.m.Text({ text: "{REGION}" })
+                    ]
+                })
+            });
+
+            var oPage = new sap.m.Page({
+                title: "Table Maintenance Smoke Test",
+                content: [
+                    new sap.m.MessageStrip({
+                        text: "This page bypasses Fiori elements and shell service startup. If data loads here, the CAP service is fine and the issue is in FE/runtime integration.",
+                        type: "Information",
+                        showIcon: true
+                    }),
+                    oTable
+                ]
+            });
+
+            new sap.m.App({
+                pages: [oPage]
+            }).placeAt("content");
+        });
+    </script>
+</head>
+<body class="sapUiBody" id="content"></body>
+</html>

@@ -1,17 +1,31 @@
-using dwcmission.farm as db from '../db/data-model';
+using ztablemaintenance.farm as db from '../db/data-model';
 using { sap.changelog.ChangeView as ChangelogChangeView } from '@cap-js/change-tracking';
 
-service FarmTankService @(path: '/odata/v4/farm-tank') {
+service DSTableMaintenanceService @(path: '/odata/v4/ds-table-maintenance') {
     entity TankVolumes
       @(restrict : [
             {
+                grant : [ 'READ' ],
+                to : [ 'ZTM_Display' ]
+            },
+            {
                 grant : [ '*' ],
-                to : [ 'FieldTechnician' ]
+                to : [ 'ZTM_DataSteward', 'ZTM_DataEngineer', 'ZTM_Admin' ]
             }
              ])
       as projection on db.TankVolumes_M;
 
     entity PlantLocation
+      @(restrict : [
+            {
+                grant : [ 'READ' ],
+                to : [ 'ZTM_Display' ]
+            },
+            {
+                grant : [ '*' ],
+                to : [ 'ZTM_DataSteward', 'ZTM_DataEngineer', 'ZTM_Admin' ]
+            }
+             ])
       as projection on db.ZPLANT_LOCATION;
 
     entity ChangeView as projection on ChangelogChangeView;

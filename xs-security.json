@@ -1,19 +1,67 @@
 {
-  "xsappname": "FarmTankCAPProxy",
+  "xsappname": "ZTableMaintenance",
   "tenant-mode": "dedicated",
   "description": "Security profile of called application",
   "scopes": [
     {
-      "name": "$XSAPPNAME.Access",
-      "description": "Technical access to FarmTankCAPProxy"
+      "name": "$XSAPPNAME.ZTM_Access",
+      "description": "Technical access to ZTableMaintenance"
+    },
+    {
+      "name": "$XSAPPNAME.ZTM_DataSteward",
+      "description": "ZTM Steward access to view & maintain data"
+    },
+    {
+      "name": "$XSAPPNAME.ZTM_Display",
+      "description": "ZTM Display access to view table data without making changes"
+    },
+    {
+      "name": "$XSAPPNAME.ZTM_DataEngineer",
+      "description": "ZTM Data Engineer access to design tables & rules"
+    },
+    {
+      "name": "$XSAPPNAME.ZTM_Admin",
+      "description": "ZTM Admin access to update config tables & Admin Console"
     }
   ],
   "role-templates": [
     {
-      "name": "Access",
-      "description": "Technical access to FarmTankCAPProxy",
+      "name": "ZTM_Access",
+      "description": "Technical access to ZTableMaintenance",
       "scope-references": [
-        "$XSAPPNAME.Access"
+        "$XSAPPNAME.ZTM_Access"
+      ]
+    },
+    {
+      "name": "ZTM_Display",
+      "description": "ZTM Display access to view table data without making changes",
+      "scope-references": [
+        "$XSAPPNAME.ZTM_Access",
+        "$XSAPPNAME.ZTM_Display"
+      ]
+    },
+    {
+      "name": "ZTM_DataSteward",
+      "description": "ZTM Steward access to view & maintain data",
+      "scope-references": [
+        "$XSAPPNAME.ZTM_Access",
+        "$XSAPPNAME.ZTM_DataSteward"
+      ]
+    },
+    {
+      "name": "ZTM_DataEngineer",
+      "description": "ZTM Data Engineer access to design tables & rules",
+      "scope-references": [
+        "$XSAPPNAME.ZTM_Access",
+        "$XSAPPNAME.ZTM_DataEngineer"
+      ]
+    },
+    {
+      "name": "ZTM_Admin",
+      "description": "ZTM Admin access to update config tables & Admin Console",
+      "scope-references": [
+        "$XSAPPNAME.ZTM_Access",
+        "$XSAPPNAME.ZTM_Admin"
       ]
     }
   ]

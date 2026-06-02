@@ -1,5 +1,5 @@
 sap.ui.define([
-    "upsonly/plantlocationapp/controller/BaseController",
+    "upsonly/tablemaintenanceapp/controller/BaseController",
     "sap/ui/model/json/JSONModel",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
@@ -7,7 +7,7 @@ sap.ui.define([
 ], function (BaseController, JSONModel, Filter, FilterOperator, MessageBox) {
     "use strict";
 
-    return BaseController.extend("upsonly.plantlocationapp.controller.List", {
+    return BaseController.extend("upsonly.tablemaintenanceapp.controller.List", {
         onInit: function () {
             this.setModel(new JSONModel({
                 search: "",

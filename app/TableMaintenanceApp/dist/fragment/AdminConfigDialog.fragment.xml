@@ -1,0 +1,46 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Dialog
+        id="adminConfigDialog"
+        title="{i18n>adminConfigDialogTitle}"
+        type="Message"
+        contentWidth="28rem">
+        <content>
+            <VBox class="sapUiContentPadding">
+                <Text text="{i18n>adminConfigDialogSelect}" class="sapUiSmallMarginBottom" styleClass="sapUiTinyMarginBottom" />
+                <List id="adminConfigList" mode="None" class="sapUiSizeCompact">
+                    <StandardListItem
+                        title="{i18n>configFieldMetadata}"
+                        description="ZSCHEMA_FIELD_METADATA"
+                        icon="sap-icon://table-column"
+                        type="Active"
+                        press=".onAdminConfigTableSelect" />
+                    <StandardListItem
+                        title="{i18n>configValidationRules}"
+                        description="ZSCHEMA_VALIDATION_RULES"
+                        icon="sap-icon://rule-editor"
+                        type="Active"
+                        press=".onAdminConfigTableSelect" />
+                    <StandardListItem
+                        title="{i18n>configValueHelpConfig}"
+                        description="ZSCHEMA_VALUE_HELP_CONFIG"
+                        icon="sap-icon://search"
+                        type="Active"
+                        press=".onAdminConfigTableSelect" />
+                    <StandardListItem
+                        title="{i18n>configValueHelpAlias}"
+                        description="ZSCHEMA_VALUE_HELP_ALIAS"
+                        icon="sap-icon://alias"
+                        type="Active"
+                        press=".onAdminConfigTableSelect" />
+                </List>
+            </VBox>
+        </content>
+        <beginButton>
+            <Button
+                text="{i18n>configTablesClose}"
+                press=".onCloseAdminConfig" />
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

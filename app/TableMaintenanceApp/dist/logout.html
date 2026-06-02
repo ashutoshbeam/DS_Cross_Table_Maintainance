@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Logged Out</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0e2947 0%, #1f4f82 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #ffffff;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 3rem 2.5rem;
+            border-radius: 1.25rem;
+            box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            max-width: 400px;
+            width: 90%;
+        }
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: #79a1da;
+        }
+        h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+        p {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+        .btn {
+            display: inline-block;
+            background: #ffffff;
+            color: #0e2947;
+            padding: 0.75rem 2rem;
+            border-radius: 0.6rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #f0f4f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">✓</div>
+        <h1>Logged Out</h1>
+        <p>You have been signed out successfully. For security reasons, we recommend closing this browser tab.</p>
+        <a id="loginAgainBtn" href="index.html" class="btn">Log In Again</a>
+    </div>
+    <script>
+        // Read redirect parameter and update the 'Log In Again' link dynamically
+        var urlParams = new URLSearchParams(window.location.search);
+        var redirectUrl = urlParams.get('redirect') || "index.html";
+        
+        var loginBtn = document.getElementById('loginAgainBtn');
+        if (loginBtn) {
+            loginBtn.setAttribute('href', redirectUrl);
+        }
+
+        // Push state to history to intercept back button
+        history.pushState(null, null, window.location.href);
+        window.addEventListener('popstate', function (event) {
+            // When the user clicks the browser Back button, redirect them forward to the login/landing page
+            // instead of letting them hit the expired SAML/OAuth callback URL (which causes HTTP 400)
+            window.location.href = redirectUrl;
+        });
+    </script>
+</body>
+</html>

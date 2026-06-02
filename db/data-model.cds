@@ -1,4 +1,4 @@
-namespace dwcmission.farm;
+namespace ztablemaintenance.farm;
 
 using {
   managed

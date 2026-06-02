@@ -4,7 +4,7 @@ sap.ui.define([
 ], function (UIComponent, Device) {
     "use strict";
 
-    return UIComponent.extend("upsonly.plantlocationapp.Component", {
+    return UIComponent.extend("upsonly.tablemaintenanceapp.Component", {
         metadata: {
             manifest: "json"
         },

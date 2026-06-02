@@ -6,7 +6,7 @@ sap.ui.define([
 ], function (Controller, Messaging, MessageBox, MessageToast) {
     "use strict";
 
-    return Controller.extend("upsonly.plantlocationapp.controller.BaseController", {
+    return Controller.extend("upsonly.tablemaintenanceapp.controller.BaseController", {
         getModel: function (sName) {
             return this.getView().getModel(sName);
         },

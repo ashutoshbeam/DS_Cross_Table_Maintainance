@@ -1,0 +1,167 @@
+<mvc:View
+    controllerName="ztm.tmapp.controller.List"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Page title="{i18n>appTitle}" busy="{view>/busy}" class="workspacePage">
+        <content>
+            <VBox class="workspaceShell" fitContainer="true">
+                <VBox class="controlCard">
+                    <MessageStrip
+                        text="{i18n>displayModeHint}"
+                        type="Information"
+                        showIcon="true"
+                        visible="{view>/isReadOnlyRole}"
+                        class="sapUiTinyMarginBottom" />
+
+                    <FlexBox wrap="Wrap" class="workspaceControlGrid">
+                        <VBox class="workspaceFilterBlock">
+                            <Label text="{i18n>templateRoleSelectLabel}" />
+                            <Select
+                                width="100%"
+                                forceSelection="false"
+                                selectedKey="{view>/selectedTemplateRole}"
+                                change=".onTemplateRoleChange"
+                                items="{view>/templateRoleItems}">
+                                <core:Item key="{view>key}" text="{view>text}" />
+                            </Select>
+                        </VBox>
+                        <VBox class="workspaceFilterBlock">
+                            <Label text="{i18n>schemaSelectLabel}" />
+                            <ComboBox
+                                width="100%"
+                                value="{view>/selectedSchema}"
+                                change=".onSchemaChange"
+                                items="{view>/schemaSelectItems}">
+                                <core:Item key="{view>name}" text="{view>name}" />
+                            </ComboBox>
+                        </VBox>
+                        <VBox class="workspaceFilterBlock workspaceFilterBlockWide">
+                            <Label text="{i18n>tableSelectLabel}" />
+                            <Input
+                                width="100%"
+                                value="{view>/selectedTable}"
+                                showValueHelp="true"
+                                valueHelpRequest=".onTableValueHelp"
+                                change=".onTableChange"
+                                placeholder="{i18n>tableSelectPlaceholder}" />
+                        </VBox>
+                        <VBox class="workspaceFilterBlock workspaceFilterBlockSearch">
+                            <Label text="{i18n>searchPlaceholder}" />
+                            <SearchField
+                                width="100%"
+                                class="workspaceSearch"
+                                placeholder="{i18n>searchPlaceholder}"
+                                liveChange=".onSearch" />
+                        </VBox>
+                    </FlexBox>
+
+                    <FlexBox wrap="Wrap" class="workspaceActionRow" justifyContent="SpaceBetween" alignItems="Center">
+                        <FlexBox wrap="Wrap" class="workspaceActionGroup">
+                            <Button
+                                icon="sap-icon://add"
+                                text="{i18n>create}"
+                                type="Emphasized"
+                                visible="{view>/canMaintain}"
+                                enabled="{= ${view>/canMaintain} &amp;&amp; !!${view>/selectedTable} }"
+                                press=".onCreate" />
+                            <Button
+                                icon="sap-icon://edit"
+                                text="{i18n>edit}"
+                                visible="{view>/canMaintain}"
+                                enabled="{= ${view>/canMaintain} &amp;&amp; !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
+                                press=".onEdit" />
+                            <Button
+                                icon="sap-icon://duplicate"
+                                text="{i18n>duplicate}"
+                                visible="{view>/canMaintain}"
+                                enabled="{= ${view>/canMaintain} &amp;&amp; !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
+                                press=".onDuplicate" />
+                            <Button
+                                icon="sap-icon://delete"
+                                text="{i18n>delete}"
+                                visible="{view>/canMaintain}"
+                                enabled="{= ${view>/canMaintain} &amp;&amp; !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} > 0 }"
+                                press=".onDelete" />
+                            <Button
+                                icon="sap-icon://multi-select"
+                                text="{i18n>multiUpdate}"
+                                visible="{view>/canMaintain}"
+                                enabled="{= ${view>/canMaintain} &amp;&amp; !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} > 1 }"
+                                press=".onOpenMultiUpdate" />
+                            <Button
+                                icon="sap-icon://upload"
+                                text="{i18n>massUpload}"
+                                visible="{view>/canMaintain}"
+                                enabled="{= ${view>/canMaintain} &amp;&amp; !!${view>/selectedTable} }"
+                                press=".onOpenMassUpload" />
+                        </FlexBox>
+                        <FlexBox wrap="Wrap" class="workspaceActionGroup workspaceActionGroupMeta" alignItems="Center">
+                            <Button
+                                icon="sap-icon://history"
+                                text="{i18n>changeHistoryButton}"
+                                visible="{view>/canMaintain}"
+                                enabled="{= ${view>/canMaintain} &amp;&amp; !!${view>/selectedTable} &amp;&amp; ${view>/selectedCount} === 1 }"
+                                press=".onOpenChangeHistory" />
+                            <Button
+                                icon="sap-icon://refresh"
+                                text="{i18n>refresh}"
+                                type="Transparent"
+                                press=".onRefresh" />
+                            <Button
+                                icon="sap-icon://action-settings"
+                                tooltip="{i18n>personalization}"
+                                enabled="{= !!${view>/selectedTable} }"
+                                type="Transparent"
+                                press=".onOpenPersonalization" />
+                            <Button
+                                icon="sap-icon://excel-attachment"
+                                text="{i18n>exportExcel}"
+                                enabled="{= !!${view>/selectedTable} }"
+                                type="Transparent"
+                                press=".onExportExcel" />
+                        </FlexBox>
+                    </FlexBox>
+                </VBox>
+
+                <VBox class="tableCard">
+                    <HBox justifyContent="SpaceBetween" alignItems="Center" class="tableCardHeader" width="100%" wrap="Wrap">
+                        <VBox>
+                            <Title text="{view>/tableTitle}" level="H3" class="tableCardTitle" />
+                            <Text text="{view>/tableSubtitle}" class="tableCardHint" />
+                        </VBox>
+                        <HBox alignItems="Center" wrap="Wrap">
+                            <ObjectStatus text="{view>/columnCountText}" state="None" class="selectionBadge sapUiTinyMarginEnd" />
+                            <ObjectStatus text="{i18n>selectedCountLabel}: {view>/selectedCount}" state="Information" class="selectionBadge" />
+                        </HBox>
+                    </HBox>
+                    <Table
+                        id="plantTable"
+                        width="auto"
+                        class="workspaceTable"
+                        growing="true"
+                        growingScrollToLoad="true"
+                        mode="{= ${view>/canMaintain} ? 'MultiSelect' : 'None' }"
+                        selectionChange=".onSelectionChange"
+                        noDataText="{i18n>noTableData}" />
+                </VBox>
+
+                <Button
+                    id="jouleChatButton"
+                    icon="sap-icon://customer-and-contacts"
+                    type="Emphasized"
+                    tooltip="{i18n>jouleChatTooltip}"
+                    press=".onOpenJouleChat"
+                    class="jouleChatButton" />
+            </VBox>
+        </content>
+
+        <dependents>
+            <core:Fragment fragmentName="ztm.tmapp.fragment.TableSelectDialog" type="XML" />
+            <core:Fragment fragmentName="ztm.tmapp.fragment.CreateEditDialog" type="XML" />
+            <core:Fragment fragmentName="ztm.tmapp.fragment.MultiUpdateDialog" type="XML" />
+            <core:Fragment fragmentName="ztm.tmapp.fragment.MassUploadDialog" type="XML" />
+            <core:Fragment fragmentName="ztm.tmapp.fragment.AdminConfigDialog" type="XML" />
+        </dependents>
+    </Page>
+</mvc:View>
