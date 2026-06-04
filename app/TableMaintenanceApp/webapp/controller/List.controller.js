@@ -113,6 +113,10 @@ sap.ui.define([
             oViewModel.setProperty("/search", "");
             this._applyTemplateRoleFilter();
             this._loadSelectedTable();
+
+            if (oViewModel.getProperty("/selectedTemplateRole")) {
+                this.onTableValueHelp();
+            }
         },
 
         onTableChange: function () {
@@ -125,22 +129,39 @@ sap.ui.define([
         },
 
         onTableValueHelp: function () {
+            if (!this.getModel("view").getProperty("/selectedTemplateRole")) {
+                this.showToast(this.getText("templateRoleSelectLabel"));
+                return;
+            }
+
+            this._resetTableSelectDialog();
             this.byId("tableSelectDialog").open();
         },
 
         onTableSelectSearch: function (oEvent) {
             var sValue = oEvent.getParameter("value");
-            var oFilter = new Filter("text", FilterOperator.Contains, sValue);
+            var oFilter = new Filter({
+                filters: [
+                    new Filter("text", FilterOperator.Contains, sValue),
+                    new Filter("key", FilterOperator.Contains, sValue)
+                ],
+                and: false
+            });
             var oBinding = oEvent.getParameter("itemsBinding");
-            oBinding.filter([oFilter]);
+            oBinding.filter(sValue ? [oFilter] : []);
         },
 
         onTableSelectConfirm: function (oEvent) {
             var oSelectedItem = oEvent.getParameter("selectedItem");
+            this._resetTableSelectDialog();
             if (oSelectedItem) {
                 this.getModel("view").setProperty("/selectedTable", oSelectedItem.getDescription());
                 this.onTableChange();
             }
+        },
+
+        onTableSelectCancel: function () {
+            this._resetTableSelectDialog();
         },
 
         onSearch: function (oEvent) {
@@ -1062,6 +1083,26 @@ sap.ui.define([
 
             if (!bTableStillAvailable) {
                 oViewModel.setProperty("/selectedTable", "");
+            }
+        },
+
+        _resetTableSelectDialog: function () {
+            var oDialog = this.byId("tableSelectDialog"),
+                oBinding,
+                oSearchField;
+
+            if (!oDialog) {
+                return;
+            }
+
+            oBinding = oDialog.getBinding("items");
+            if (oBinding) {
+                oBinding.filter([]);
+            }
+
+            oSearchField = oDialog._oSearchField;
+            if (oSearchField && typeof oSearchField.setValue === "function") {
+                oSearchField.setValue("");
             }
         },
 

@@ -46,7 +46,7 @@ sap.ui.define([
                     oViewModel.setProperty("/userEmail", sEmail);
                     oViewModel.setProperty("/displayName", this._getFriendlyName(sEmail));
                     oViewModel.setProperty("/logoutRedirectUrl", oUserInfo.logoutRedirectUrl || "");
-                    
+
                     // Save actual roles in view model
                     oViewModel.setProperty("/actualIsDisplay", bHasDisplayRole);
                     oViewModel.setProperty("/actualIsAdmin", oUserInfo.isAdmin === true);
@@ -152,7 +152,7 @@ sap.ui.define([
 
                 // If currently on AdminConsole, kick out to DataMaintenance
                 if (sCurrentModule === "AdminConsole") {
-                    this.getRouter().navTo("PlantLocationList");
+                    this.getRouter().navTo("DSTableList");
                 }
             } else if (sProfileKey === "ZTM_DataSteward") {
                 oViewModel.setProperty("/isDisplay", true);
@@ -165,7 +165,7 @@ sap.ui.define([
 
                 // If on restricted modules, kick out to DataMaintenance
                 if (sCurrentModule === "AdminConsole" || sCurrentModule === "TableDesigner") {
-                    this.getRouter().navTo("PlantLocationList");
+                    this.getRouter().navTo("DSTableList");
                 }
             } else if (sProfileKey === "ZTM_Display") {
                 oViewModel.setProperty("/isDisplay", true);
@@ -177,7 +177,7 @@ sap.ui.define([
                 oViewModel.setProperty("/activeRoleState", "Information");
 
                 if (sCurrentModule === "AdminConsole" || sCurrentModule === "TableDesigner") {
-                    this.getRouter().navTo("PlantLocationList");
+                    this.getRouter().navTo("DSTableList");
                 }
             } else {
                 oViewModel.setProperty("/isDisplay", false);
@@ -189,7 +189,7 @@ sap.ui.define([
                 oViewModel.setProperty("/activeRoleState", "Error");
 
                 // Kick out of restricted modules
-                this.getRouter().navTo("PlantLocationList");
+                this.getRouter().navTo("DSTableList");
             }
 
             // Ensure sidebar is collapsed when role changes
@@ -232,7 +232,7 @@ sap.ui.define([
                         if (oPopover) {
                             oPopover.close();
                         }
-                        
+
                         // Determine the logout endpoint based on prefix routing
                         var sLogoutUrl = "/my/logout";
                         var sPath = window.location.pathname;
@@ -284,7 +284,7 @@ sap.ui.define([
             }
 
             if (sKey === "DataMaintenance") {
-                this.getRouter().navTo("PlantLocationList");
+                this.getRouter().navTo("DSTableList");
             } else if (sKey === "TableDesigner") {
                 this.getRouter().navTo("TableDesigner");
             } else if (sKey === "AdminConsole") {
@@ -296,7 +296,7 @@ sap.ui.define([
             var sRouteName = oEvent.getParameter("name");
             var oViewModel = this.getModel("view");
 
-            if (sRouteName === "PlantLocationList" || sRouteName === "PlantLocationObjectPage" || sRouteName === "PlantLocationChangeHistory") {
+            if (sRouteName === "DSTableList" || sRouteName === "PlantLocationObjectPage" || sRouteName === "PlantLocationChangeHistory") {
                 oViewModel.setProperty("/selectedModule", "DataMaintenance");
             } else if (sRouteName === "TableDesigner" || sRouteName === "CreateTable" || sRouteName === "AlterTable") {
                 oViewModel.setProperty("/selectedModule", "TableDesigner");

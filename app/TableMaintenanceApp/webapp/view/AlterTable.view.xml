@@ -59,7 +59,7 @@
                                         </Select>
                                         <Input value="{view>length}" type="Number" enabled="{= ${view>type} === 'NVARCHAR' || ${view>type} === 'VARCHAR' || ${view>type} === 'DECIMAL' }" />
                                         <Input value="{view>scale}" type="Number" enabled="{= ${view>type} === 'DECIMAL' }" />
-                                        <CheckBox selected="{view>isPrimary}" enabled="false" />
+                                        <CheckBox selected="{view>isPrimary}" select=".onPrimaryKeyToggle" />
                                         <CheckBox selected="{view>isNotNull}" enabled="{= !${view>isPrimary} }" />
                                         <Input value="{view>referenceTable}" />
                                         <Input value="{view>referenceColumn}" />

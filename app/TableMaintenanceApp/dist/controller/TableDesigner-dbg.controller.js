@@ -85,6 +85,7 @@ sap.ui.define([
         },
 
         onTableValueHelp: function () {
+            this._resetTableSelectDialog();
             this.byId("tableSelectDialog").open();
         },
 
@@ -107,11 +108,17 @@ sap.ui.define([
         onTableSelectConfirm: function (oEvent) {
             var oSelectedItem = oEvent.getParameter("selectedItem");
 
+            this._resetTableSelectDialog();
+
             if (!oSelectedItem) {
                 return;
             }
 
             this._loadTableMetadata(oSelectedItem.getDescription());
+        },
+
+        onTableSelectCancel: function () {
+            this._resetTableSelectDialog();
         },
 
         _loadTableMetadata: function (sTableName) {
@@ -148,6 +155,26 @@ sap.ui.define([
                 .finally(function () {
                     this._setBusy(false);
                 }.bind(this));
+        },
+
+        _resetTableSelectDialog: function () {
+            var oDialog = this.byId("tableSelectDialog"),
+                oBinding,
+                oSearchField;
+
+            if (!oDialog) {
+                return;
+            }
+
+            oBinding = oDialog.getBinding("items");
+            if (oBinding) {
+                oBinding.filter([]);
+            }
+
+            oSearchField = oDialog._oSearchField;
+            if (oSearchField && typeof oSearchField.setValue === "function") {
+                oSearchField.setValue("");
+            }
         },
 
         onCreateTablePress: function () {

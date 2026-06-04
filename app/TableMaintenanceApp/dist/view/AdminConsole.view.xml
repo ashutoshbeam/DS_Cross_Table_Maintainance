@@ -47,7 +47,7 @@
                                 </VBox>
                             </IconTabFilter>
 
-                            <IconTabFilter text="Validations" icon="sap-icon://rule-form" key="validations">
+                            <IconTabFilter text="Validations" icon="sap-icon://checklist" key="validations">
                                 <VBox class="adminTabContent">
                                     <HBox justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap" class="adminSectionHeader">
                                         <VBox>

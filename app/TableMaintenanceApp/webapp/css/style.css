@@ -1,7 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+/* Global Font Override for modern look */
+body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLabel, .sapMITBText, .sapMSF {
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+}
+
 .workspacePage .sapMPageEnableScrolling {
-    background:
-        radial-gradient(circle at top left, rgba(210, 227, 255, 0.9), transparent 28%),
-        linear-gradient(180deg, #f5f8fc 0%, #eef3f8 100%);
+    background: 
+        radial-gradient(at 0% 0%, hsla(215, 100%, 96%, 1) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(225, 100%, 94%, 1) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, hsla(210, 100%, 97%, 1) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, hsla(220, 100%, 96%, 1) 0px, transparent 50%),
+        linear-gradient(135deg, #f4f7fc 0%, #eef3fb 100%) !important;
+    background-attachment: fixed !important;
 }
 
 .workspaceShell {
@@ -14,30 +25,52 @@
 .controlCard,
 .tableCard {
     border-radius: 1.25rem;
-    background: rgba(255, 255, 255, 0.88);
-    box-shadow: 0 1rem 2.5rem rgba(21, 42, 77, 0.08);
-    border: 1px solid rgba(148, 173, 214, 0.2);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.controlCard:hover,
+.tableCard:hover {
+    box-shadow: 0 16px 48px 0 rgba(31, 38, 135, 0.1);
+    border-color: rgba(148, 173, 214, 0.4);
+    transform: translateY(-2px);
 }
 
 .heroPanel {
-    padding: 1.35rem 1.5rem;
-    background:
-        linear-gradient(135deg, rgba(14, 76, 146, 0.96), rgba(38, 126, 181, 0.9)),
-        linear-gradient(180deg, #0b4a8f 0%, #1765aa 100%);
+    padding: 1.6rem 2.2rem;
+    background: linear-gradient(135deg, #0d2948 0%, #1c4e80 40%, #2f73b3 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 36px rgba(13, 41, 72, 0.22);
     color: #ffffff;
     overflow: hidden;
     position: relative;
+}
+
+.heroPanel::before {
+    content: "";
+    position: absolute;
+    top: -30%;
+    left: -15%;
+    width: 25rem;
+    height: 25rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(90, 134, 246, 0.25) 0%, transparent 70%);
+    pointer-events: none;
 }
 
 .heroPanel::after {
     content: "";
     position: absolute;
     inset: auto -8% -45% auto;
-    width: 16rem;
-    height: 16rem;
+    width: 18rem;
+    height: 18rem;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+    pointer-events: none;
 }
 
 .heroPanelRow {
@@ -186,6 +219,16 @@
     font-weight: 700;
 }
 
+.tableCardHeader {
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.tableCardTitle.sapMTitle {
+    color: #16324d;
+    font-weight: 700;
+}
+
 .tableCardHint {
     color: #6a7e96;
 }
@@ -198,14 +241,16 @@
 }
 
 .workspaceTable {
-    border-radius: 1rem;
-    overflow: hidden;
-    min-height: 26rem;
+    border-radius: 0.75rem !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(148, 173, 214, 0.18) !important;
 }
 
 .workspaceTable .sapMListTblHeaderCell {
-    background: #f6f9fd;
-    border-bottom: 1px solid rgba(148, 173, 214, 0.24);
+    background: #f3f6fa !important;
+    border-bottom: 1.5px solid rgba(148, 173, 214, 0.3) !important;
+    padding-top: 0.85rem !important;
+    padding-bottom: 0.85rem !important;
 }
 
 .wideTable {
@@ -223,10 +268,17 @@
 
 .workspaceTable .sapMLIB {
     border-bottom: 1px solid rgba(224, 232, 242, 0.8);
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .workspaceTable .sapMLIBSelected {
-    background: rgba(225, 238, 255, 0.78);
+    background: linear-gradient(90deg, rgba(220, 237, 255, 0.7) 0%, rgba(235, 244, 255, 0.7) 100%) !important;
+    border-left: 4px solid #1f4f82 !important;
+    box-shadow: inset 2px 0 0 #1f4f82 !important;
+}
+
+.workspaceTable .sapMLIB:hover:not(.sapMLIBSelected) {
+    background-color: rgba(240, 246, 255, 0.6) !important;
 }
 
 .sapMDialog.sapMDialogOpen .sapMDialogSection {
@@ -347,6 +399,8 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    animation: joulePulse 3s infinite alternate;
 }
 
 .jouleChatButton .sapMBtnIcon {
@@ -368,11 +422,22 @@
 .jouleChatButton .sapMBtnInner:hover,
 .jouleChatButton .sapMBtnInner:focus {
     background: linear-gradient(180deg, #6a92fb 0%, #4677e6 100%) !important;
+    transform: scale(1.08) rotate(5deg);
+    box-shadow: 0 12px 24px rgba(61, 111, 224, 0.4), 0 4px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
 .jouleChatButton .sapMBtnActive .sapMBtnInner,
 .jouleChatButton .sapMBtnInner.sapMBtnActive {
     background: linear-gradient(180deg, #3f6ddd 0%, #305dc5 100%) !important;
+}
+
+@keyframes joulePulse {
+    0% {
+        box-shadow: 0 8px 16px rgba(61, 111, 224, 0.25), 0 0 0 0px rgba(90, 134, 246, 0.3);
+    }
+    100% {
+        box-shadow: 0 12px 24px rgba(61, 111, 224, 0.35), 0 0 0 10px rgba(90, 134, 246, 0);
+    }
 }
 
 @media (max-width: 768px) {
@@ -438,17 +503,21 @@
     box-shadow: 0 0.25rem 0.75rem rgba(21, 42, 77, 0.03);
 }
 
+
 /* Redesigned Shell Layout Styles */
 .sapTntToolPage {
     background-color: #f2f5f9 !important;
 }
 
 .sapTntToolHeader {
-    background: linear-gradient(135deg, #0e2947 0%, #1f4f82 100%) !important;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.12) !important;
-    height: 3.25rem !important;
-    padding: 0 1rem !important;
+    background: rgba(14, 41, 72, 0.88) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08) !important;
+    height: 3.5rem !important;
+    padding: 0 1.5rem !important;
+    transition: background-color 0.3s ease;
 }
 
 .sapTntToolHeader .sapMTitle {
@@ -483,34 +552,82 @@
 }
 
 .sapTntSideNavigation {
-    background: #ffffff !important;
-    border-right: 1px solid rgba(148, 173, 214, 0.2) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-right: 1px solid rgba(148, 173, 214, 0.15) !important;
     box-shadow: 0.25rem 0 1rem rgba(21, 42, 77, 0.02) !important;
-    width: 3rem !important;
 }
 
-.sapTntToolPageAside,
-.sapTntToolPageAsideContent,
-.sapTntToolPageAsideCollapsed {
-    width: 3rem !important;
-    min-width: 3rem !important;
-    flex: 0 0 3rem !important;
+/* Active Role Badge in Header */
+.sapTntToolHeader .sapMObjStatus {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 0.15rem 0.65rem !important;
+    border-radius: 6px !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    height: auto !important;
 }
 
-.sapTntToolPageMain {
-    width: calc(100% - 3rem) !important;
+/* Success state: Admin */
+.sapTntToolHeader .sapMObjStatusSuccess {
+    background: rgba(45, 227, 137, 0.15) !important;
+    border: 1px solid rgba(45, 227, 137, 0.3) !important;
+}
+.sapTntToolHeader .sapMObjStatusSuccess .sapMObjStatusText,
+.sapTntToolHeader .sapMObjStatusSuccess .sapMObjStatusIcon,
+.sapTntToolHeader .sapMObjStatusSuccess > .sapMObjStatusText {
+    color: #2de389 !important;
+    text-shadow: none !important;
 }
 
-.sapTntNavLI {
-    justify-content: center !important;
+/* Warning state: Data Engineer */
+.sapTntToolHeader .sapMObjStatusWarning {
+    background: rgba(255, 184, 77, 0.15) !important;
+    border: 1px solid rgba(255, 184, 77, 0.3) !important;
+}
+.sapTntToolHeader .sapMObjStatusWarning .sapMObjStatusText,
+.sapTntToolHeader .sapMObjStatusWarning .sapMObjStatusIcon,
+.sapTntToolHeader .sapMObjStatusWarning > .sapMObjStatusText {
+    color: #ffb84d !important;
+    text-shadow: none !important;
 }
 
-.sapTntNavLI .sapTntNavLIText {
-    display: none !important;
+/* Information state: Display */
+.sapTntToolHeader .sapMObjStatusInformation {
+    background: rgba(77, 166, 255, 0.15) !important;
+    border: 1px solid rgba(77, 166, 255, 0.3) !important;
+}
+.sapTntToolHeader .sapMObjStatusInformation .sapMObjStatusText,
+.sapTntToolHeader .sapMObjStatusInformation .sapMObjStatusIcon,
+.sapTntToolHeader .sapMObjStatusInformation > .sapMObjStatusText {
+    color: #4da6ff !important;
+    text-shadow: none !important;
 }
 
-.sapTntNavLI .sapTntNavLIIcon {
-    margin: 0 !important;
+/* None state: Business User */
+.sapTntToolHeader .sapMObjStatusNone {
+    background: rgba(226, 232, 240, 0.10) !important;
+    border: 1px solid rgba(226, 232, 240, 0.2) !important;
+}
+.sapTntToolHeader .sapMObjStatusNone .sapMObjStatusText,
+.sapTntToolHeader .sapMObjStatusNone .sapMObjStatusIcon,
+.sapTntToolHeader .sapMObjStatusNone > .sapMObjStatusText {
+    color: #e2e8f0 !important;
+    text-shadow: none !important;
+}
+
+/* Error state: No access */
+.sapTntToolHeader .sapMObjStatusError {
+    background: rgba(255, 107, 107, 0.15) !important;
+    border: 1px solid rgba(255, 107, 107, 0.3) !important;
+}
+.sapTntToolHeader .sapMObjStatusError .sapMObjStatusText,
+.sapTntToolHeader .sapMObjStatusError .sapMObjStatusIcon,
+.sapTntToolHeader .sapMObjStatusError > .sapMObjStatusText {
+    color: #ff6b6b !important;
+    text-shadow: none !important;
 }
 
 .sapTntNavL {
@@ -519,18 +636,18 @@
 }
 
 .sapTntNavLItem {
-    border-radius: 0.6rem !important;
-    margin: 0.2rem !important;
-    transition: all 0.2s ease !important;
+    border-radius: 0.5rem !important;
+    margin: 0.3rem 0.4rem !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .sapTntNavLItem:hover {
-    background-color: #f0f4f9 !important;
+    background-color: rgba(31, 79, 130, 0.06) !important;
 }
 
 .sapTntNavLItem.sapTntNavLItemSelected {
-    background: linear-gradient(90deg, #e1eefa 0%, #ebf4fc 100%) !important;
-    border-left: 3px solid #1f4f82 !important;
+    background: linear-gradient(90deg, rgba(31, 79, 130, 0.08) 0%, rgba(31, 79, 130, 0.03) 100%) !important;
+    border-left: 4.5px solid #1f4f82 !important;
 }
 
 .sapTntNavLItem.sapTntNavLItemSelected .sapTntNavLItemIcon,
@@ -656,50 +773,95 @@
 }
 
 .adminConsoleTabs .sapMITBHead {
-    padding-top: 0.2rem;
+    padding: 0.5rem 0 !important;
+    gap: 0.8rem !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+}
+
+.adminConsoleTabs .sapMITBHeadContainer {
+    border-bottom: none !important;
 }
 
 .adminConsoleTabs .sapMITBFilter {
-    margin: 0 0.15rem;
+    background: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid rgba(148, 173, 214, 0.25) !important;
+    border-radius: 0.75rem !important;
+    padding: 0.8rem 1.4rem !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 0 4px 12px rgba(21, 42, 77, 0.02) !important;
+    min-width: 9.5rem !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
 }
 
-.adminConsoleTabs .sapMITBFilter .sapMITBContentArrow {
-    display: none;
+.adminConsoleTabs .sapMITBFilter:hover {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(31, 79, 130, 0.4) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(21, 42, 77, 0.06) !important;
+}
+
+.adminConsoleTabs .sapMITBFilter.sapMITBSelected {
+    background: linear-gradient(135deg, #1f4f82 0%, #0e2947 100%) !important;
+    border-color: #0e2947 !important;
+    box-shadow: 0 8px 20px rgba(14, 41, 71, 0.18) !important;
 }
 
 .adminConsoleTabs .sapMITBFilterDefault {
-    height: auto;
-    padding: 0.55rem 0.75rem;
-    border-radius: 0.9rem;
-    border: 1px solid rgba(76, 114, 172, 0.28);
-    background: #f8fbff;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    height: auto !important;
 }
 
-.adminConsoleTabs .sapMITBSelected .sapMITBFilterDefault {
-    background: linear-gradient(180deg, #e7f0ff 0%, #dbe9ff 100%);
-    border-color: rgba(45, 90, 160, 0.55);
-    box-shadow: 0 0.35rem 0.9rem rgba(45, 90, 160, 0.12);
+/* Remove default Fiori Horizon blue circles/borders around active tab icons */
+.adminConsoleTabs .sapMITBIconContainer {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.adminConsoleTabs .sapMITBFilter.sapMITBSelected .sapMITBIconContainer {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.adminConsoleTabs .sapMITBFilter .sapUiIcon {
+    font-size: 1.6rem !important;
+    color: #4b6f9f !important;
+    margin-bottom: 0.4rem !important;
+    transition: color 0.2s ease !important;
+}
+
+.adminConsoleTabs .sapMITBFilter.sapMITBSelected .sapUiIcon {
+    color: #ffffff !important;
 }
 
 .adminConsoleTabs .sapMITBText {
-    font-size: 0.95rem !important;
+    font-size: 0.9rem !important;
     font-weight: 700 !important;
     color: #35506e !important;
     white-space: nowrap !important;
     overflow: visible !important;
+    transition: color 0.2s ease !important;
+}
+
+.adminConsoleTabs .sapMITBFilter.sapMITBSelected .sapMITBText {
+    color: #ffffff !important;
 }
 
 .adminConsoleTabs .sapMITBContent {
     padding-top: 0.65rem !important;
-}
-
-.adminConsoleTabs .sapMITBSelected .sapMITBText,
-.adminConsoleTabs .sapMITBSelected .sapUiIcon {
-    color: #1f4f82 !important;
-}
-
-.adminConsoleTabs .sapUiIcon {
-    color: #4b6f9f !important;
 }
 
 .adminTabContent {
@@ -948,5 +1110,19 @@
         width: 100%;
         flex-basis: 100%;
     }
+}
+
+/* Styled Input and Filter Controls Focus states */
+.sapMInputBaseInner, .sapMSlt, .sapMComboBoxInner {
+    border-radius: 0.5rem !important;
+    border: 1px solid rgba(148, 173, 214, 0.4) !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease !important;
+    background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.sapMInputBaseInner:focus, .sapMSlt:focus, .sapMComboBoxInner:focus {
+    border-color: #1f4f82 !important;
+    box-shadow: 0 0 0 3px rgba(31, 79, 130, 0.15) !important;
+    background-color: #ffffff !important;
 }
 

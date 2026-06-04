@@ -6,6 +6,7 @@
         title="{i18n>selectDialogTitle}"
         items="{view>/tableSelectItems}"
         search=".onTableSelectSearch"
+        cancel=".onTableSelectCancel"
         confirm=".onTableSelectConfirm">
         <StandardListItem
             title="{view>text}"

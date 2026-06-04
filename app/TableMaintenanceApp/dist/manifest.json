@@ -133,14 +133,14 @@
 				},
 				{
 					"pattern": ":?query:",
-					"name": "PlantLocationList",
-					"target": "PlantLocationList"
+					"name": "DSTableList",
+					"target": "DSTableList"
 				}
 			],
 			"targets": {
-				"PlantLocationList": {
+				"DSTableList": {
 					"viewName": "List",
-					"viewId": "PlantLocationList"
+					"viewId": "DSTableList"
 				},
 				"TableDesigner": {
 					"viewName": "TableDesigner",

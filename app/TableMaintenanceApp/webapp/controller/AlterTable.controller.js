@@ -142,6 +142,19 @@ sap.ui.define([
             }
         },
 
+        onPrimaryKeyToggle: function (oEvent) {
+            var oCheckBox = oEvent.getSource(),
+                sContextPath = oCheckBox.getBindingContext("view").getPath(),
+                oViewModel = this.getModel("view"),
+                bSelected = !!oEvent.getParameter("selected");
+
+            oViewModel.setProperty(sContextPath + "/isPrimary", bSelected);
+
+            if (bSelected) {
+                oViewModel.setProperty(sContextPath + "/isNotNull", true);
+            }
+        },
+
         _loadSemanticTypeConfig: function () {
             var oViewModel = this.getModel("view"),
                 sSchema = oViewModel.getProperty("/selectedSchema"),
@@ -242,6 +255,12 @@ sap.ui.define([
                     return false;
                 }
             }
+
+            if (!aFields.some(function (oField) { return !!oField.isPrimary; })) {
+                MessageBox.warning("At least one primary key column is required.");
+                return false;
+            }
+
             return true;
         }
     });

@@ -41,7 +41,10 @@
                             <Input
                                 width="100%"
                                 value="{view>/selectedTable}"
+                                visible="{= !!${view>/selectedTemplateRole} }"
+                                enabled="{= !!${view>/selectedTemplateRole} }"
                                 showValueHelp="true"
+                                valueHelpOnly="true"
                                 valueHelpRequest=".onTableValueHelp"
                                 change=".onTableChange"
                                 placeholder="{i18n>tableSelectPlaceholder}" />

@@ -13,8 +13,8 @@
                     type="Transparent"
                     press=".onSideNavCollapsePress"
                     tooltip="Toggle Menu" />
-                <Image src="https://www.sap.com/dam/application/shared/logos/sap-logo-svg.svg" height="20px" class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiHideOnPhone" />
-                <Title text="DS Table Master App" level="H1" class="sapUiHideOnPhone" />
+                <Image src="images/suntory_logo.jpg" height="24px" class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiHideOnPhone" />
+                <Title text="DS Table Maintenance" level="H1" class="sapUiHideOnPhone" />
                 <ToolbarSpacer />
                 
                 <Label text="Simulate BTP Role:" class="sapUiTinyMarginEnd" visible="{view>/hasMultipleRoles}" />
@@ -43,7 +43,7 @@
         <tnt:sideContent>
             <tnt:SideNavigation id="sideNavigation" expanded="false" selectedKey="{view>/selectedModule}">
                 <tnt:NavigationList itemSelect=".onModuleSelect">
-                    <tnt:NavigationListItem text="Data Maintenance" icon="sap-icon://table-view" key="DataMaintenance" visible="{view>/hasAppAccess}" />
+                    <tnt:NavigationListItem text="Table Data Maintenance" icon="sap-icon://table-view" key="DataMaintenance" visible="{view>/hasAppAccess}" />
                     <tnt:NavigationListItem text="Table Designer" icon="sap-icon://excel-attachment" key="TableDesigner" visible="{view>/isDataEngineer}" />
                     <tnt:NavigationListItem text="Admin Console" icon="sap-icon://key-user-settings" key="AdminConsole" visible="{view>/isAdmin}" />
                 </tnt:NavigationList>

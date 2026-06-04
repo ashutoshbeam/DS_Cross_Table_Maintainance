@@ -132,7 +132,8 @@ const getFieldMetadataPayload = (field = {}) => {
         semanticType,
         referenceTable,
         referenceColumn,
-        valueHelpRequired
+        valueHelpRequired,
+        isPrimary: field.isPrimary === true || field.isPrimary === "true"
     };
 };
 
@@ -141,7 +142,8 @@ const hasFieldMetadataPayload = (field = {}) => {
     return metadata.valueHelpRequired
         || !!metadata.semanticType
         || !!metadata.referenceTable
-        || !!metadata.referenceColumn;
+        || !!metadata.referenceColumn
+        || metadata.isPrimary;
 };
 
 const getColumnByName = (definition, name) => {
@@ -175,6 +177,48 @@ const buildWhereClause = (keys, keyColumns, columns) => {
         values
     };
 };
+
+const getBusinessKeyColumns = (definition) => {
+    const nonManagedKeys = (definition.keyColumns || []).filter((keyName) => !isManagedField(keyName));
+    return nonManagedKeys.length ? nonManagedKeys : (definition.keyColumns || []);
+};
+
+async function validateBusinessKeyUniqueness(db, definition, row, currentKeys) {
+    const businessKeyColumns = getBusinessKeyColumns(definition);
+
+    if (!businessKeyColumns.length) {
+        return;
+    }
+
+    const businessKeyValues = {};
+    businessKeyColumns.forEach((keyName) => {
+        businessKeyValues[keyName] = row[keyName];
+    });
+
+    if (businessKeyColumns.some((keyName) => isBlankValue(businessKeyValues[keyName]))) {
+        return;
+    }
+
+    const where = buildWhereClause(businessKeyValues, businessKeyColumns, definition.columns);
+    let sql = `SELECT * FROM ${quoteIdentifier(definition.schemaName)}.${quoteIdentifier(definition.tableName)}
+        WHERE ${where.clause}`;
+    let values = where.values.slice();
+
+    if (currentKeys && definition.keyColumns && definition.keyColumns.length) {
+        const currentKeyWhere = buildWhereClause(currentKeys, definition.keyColumns, definition.columns);
+        sql += ` AND NOT (${currentKeyWhere.clause})`;
+        values = values.concat(currentKeyWhere.values);
+    }
+
+    sql += " LIMIT 1";
+
+    const [existingRow] = await executeQuery(db, sql, values);
+
+    if (existingRow) {
+        const keyLabel = businessKeyColumns.map((keyName) => `${keyName}=${formatAuditValue(row[keyName])}`).join(", ");
+        throw new Error(`A record already exists for primary key values ${keyLabel}. Please adjust the key fields and try again.`);
+    }
+}
 
 async function getDb() {
     if (cds.db) {
@@ -219,6 +263,23 @@ async function ensureFieldMetadataTable(db, schemaName) {
     );
 
     if (rows.length) {
+        const primaryKeyColumn = await executeQuery(
+            db,
+            `SELECT COLUMN_NAME
+               FROM SYS.TABLE_COLUMNS
+              WHERE SCHEMA_NAME = ?
+                AND TABLE_NAME = ?
+                AND COLUMN_NAME = 'IS_PRIMARY_KEY'`,
+            [schemaName, FIELD_METADATA_TABLE]
+        );
+
+        if (!primaryKeyColumn.length) {
+            await executeStatement(
+                db,
+                `CALL "EXECUTE_DDL"(?)`,
+                [`ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(FIELD_METADATA_TABLE)} ADD ("IS_PRIMARY_KEY" BOOLEAN DEFAULT FALSE NOT NULL)`]
+            );
+        }
         return;
     }
 
@@ -230,6 +291,7 @@ async function ensureFieldMetadataTable(db, schemaName) {
         "REFERENCE_TABLE" NVARCHAR(256),
         "REFERENCE_COLUMN" NVARCHAR(256),
         "VALUE_HELP_REQUIRED" BOOLEAN DEFAULT TRUE NOT NULL,
+        "IS_PRIMARY_KEY" BOOLEAN DEFAULT FALSE NOT NULL,
         "UPDATED_AT" TIMESTAMP,
         PRIMARY KEY ("SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME")
     )`;
@@ -370,7 +432,8 @@ async function getFieldMetadataMap(db, schemaName, tableName) {
                 SEMANTIC_TYPE,
                 REFERENCE_TABLE,
                 REFERENCE_COLUMN,
-                VALUE_HELP_REQUIRED
+                VALUE_HELP_REQUIRED,
+                IS_PRIMARY_KEY
            FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(FIELD_METADATA_TABLE)}
           WHERE SCHEMA_NAME = ?
             AND TABLE_NAME = ?`,
@@ -382,7 +445,8 @@ async function getFieldMetadataMap(db, schemaName, tableName) {
             semanticType: row.SEMANTIC_TYPE || "",
             referenceTable: row.REFERENCE_TABLE || "",
             referenceColumn: row.REFERENCE_COLUMN || "",
-            valueHelpRequired: row.VALUE_HELP_REQUIRED === true || row.VALUE_HELP_REQUIRED === "TRUE" || row.VALUE_HELP_REQUIRED === 1
+            valueHelpRequired: row.VALUE_HELP_REQUIRED === true || row.VALUE_HELP_REQUIRED === "TRUE" || row.VALUE_HELP_REQUIRED === 1,
+            isPrimary: row.IS_PRIMARY_KEY === true || row.IS_PRIMARY_KEY === "TRUE" || row.IS_PRIMARY_KEY === 1
         });
         return map;
     }, new Map());
@@ -484,8 +548,8 @@ async function replaceFieldMetadata(db, schemaName, tableName, fields) {
         await executeStatement(
             db,
             `INSERT INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(FIELD_METADATA_TABLE)}
-                ("SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME", "SEMANTIC_TYPE", "REFERENCE_TABLE", "REFERENCE_COLUMN", "VALUE_HELP_REQUIRED", "UPDATED_AT")
-             VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_UTCTIMESTAMP)`,
+                ("SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME", "SEMANTIC_TYPE", "REFERENCE_TABLE", "REFERENCE_COLUMN", "VALUE_HELP_REQUIRED", "IS_PRIMARY_KEY", "UPDATED_AT")
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_UTCTIMESTAMP)`,
             [
                 schemaName,
                 tableName,
@@ -493,7 +557,8 @@ async function replaceFieldMetadata(db, schemaName, tableName, fields) {
                 metadata.semanticType || null,
                 metadata.referenceTable || null,
                 metadata.referenceColumn || null,
-                metadata.valueHelpRequired
+                metadata.valueHelpRequired,
+                metadata.isPrimary
             ]
         );
     }
@@ -691,6 +756,19 @@ async function getPrimaryKeys(db, schemaName, tableName, columns) {
         // Fall back to the first column when the catalog view is unavailable.
     }
 
+    try {
+        const fieldMetadata = await getFieldMetadataMap(db, schemaName, tableName);
+        const metadataKeys = columns
+            .map((column) => column.name)
+            .filter((columnName) => fieldMetadata.get(columnName)?.isPrimary);
+
+        if (metadataKeys.length) {
+            return metadataKeys;
+        }
+    } catch (error) {
+        // Continue to last-resort fallback.
+    }
+
     return columns.length ? [columns[0].name] : [];
 }
 
@@ -722,13 +800,206 @@ async function getTableDefinition(db, schemaName, tableName) {
         schemaName,
         tableName,
         keyColumns,
-        columns: columns.map((column) => ({
-            ...column,
-            ...resolveColumnValueHelp(column, fieldMetadata.get(column.name), schemaValueHelpMap, schemaValueHelpAliases),
-            key: keyColumns.includes(column.name),
-            editable: !keyColumns.includes(column.name)
-        }))
+        columns: columns.map((column) => {
+            const isKeyColumn = keyColumns.includes(column.name) || !!fieldMetadata.get(column.name)?.isPrimary;
+            return {
+                ...column,
+                ...resolveColumnValueHelp(column, fieldMetadata.get(column.name), schemaValueHelpMap, schemaValueHelpAliases),
+                key: isKeyColumn,
+                editable: !isKeyColumn
+            };
+        })
     };
+}
+
+function buildColumnDefinition(field, includeNullability = true) {
+    let colDef = `${quoteIdentifier(field.name)} ${field.type}`;
+    const typeUpper = String(field.type || "").toUpperCase();
+
+    if (field.length && ["VARCHAR", "NVARCHAR", "VARBINARY", "DECIMAL"].includes(typeUpper)) {
+        if (typeUpper === "DECIMAL") {
+            colDef += `(${field.length}${field.scale ? "," + field.scale : ""})`;
+        } else {
+            colDef += `(${field.length})`;
+        }
+    }
+
+    if (includeNullability && (field.isNotNull || field.isPrimary)) {
+        colDef += " NOT NULL";
+    }
+
+    return colDef;
+}
+
+function normalizePrimaryKeyFields(fields) {
+    return (fields || []).map((field) => ({
+        ...field,
+        isPrimary: !!field.isPrimary,
+        isNotNull: !!field.isPrimary || !!field.isNotNull
+    }));
+}
+
+function haveSamePrimaryKeys(currentKeys, requestedKeys) {
+    if (currentKeys.length !== requestedKeys.length) {
+        return false;
+    }
+
+    return currentKeys.every((key, index) => key === requestedKeys[index]);
+}
+
+function isStringDataType(typeName) {
+    const typeUpper = String(typeName || "").toUpperCase();
+    return ["VARCHAR", "NVARCHAR", "ALPHANUM", "SHORTTEXT", "TEXT"].includes(typeUpper);
+}
+
+function isUserFacingValidationError(error) {
+    const message = String(error?.message || error || "");
+    return message.includes("Primary key change cannot be applied")
+        || message.includes("At least one primary key column is required");
+}
+
+async function validatePrimaryKeyData(db, schemaName, tableName, primaryKeyFields) {
+    if (!primaryKeyFields.length) {
+        throw new Error("At least one primary key column is required. Select the key columns and try Alter Table again.");
+    }
+
+    const tableRef = `${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}`;
+    const keyLabel = primaryKeyFields.map((field) => field.name).join(", ");
+    const nullChecks = primaryKeyFields.map((field) => {
+        const quotedColumn = quoteIdentifier(field.name);
+        if (isStringDataType(field.type)) {
+            return `(${quotedColumn} IS NULL OR LENGTH(TRIM(${quotedColumn})) = 0)`;
+        }
+        return `${quotedColumn} IS NULL`;
+    });
+    const nullResult = await executeQuery(
+        db,
+        `SELECT COUNT(*) AS VIOLATION_COUNT
+           FROM ${tableRef}
+          WHERE ${nullChecks.join(" OR ")}`,
+        []
+    );
+    const nullViolations = Number(nullResult?.[0]?.VIOLATION_COUNT || 0);
+
+    if (nullViolations > 0) {
+        throw new Error(`Primary key change cannot be applied. Existing rows contain empty or null values for ${keyLabel}. Please clean the table data and try Alter Table again.`);
+    }
+
+    const duplicateResult = await executeQuery(
+        db,
+        `SELECT TOP 1 1 AS HAS_DUPLICATE
+           FROM ${tableRef}
+          GROUP BY ${primaryKeyFields.map((field) => quoteIdentifier(field.name)).join(", ")}
+         HAVING COUNT(*) > 1`,
+        []
+    );
+
+    if (duplicateResult.length) {
+        throw new Error(`Primary key change cannot be applied. Existing rows contain duplicate values for ${keyLabel}. Please clean the table data and try Alter Table again.`);
+    }
+}
+
+async function applyPrimaryKeyChange(db, schemaName, tableName, currentPrimaryKeys, requestedPrimaryKeys) {
+    if (haveSamePrimaryKeys(currentPrimaryKeys, requestedPrimaryKeys)) {
+        return;
+    }
+
+    const tableRef = `${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}`;
+
+    if (currentPrimaryKeys.length) {
+        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [`ALTER TABLE ${tableRef} DROP PRIMARY KEY`]);
+    }
+
+    if (requestedPrimaryKeys.length) {
+        await executeStatement(
+            db,
+            `CALL "EXECUTE_DDL"(?)`,
+            [`ALTER TABLE ${tableRef} ADD PRIMARY KEY (${requestedPrimaryKeys.map((columnName) => quoteIdentifier(columnName)).join(", ")})`]
+        );
+    }
+}
+
+async function alterTableDefinition(db, schemaName, tableName, fields) {
+    const normalizedFields = normalizePrimaryKeyFields(fields);
+
+    await validateFieldMetadataConfiguration(db, schemaName, normalizedFields);
+
+    const currentColsSql = `
+        SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE, IS_NULLABLE
+          FROM SYS.TABLE_COLUMNS
+         WHERE SCHEMA_NAME = ? AND TABLE_NAME = ?
+         UNION ALL
+        SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE, IS_NULLABLE
+          FROM SYS.VIEW_COLUMNS
+         WHERE SCHEMA_NAME = ? AND VIEW_NAME = ?
+    `;
+    const currentCols = await executeQuery(db, currentColsSql, [schemaName, tableName, schemaName, tableName]);
+    const currentColMap = new Map();
+    currentCols.forEach((column) => currentColMap.set(column.COLUMN_NAME, column));
+
+    const reqColMap = new Map();
+    normalizedFields.forEach((field) => reqColMap.set(field.name, field));
+
+    for (const field of normalizedFields) {
+        const colDef = buildColumnDefinition(field);
+        const typeUpper = String(field.type || "").toUpperCase();
+        const desiredNullable = !(field.isNotNull || field.isPrimary);
+
+        if (!currentColMap.has(field.name)) {
+            let addColDef = colDef;
+            if (field.defaultValue !== undefined && field.defaultValue !== null && field.defaultValue !== "") {
+                addColDef += ` DEFAULT '${String(field.defaultValue).replace(/'/g, "''")}'`;
+            }
+
+            const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} ADD (${addColDef})`;
+            await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+        } else {
+            const currentColumn = currentColMap.get(field.name);
+            const currentType = String(currentColumn.DATA_TYPE_NAME || "").toUpperCase();
+            const currentNullable = String(currentColumn.IS_NULLABLE || "").toUpperCase() === "TRUE";
+            const shouldAlter =
+                typeUpper !== currentType
+                || field.length != currentColumn.LENGTH
+                || field.scale != currentColumn.SCALE
+                || currentNullable !== desiredNullable;
+
+            if (shouldAlter) {
+                const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} ALTER (${colDef})`;
+                await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+            }
+        }
+
+        if (field.comment) {
+            await executeStatement(
+                db,
+                `CALL "EXECUTE_DDL"(?)`,
+                [`COMMENT ON COLUMN ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}.${quoteIdentifier(field.name)} IS '${String(field.comment).replace(/'/g, "''")}'`]
+            );
+        }
+    }
+
+    const currentPrimaryKeys = await getPrimaryKeys(
+        db,
+        schemaName,
+        tableName,
+        currentCols.map((column) => ({ name: column.COLUMN_NAME }))
+    );
+    const requestedPrimaryKeyFields = normalizedFields.filter((field) => field.isPrimary);
+    const requestedPrimaryKeys = requestedPrimaryKeyFields.map((field) => field.name);
+
+    await validatePrimaryKeyData(db, schemaName, tableName, requestedPrimaryKeyFields);
+    await applyPrimaryKeyChange(db, schemaName, tableName, currentPrimaryKeys, requestedPrimaryKeys);
+
+    for (const currentColumn of currentCols) {
+        if (!reqColMap.has(currentColumn.COLUMN_NAME)) {
+            const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} DROP (${quoteIdentifier(currentColumn.COLUMN_NAME)})`;
+            await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+        }
+    }
+
+    await replaceFieldMetadata(db, schemaName, tableName, normalizedFields);
+    await upsertSchemaValueHelpConfig(db, schemaName, normalizedFields);
+    await upsertSchemaValueHelpAliases(db, schemaName, normalizedFields);
 }
 
 function resolveColumnValueHelp(column, explicitMetadata, schemaValueHelpMap, schemaValueHelpAliases) {
@@ -922,6 +1193,7 @@ async function insertRow(db, definition, payload, req) {
         row[updatedAtColumn.name] = now;
     }
 
+    await validateBusinessKeyUniqueness(db, definition, row);
     await validateValueHelpValues(db, definition, row);
     await validateCustomRules(db, definition.schemaName, definition.tableName, row);
 
@@ -971,6 +1243,7 @@ async function updateRow(db, definition, keys, changes, req) {
         payload[updatedAtColumn.name] = now;
     }
 
+    await validateBusinessKeyUniqueness(db, definition, Object.assign({}, beforeRow, payload), keys);
     await validateValueHelpValues(db, definition, payload);
     await validateCustomRules(db, definition.schemaName, definition.tableName, Object.assign({}, beforeRow, payload));
 
@@ -1494,7 +1767,7 @@ cds.on("bootstrap", (app) => {
                 return res.status(400).json({ error: "Missing tableName or fields" });
             }
 
-            const processedFields = [...(fields || [])];
+            const processedFields = normalizePrimaryKeyFields([...(fields || [])]);
 
             if (includeCuid) {
                 processedFields.unshift({ name: "ID", type: "NVARCHAR", length: 36, isPrimary: true, isNotNull: true, comment: "UUID" });
@@ -1644,80 +1917,13 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
-
-                await validateFieldMetadataConfiguration(db, schemaName, fields);
-                
-                const currentColsSql = `
-                    SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE
-                    FROM SYS.TABLE_COLUMNS
-                    WHERE SCHEMA_NAME = ? AND TABLE_NAME = ?
-                    UNION ALL
-                    SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE
-                    FROM SYS.VIEW_COLUMNS
-                    WHERE SCHEMA_NAME = ? AND VIEW_NAME = ?
-                `;
-                const currentCols = await executeQuery(db, currentColsSql, [schemaName, tableName, schemaName, tableName]);
-                
-                const currentColMap = new Map();
-                currentCols.forEach(c => currentColMap.set(c.COLUMN_NAME, c));
-                
-                const reqColMap = new Map();
-                fields.forEach(f => reqColMap.set(f.name, f));
-                
-                // Add or Alter
-                for (const f of fields) {
-                    let colDef = `${quoteIdentifier(f.name)} ${f.type}`;
-                    const typeUpper = String(f.type || "").toUpperCase();
-                    if (f.length && ["VARCHAR", "NVARCHAR", "VARBINARY", "DECIMAL"].includes(typeUpper)) {
-                        if (typeUpper === "DECIMAL") {
-                            colDef += `(${f.length}${f.scale ? ',' + f.scale : ''})`;
-                        } else {
-                            colDef += `(${f.length})`;
-                        }
-                    }
-
-                    if (!currentColMap.has(f.name)) {
-                        // ADD
-                        if (f.defaultValue !== undefined && f.defaultValue !== "") {
-                            colDef += ` DEFAULT '${String(f.defaultValue).replace(/'/g, "''")}'`;
-                        }
-                        if (f.isNotNull) colDef += " NOT NULL";
-                        
-                        const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} ADD (${colDef})`;
-                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
-                    } else {
-                        // ALTER (only if type or length changed to avoid HANA errors)
-                        const curr = currentColMap.get(f.name);
-                        const currType = String(curr.DATA_TYPE_NAME || "").toUpperCase();
-                        if (typeUpper !== currType || f.length != curr.LENGTH || f.scale != curr.SCALE) {
-                            const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} ALTER (${colDef})`;
-                            await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
-                        }
-                    }
-                    
-                    // Comments
-                    if (f.comment) {
-                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [`COMMENT ON COLUMN ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}.${quoteIdentifier(f.name)} IS '${String(f.comment).replace(/'/g, "''")}'`]);
-                    }
-                }
-                
-                // Drop
-                for (const curr of currentCols) {
-                    if (!reqColMap.has(curr.COLUMN_NAME)) {
-                        const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} DROP (${quoteIdentifier(curr.COLUMN_NAME)})`;
-                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
-                    }
-                }
-
-                await replaceFieldMetadata(db, schemaName, tableName, fields);
-                await upsertSchemaValueHelpConfig(db, schemaName, fields);
-                await upsertSchemaValueHelpAliases(db, schemaName, fields);
+                await alterTableDefinition(db, schemaName, tableName, fields);
             });
 
             res.json({ success: true, message: "Table altered successfully" });
         } catch (err) {
             console.error("Error altering table:", err);
-            res.status(500).json({ error: err.message || "Failed to alter table" });
+            res.status(isUserFacingValidationError(err) ? 400 : 500).json({ error: err.message || "Failed to alter table" });
         }
     });
 
@@ -2152,7 +2358,7 @@ module.exports = cds.service.impl(function () {
                 return req.reject(400, "Missing tableName or fields");
             }
 
-            const processedFields = [...(fields || [])];
+            const processedFields = normalizePrimaryKeyFields([...(fields || [])]);
 
             if (includeCuid) {
                 processedFields.unshift({ name: "ID", type: "NVARCHAR", length: 36, isPrimary: true, isNotNull: true, comment: "UUID" });
@@ -2266,74 +2472,13 @@ module.exports = cds.service.impl(function () {
             await withDbClient(async (db) => {
                 const requestedSchema = req.data.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
-                
-                const currentColsSql = `
-                    SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE
-                    FROM SYS.TABLE_COLUMNS
-                    WHERE SCHEMA_NAME = ? AND TABLE_NAME = ?
-                    UNION ALL
-                    SELECT COLUMN_NAME, DATA_TYPE_NAME, LENGTH, SCALE
-                    FROM SYS.VIEW_COLUMNS
-                    WHERE SCHEMA_NAME = ? AND VIEW_NAME = ?
-                `;
-                const currentCols = await executeQuery(db, currentColsSql, [schemaName, tableName, schemaName, tableName]);
-                
-                const currentColMap = new Map();
-                currentCols.forEach(c => currentColMap.set(c.COLUMN_NAME, c));
-                
-                const reqColMap = new Map();
-                fields.forEach(f => reqColMap.set(f.name, f));
-                
-                // Add or Alter
-                for (const f of fields) {
-                    let colDef = `${quoteIdentifier(f.name)} ${f.type}`;
-                    const typeUpper = String(f.type || "").toUpperCase();
-                    if (f.length && ["VARCHAR", "NVARCHAR", "VARBINARY", "DECIMAL"].includes(typeUpper)) {
-                        if (typeUpper === "DECIMAL") {
-                            colDef += `(${f.length}${f.scale ? ',' + f.scale : ''})`;
-                        } else {
-                            colDef += `(${f.length})`;
-                        }
-                    }
-
-                    if (!currentColMap.has(f.name)) {
-                        // ADD
-                        if (f.defaultValue !== undefined && f.defaultValue !== null && f.defaultValue !== "") {
-                            colDef += ` DEFAULT '${String(f.defaultValue).replace(/'/g, "''")}'`;
-                        }
-                        if (f.isNotNull) colDef += " NOT NULL";
-                        
-                        const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} ADD (${colDef})`;
-                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
-                    } else {
-                        // ALTER (only if type or length changed to avoid HANA errors)
-                        const curr = currentColMap.get(f.name);
-                        const currType = String(curr.DATA_TYPE_NAME || "").toUpperCase();
-                        if (typeUpper !== currType || f.length != curr.LENGTH || f.scale != curr.SCALE) {
-                            const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} ALTER (${colDef})`;
-                            await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
-                        }
-                    }
-                    
-                    // Comments
-                    if (f.comment) {
-                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [`COMMENT ON COLUMN ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}.${quoteIdentifier(f.name)} IS '${String(f.comment).replace(/'/g, "''")}'`]);
-                    }
-                }
-                
-                // Drop
-                for (const curr of currentCols) {
-                    if (!reqColMap.has(curr.COLUMN_NAME)) {
-                        const sql = `ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)} DROP (${quoteIdentifier(curr.COLUMN_NAME)})`;
-                        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
-                    }
-                }
+                await alterTableDefinition(db, schemaName, tableName, fields);
             });
 
             return { success: true, message: "Table altered successfully" };
         } catch (err) {
             console.error("Error altering table via OData:", err);
-            req.reject(500, err.message || "Failed to alter table");
+            req.reject(isUserFacingValidationError(err) ? 400 : 500, err.message || "Failed to alter table");
         }
     });
 });
