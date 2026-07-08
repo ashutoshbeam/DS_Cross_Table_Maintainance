@@ -65,41 +65,43 @@
                         <ObjectStatus text="{= (${view>/columns}.length || 0) + ' fields' }" state="Information" class="selectionBadge" />
                     </HBox>
 
-                    <Table
-                        id="metadataTable"
-                        width="100%"
-                        class="workspaceTable designerMetadataTable"
-                        growing="true"
-                        growingScrollToLoad="true"
-                        items="{view>/columns}">
-                        <columns>
-                            <Column width="13rem"><Text text="Field Name" /></Column>
-                            <Column width="10rem"><Text text="Data Type" /></Column>
-                            <Column width="6rem"><Text text="Length" /></Column>
-                            <Column width="7rem" hAlign="Center"><Text text="Primary Key" /></Column>
-                            <Column width="7rem" hAlign="Center"><Text text="Nullable" /></Column>
-                            <Column width="12rem"><Text text="Semantic Type" /></Column>
-                            <Column width="14rem"><Text text="Validation Rule Assignment" /></Column>
-                        </columns>
-                        <items>
-                            <ColumnListItem vAlign="Middle">
-                                <cells>
-                                    <Text text="{view>name}" />
-                                    <ObjectStatus text="{view>type}" state="Information" />
-                                    <Text text="{= ${view>length} ? ${view>length} : '-' }" />
-                                    <core:Icon
-                                        src="{= ${view>key} ? 'sap-icon://accept' : '' }"
-                                        color="Positive"
-                                        visible="{view>key}" />
-                                    <core:Icon
-                                        src="{= ${view>nullable} ? 'sap-icon://accept' : 'sap-icon://decline' }"
-                                        color="{= ${view>nullable} ? 'Neutral' : 'Negative' }" />
-                                    <Text text="{= ${view>semanticType} ? ${view>semanticType} : '-' }" />
-                                    <Text text="{= ${view>valueHelpRequired} ? 'Value Help Lookup' : 'No Validation Rules' }" wrapping="true" />
-                                </cells>
-                            </ColumnListItem>
-                        </items>
-                    </Table>
+                    <ScrollContainer width="100%" horizontal="true" vertical="false" class="sapUiSmallMarginBottom">
+                        <Table
+                            id="metadataTable"
+                            width="100%"
+                            class="workspaceTable designerMetadataTable designerMetadataTableWide"
+                            growing="true"
+                            growingScrollToLoad="true"
+                            items="{view>/columns}">
+                            <columns>
+                                <Column width="13rem"><Text text="Field Name" /></Column>
+                                <Column width="10rem"><Text text="Data Type" /></Column>
+                                <Column width="6rem"><Text text="Length" /></Column>
+                                <Column width="7rem" hAlign="Center"><Text text="Primary Key" /></Column>
+                                <Column width="7rem" hAlign="Center"><Text text="Nullable" /></Column>
+                                <Column width="12rem"><Text text="Semantic Type" /></Column>
+                                <Column width="14rem"><Text text="Validation Rule Assignment" /></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem vAlign="Middle">
+                                    <cells>
+                                        <Text text="{view>name}" />
+                                        <ObjectStatus text="{view>type}" state="Information" />
+                                        <Text text="{= ${view>length} ? ${view>length} : '-' }" />
+                                        <core:Icon
+                                            src="{= ${view>key} ? 'sap-icon://accept' : '' }"
+                                            color="Positive"
+                                            visible="{view>key}" />
+                                        <core:Icon
+                                            src="{= ${view>nullable} ? 'sap-icon://accept' : 'sap-icon://decline' }"
+                                            color="{= ${view>nullable} ? 'Neutral' : 'Negative' }" />
+                                        <Text text="{= ${view>semanticType} ? ${view>semanticType} : '-' }" />
+                                        <Text text="{= ${view>valueHelpRequired} ? 'Value Help Lookup' : 'No Validation Rules' }" wrapping="true" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </ScrollContainer>
                 </VBox>
 
                 <VBox class="tableCard designerEmptyState designerEmptyStateWide" width="100%" height="100%" justifyContent="Center" alignItems="Center" visible="{= !${view>/selectedTable} }">

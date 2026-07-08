@@ -2,6 +2,20 @@
   "xsappname": "ZTableMaintenance",
   "tenant-mode": "dedicated",
   "description": "Security profile of called application",
+  "attributes": [
+    {
+      "name": "ZTM_TEMPLATE_ROLE",
+      "description": "Template role keys allowed for the logged-in user",
+      "valueType": "s",
+      "valueRequired": false
+    },
+    {
+      "name": "ZTM_TABLE_ACCESS",
+      "description": "Table names or SCHEMA.TABLE values allowed for the logged-in user",
+      "valueType": "s",
+      "valueRequired": false
+    }
+  ],
   "scopes": [
     {
       "name": "$XSAPPNAME.ZTM_Access",
@@ -28,6 +42,10 @@
     {
       "name": "ZTM_Access",
       "description": "Technical access to ZTableMaintenance",
+      "attribute-references": [
+        "ZTM_TEMPLATE_ROLE",
+        "ZTM_TABLE_ACCESS"
+      ],
       "scope-references": [
         "$XSAPPNAME.ZTM_Access"
       ]
@@ -35,6 +53,10 @@
     {
       "name": "ZTM_Display",
       "description": "ZTM Display access to view table data without making changes",
+      "attribute-references": [
+        "ZTM_TEMPLATE_ROLE",
+        "ZTM_TABLE_ACCESS"
+      ],
       "scope-references": [
         "$XSAPPNAME.ZTM_Access",
         "$XSAPPNAME.ZTM_Display"
@@ -43,6 +65,10 @@
     {
       "name": "ZTM_DataSteward",
       "description": "ZTM Steward access to view & maintain data",
+      "attribute-references": [
+        "ZTM_TEMPLATE_ROLE",
+        "ZTM_TABLE_ACCESS"
+      ],
       "scope-references": [
         "$XSAPPNAME.ZTM_Access",
         "$XSAPPNAME.ZTM_DataSteward"
@@ -51,6 +77,10 @@
     {
       "name": "ZTM_DataEngineer",
       "description": "ZTM Data Engineer access to design tables & rules",
+      "attribute-references": [
+        "ZTM_TEMPLATE_ROLE",
+        "ZTM_TABLE_ACCESS"
+      ],
       "scope-references": [
         "$XSAPPNAME.ZTM_Access",
         "$XSAPPNAME.ZTM_DataEngineer"
@@ -59,6 +89,10 @@
     {
       "name": "ZTM_Admin",
       "description": "ZTM Admin access to update config tables & Admin Console",
+      "attribute-references": [
+        "ZTM_TEMPLATE_ROLE",
+        "ZTM_TABLE_ACCESS"
+      ],
       "scope-references": [
         "$XSAPPNAME.ZTM_Access",
         "$XSAPPNAME.ZTM_Admin"

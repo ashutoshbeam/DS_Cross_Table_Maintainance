@@ -4,216 +4,219 @@
     xmlns="sap.m"
     xmlns:core="sap.ui.core"
     xmlns:form="sap.ui.layout.form">
-    <Page title="Admin Console" busy="{view>/busy}" class="workspacePage">
+    <Page title="" showHeader="false" busy="{view>/busy}" class="workspacePage cockpitPage">
         <content>
             <VBox class="workspaceShell adminConsoleShell" fitContainer="true">
+                <HBox alignItems="Center" wrap="Wrap" class="cockpitContextBar cockpitContextBarCompact">
+                    <Text text="Security" class="cockpitBreadcrumbText" />
+                    <Text text="/" class="cockpitBreadcrumbDivider" />
+                    <Title text="Admin Console" level="H2" class="cockpitPageTitle" />
+                </HBox>
                 <VBox class="tableCard adminConsoleCard">
-                    <IconTabBar id="adminTabBar" expanded="true" class="adminConsoleTabs">
-                        <items>
-                            <IconTabFilter text="Roles" icon="sap-icon://role" key="roles">
-                                <VBox class="adminTabContent">
-                                    <HBox justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap" class="adminSectionHeader">
-                                        <VBox>
-                                            <Title text="Access Privilege Template Matrix" level="H3" />
-                                            <Text text="Define technical privilege coverage for each standard user persona." />
-                                        </VBox>
-                                        <Button text="Save Role Assignments" type="Emphasized" press=".onSaveRoleTemplates" />
-                                    </HBox>
+                    <VBox class="adminTabContent" visible="{= ${view>/selectedAdminTab} === 'roles' }">
+                        <HBox justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap" class="adminSectionHeader">
+                            <VBox>
+                                <Title text="Access Privilege Template Matrix" level="H3" />
+                                <Text text="Define technical privilege coverage for each standard user persona." />
+                            </VBox>
+                            <Button text="Save Role Assignments" type="Emphasized" press=".onSaveRoleTemplates" />
+                        </HBox>
 
-                                    <Table id="rolesPrivilegesTable" class="workspaceTable adminDataTable" items="{view>/roleTemplates}">
-                                        <columns>
-                                            <Column width="15rem"><Text text="Template Role" /></Column>
-                                            <Column hAlign="Center"><Text text="Create" /></Column>
-                                            <Column hAlign="Center"><Text text="Alter" /></Column>
-                                            <Column hAlign="Center"><Text text="Drop" /></Column>
-                                            <Column hAlign="Center"><Text text="Read" /></Column>
-                                            <Column hAlign="Center"><Text text="Write" /></Column>
-                                            <Column hAlign="Center"><Text text="Delete" /></Column>
-                                        </columns>
-                                        <items>
-                                            <ColumnListItem>
-                                                <cells>
-                                                    <Text text="{view>roleName}" />
-                                                    <CheckBox selected="{view>canCreate}" />
-                                                    <CheckBox selected="{view>canAlter}" />
-                                                    <CheckBox selected="{view>canDrop}" />
-                                                    <CheckBox selected="{view>canRead}" />
-                                                    <CheckBox selected="{view>canWrite}" />
-                                                    <CheckBox selected="{view>canDelete}" />
-                                                </cells>
-                                            </ColumnListItem>
-                                        </items>
-                                    </Table>
+                        <Table id="rolesPrivilegesTable" class="workspaceTable adminDataTable" items="{view>/roleTemplates}">
+                            <columns>
+                                <Column width="15rem"><Text text="Template Role" /></Column>
+                                <Column hAlign="Center"><Text text="Create" /></Column>
+                                <Column hAlign="Center"><Text text="Alter" /></Column>
+                                <Column hAlign="Center"><Text text="Drop" /></Column>
+                                <Column hAlign="Center"><Text text="Read" /></Column>
+                                <Column hAlign="Center"><Text text="Write" /></Column>
+                                <Column hAlign="Center"><Text text="Delete" /></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{view>roleName}" />
+                                        <CheckBox selected="{view>canCreate}" />
+                                        <CheckBox selected="{view>canAlter}" />
+                                        <CheckBox selected="{view>canDrop}" />
+                                        <CheckBox selected="{view>canRead}" />
+                                        <CheckBox selected="{view>canWrite}" />
+                                        <CheckBox selected="{view>canDelete}" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </VBox>
+
+                    <VBox class="adminTabContent" visible="{= ${view>/selectedAdminTab} === 'validations' }">
+                        <HBox justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap" class="adminSectionHeader">
+                            <VBox>
+                                <Title text="Reusable Schema Fields &amp; Validation Rules" level="H3" />
+                                <Text text="Map semantic types to reusable validation rules and lookup behavior." />
+                            </VBox>
+                            <Button icon="sap-icon://add" text="Add Custom Rule" type="Emphasized" press=".onAddValidationRule" />
+                        </HBox>
+
+                        <Table id="globalValidationsTable" class="workspaceTable adminDataTable" items="{view>/globalValidations}">
+                            <columns>
+                                <Column width="14rem"><Text text="Semantic Type" /></Column>
+                                <Column width="11rem"><Text text="Validation Type" /></Column>
+                                <Column width="20rem"><Text text="Rule Expression / Values" /></Column>
+                                <Column><Text text="Default Error Message" /></Column>
+                                <Column width="5rem" hAlign="Center"><Text text="Delete" /></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Input value="{view>semanticType}" placeholder="e.g. PHONE_NUMBER" />
+                                        <Select selectedKey="{view>ruleType}">
+                                            <core:Item key="MANDATORY" text="Mandatory Field" />
+                                            <core:Item key="REGEX" text="Regular Expression" />
+                                            <core:Item key="RANGE" text="Value Range" />
+                                            <core:Item key="VALUE_LIST" text="Predefined Values" />
+                                        </Select>
+                                        <Input value="{view>ruleValue}" placeholder="e.g. ^\+?[0-9]{10,15}$ or 0,100" />
+                                        <Input value="{view>errorMessage}" placeholder="e.g. Invalid phone format." />
+                                        <Button icon="sap-icon://delete" type="Reject" press=".onDeleteValidationRule" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </VBox>
+
+                    <VBox class="adminTabContent adminTabContentStretch" busy="{view>/logsBusy}" visible="{= ${view>/selectedAdminTab} === 'logs' }">
+                        <HBox justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap" class="adminSectionHeader">
+                            <VBox>
+                                <Title text="Global Change Log &amp; Data Auditing Trail" level="H3" />
+                                <Text text="Filter logs by schema, table, and user email parsed from the entity path." />
+                            </VBox>
+                            <HBox class="adminHeaderActions" wrap="Wrap" alignItems="Center">
+                                <SearchField width="18rem" placeholder="Search logs..." liveChange=".onSearchLogs" />
+                                <Button icon="sap-icon://refresh" type="Transparent" press=".onRefreshLogs" />
+                            </HBox>
+                        </HBox>
+
+                        <VBox class="controlCard adminFilterCard">
+                            <FlexBox wrap="Wrap" class="adminFilterGrid">
+                                <VBox class="workspaceFilterBlock">
+                                    <Label text="Filter Schema" class="sapUiTinyMarginBottom" />
+                                    <ComboBox
+                                        id="logSchemaFilterCombo"
+                                        width="100%"
+                                        selectedKey="{view>/selectedLogSchema}"
+                                        change=".onLogFilterChange"
+                                        items="{view>/logSchemaItems}">
+                                        <core:Item key="{view>key}" text="{view>text}" />
+                                    </ComboBox>
                                 </VBox>
-                            </IconTabFilter>
-
-                            <IconTabFilter text="Validations" icon="sap-icon://checklist" key="validations">
-                                <VBox class="adminTabContent">
-                                    <HBox justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap" class="adminSectionHeader">
-                                        <VBox>
-                                            <Title text="Reusable Schema Fields &amp; Validation Rules" level="H3" />
-                                            <Text text="Map semantic types to reusable validation rules and lookup behavior." />
-                                        </VBox>
-                                        <Button icon="sap-icon://add" text="Add Custom Rule" type="Emphasized" press=".onAddValidationRule" />
-                                    </HBox>
-
-                                    <Table id="globalValidationsTable" class="workspaceTable adminDataTable" items="{view>/globalValidations}">
-                                        <columns>
-                                            <Column width="14rem"><Text text="Semantic Type" /></Column>
-                                            <Column width="11rem"><Text text="Validation Type" /></Column>
-                                            <Column width="20rem"><Text text="Rule Expression / Values" /></Column>
-                                            <Column><Text text="Default Error Message" /></Column>
-                                            <Column width="5rem" hAlign="Center"><Text text="Delete" /></Column>
-                                        </columns>
-                                        <items>
-                                            <ColumnListItem>
-                                                <cells>
-                                                    <Input value="{view>semanticType}" placeholder="e.g. PHONE_NUMBER" />
-                                                    <Select selectedKey="{view>ruleType}">
-                                                        <core:Item key="MANDATORY" text="Mandatory Field" />
-                                                        <core:Item key="REGEX" text="Regular Expression" />
-                                                        <core:Item key="RANGE" text="Value Range" />
-                                                        <core:Item key="VALUE_LIST" text="Predefined Values" />
-                                                    </Select>
-                                                    <Input value="{view>ruleValue}" placeholder="e.g. ^\+?[0-9]{10,15}$ or 0,100" />
-                                                    <Input value="{view>errorMessage}" placeholder="e.g. Invalid phone format." />
-                                                    <Button icon="sap-icon://delete" type="Reject" press=".onDeleteValidationRule" />
-                                                </cells>
-                                            </ColumnListItem>
-                                        </items>
-                                    </Table>
+                                <VBox class="workspaceFilterBlock">
+                                    <Label text="Filter Table" class="sapUiTinyMarginBottom" />
+                                    <ComboBox
+                                        id="logTableFilterCombo"
+                                        width="100%"
+                                        selectedKey="{view>/selectedLogTable}"
+                                        change=".onLogFilterChange"
+                                        items="{view>/logTableItems}">
+                                        <core:Item key="{view>key}" text="{view>text}" />
+                                    </ComboBox>
                                 </VBox>
-                            </IconTabFilter>
-
-                            <IconTabFilter text="Audit Logs" icon="sap-icon://history" key="logs">
-                                <VBox class="adminTabContent adminTabContentStretch" busy="{view>/logsBusy}">
-                                    <HBox justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap" class="adminSectionHeader">
-                                        <VBox>
-                                            <Title text="Global Change Log &amp; Data Auditing Trail" level="H3" />
-                                            <Text text="Filter logs by schema, table, and user email parsed from the entity path." />
-                                        </VBox>
-                                        <HBox class="adminHeaderActions" wrap="Wrap" alignItems="Center">
-                                            <SearchField width="18rem" placeholder="Search logs..." liveChange=".onSearchLogs" />
-                                            <Button icon="sap-icon://refresh" type="Transparent" press=".onRefreshLogs" />
-                                        </HBox>
-                                    </HBox>
-
-                                    <VBox class="controlCard adminFilterCard">
-                                        <FlexBox wrap="Wrap" class="adminFilterGrid">
-                                            <VBox class="workspaceFilterBlock">
-                                                <Label text="Filter Schema" class="sapUiTinyMarginBottom" />
-                                                <ComboBox
-                                                    id="logSchemaFilterCombo"
-                                                    width="100%"
-                                                    selectedKey="{view>/selectedLogSchema}"
-                                                    change=".onLogFilterChange"
-                                                    items="{view>/logSchemaItems}">
-                                                    <core:Item key="{view>key}" text="{view>text}" />
-                                                </ComboBox>
-                                            </VBox>
-                                            <VBox class="workspaceFilterBlock">
-                                                <Label text="Filter Table" class="sapUiTinyMarginBottom" />
-                                                <ComboBox
-                                                    id="logTableFilterCombo"
-                                                    width="100%"
-                                                    selectedKey="{view>/selectedLogTable}"
-                                                    change=".onLogFilterChange"
-                                                    items="{view>/logTableItems}">
-                                                    <core:Item key="{view>key}" text="{view>text}" />
-                                                </ComboBox>
-                                            </VBox>
-                                            <VBox class="workspaceFilterBlock">
-                                                <Label text="Filter User Email" class="sapUiTinyMarginBottom" />
-                                                <ComboBox
-                                                    id="logUserFilterCombo"
-                                                    width="100%"
-                                                    selectedKey="{view>/selectedLogUser}"
-                                                    change=".onLogFilterChange"
-                                                    items="{view>/logUserItems}">
-                                                    <core:Item key="{view>key}" text="{view>text}" />
-                                                </ComboBox>
-                                            </VBox>
-                                            <VBox class="workspaceFilterBlock adminFilterAction">
-                                                <Label text="Actions" class="sapUiTinyMarginBottom" />
-                                                <Button
-                                                    icon="sap-icon://clear-filter"
-                                                    text="Clear"
-                                                    type="Transparent"
-                                                    press=".onClearLogFilters" />
-                                            </VBox>
-                                        </FlexBox>
-                                    </VBox>
-
-                                    <Table id="globalAuditLogsTable" class="workspaceTable adminDataTable adminAuditTable" items="{view>/filteredAuditLogs}" growing="true" growingScrollToLoad="true">
-                                        <columns>
-                                            <Column width="11rem"><Text text="Timestamp" /></Column>
-                                            <Column width="15rem"><Text text="User Email" /></Column>
-                                            <Column width="8rem"><Text text="Modification" /></Column>
-                                            <Column width="16rem"><Text text="Entity Path" /></Column>
-                                            <Column width="10rem"><Text text="Schema" /></Column>
-                                            <Column width="14rem"><Text text="Table" /></Column>
-                                            <Column width="10rem"><Text text="Field Affected" /></Column>
-                                            <Column width="15rem"><Text text="Value Before" /></Column>
-                                            <Column width="15rem"><Text text="Value After" /></Column>
-                                        </columns>
-                                        <items>
-                                            <ColumnListItem vAlign="Top">
-                                                <cells>
-                                                    <Text text="{view>createdAtDisplay}" />
-                                                    <Text text="{view>userEmail}" wrapping="true" />
-                                                    <ObjectStatus text="{view>modification}" state="{= ${view>modification} === 'DELETE' ? 'Error' : (${view>modification} === 'CREATE' ? 'Success' : 'Warning') }" />
-                                                    <Text text="{view>logEntityPath}" wrapping="true" />
-                                                    <Text text="{view>logSchema}" />
-                                                    <Text text="{view>logTable}" />
-                                                    <Text text="{view>attribute}" />
-                                                    <Text text="{view>valueChangedFrom}" wrapping="true" />
-                                                    <Text text="{view>valueChangedTo}" wrapping="true" />
-                                                </cells>
-                                            </ColumnListItem>
-                                        </items>
-                                    </Table>
+                                <VBox class="workspaceFilterBlock">
+                                    <Label text="Filter User Email" class="sapUiTinyMarginBottom" />
+                                    <ComboBox
+                                        id="logUserFilterCombo"
+                                        width="100%"
+                                        selectedKey="{view>/selectedLogUser}"
+                                        change=".onLogFilterChange"
+                                        items="{view>/logUserItems}">
+                                        <core:Item key="{view>key}" text="{view>text}" />
+                                    </ComboBox>
                                 </VBox>
-                            </IconTabFilter>
-
-                            <IconTabFilter text="Config Tables" icon="sap-icon://table-column" key="configTables">
-                                <VBox class="adminTabContent adminTabContentStretch" busy="{view>/configBusy}">
-                                    <HBox justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap" class="adminSectionHeader">
-                                        <VBox>
-                                            <Title text="Maintain System Configuration Metadata" level="H3" />
-                                            <Text text="Direct maintenance of framework-level mappings, value helps, and validation rules." />
-                                        </VBox>
-                                        <FlexBox wrap="Wrap" alignItems="Center" class="adminHeaderActions">
-                                            <Label text="Select Config Table:" required="true" />
-                                            <Select
-                                                id="configTableSelect"
-                                                width="18rem"
-                                                selectedKey="{view>/selectedConfigTable}"
-                                                change=".onConfigTableChange">
-                                                <core:Item key="" text="-- Select Table --" />
-                                                <core:Item key="ZSCHEMA_FIELD_METADATA" text="Field Metadata" />
-                                                <core:Item key="ZSCHEMA_VALUE_HELP_CONFIG" text="Value Help Config" />
-                                                <core:Item key="ZSCHEMA_VALUE_HELP_ALIAS" text="Value Help Aliases" />
-                                                <core:Item key="ZSCHEMA_VALIDATION_RULES" text="Validation Rules" />
-                                            </Select>
-                                            <Button icon="sap-icon://add" text="Add Row" type="Accept" press=".onAddConfigRow" enabled="{= !!${view>/selectedConfigTable} }" />
-                                            <Button icon="sap-icon://edit" text="Edit Row" type="Emphasized" press=".onEditConfigRow" enabled="{= !!${view>/selectedConfigTable} &amp;&amp; ${view>/selectedConfigCount} === 1 }" />
-                                            <Button icon="sap-icon://delete" text="Delete Selected" type="Reject" press=".onDeleteConfigRow" enabled="{= !!${view>/selectedConfigTable} &amp;&amp; ${view>/selectedConfigCount} > 0 }" />
-                                            <Button icon="sap-icon://refresh" type="Transparent" press=".onRefreshConfigData" enabled="{= !!${view>/selectedConfigTable} }" />
-                                        </FlexBox>
-                                    </HBox>
-
-                                    <Table
-                                        id="configDataTable"
-                                        mode="MultiSelect"
-                                        selectionChange=".onConfigSelectionChange"
-                                        class="workspaceTable adminDataTable adminConfigTable"
-                                        growing="true"
-                                        growingScrollToLoad="true"
-                                        noDataText="Select a configuration table to view and edit properties." />
+                                <VBox class="workspaceFilterBlock adminFilterAction">
+                                    <Label text="Actions" class="sapUiTinyMarginBottom" />
+                                    <Button
+                                        icon="sap-icon://clear-filter"
+                                        text="Clear"
+                                        type="Transparent"
+                                        press=".onClearLogFilters" />
                                 </VBox>
-                            </IconTabFilter>
-                        </items>
-                    </IconTabBar>
+                            </FlexBox>
+                        </VBox>
+
+                        <Table id="globalAuditLogsTable" class="workspaceTable adminDataTable adminAuditTable" items="{view>/filteredAuditLogs}" growing="true" growingScrollToLoad="true">
+                            <columns>
+                                <Column width="11rem"><Text text="Timestamp" /></Column>
+                                <Column width="15rem"><Text text="User Email" /></Column>
+                                <Column width="8rem"><Text text="Modification" /></Column>
+                                <Column width="16rem"><Text text="Entity Path" /></Column>
+                                <Column width="10rem"><Text text="Schema" /></Column>
+                                <Column width="14rem"><Text text="Table" /></Column>
+                                <Column width="10rem"><Text text="Field Affected" /></Column>
+                                <Column width="15rem"><Text text="Value Before" /></Column>
+                                <Column width="15rem"><Text text="Value After" /></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem vAlign="Top">
+                                    <cells>
+                                        <Text text="{view>createdAtDisplay}" />
+                                        <Text text="{view>userEmail}" wrapping="true" />
+                                        <ObjectStatus text="{view>modification}" state="{= ${view>modification} === 'DELETE' ? 'Error' : (${view>modification} === 'CREATE' ? 'Success' : 'Warning') }" />
+                                        <Text text="{view>logEntityPath}" wrapping="true" />
+                                        <Text text="{view>logSchema}" />
+                                        <Text text="{view>logTable}" />
+                                        <Text text="{view>attribute}" />
+                                        <Text text="{view>valueChangedFrom}" wrapping="true" />
+                                        <Text text="{view>valueChangedTo}" wrapping="true" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </VBox>
+
+                    <VBox class="adminTabContent adminTabContentStretch" busy="{view>/configBusy}" visible="{= ${view>/selectedAdminTab} === 'configTables' }">
+                        <HBox justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap" class="adminSectionHeader">
+                            <VBox>
+                                <Title text="Maintain System Configuration Metadata" level="H3" />
+                                <Text text="Direct maintenance of framework-level mappings, value helps, and validation rules." />
+                            </VBox>
+                            <FlexBox wrap="Wrap" alignItems="Center" class="adminHeaderActions">
+                                <Label text="Select Config Table:" required="true" />
+                                <Select
+                                    id="configTableSelect"
+                                    width="18rem"
+                                    selectedKey="{view>/selectedConfigTable}"
+                                    change=".onConfigTableChange">
+                                    <core:Item key="" text="-- Select Table --" />
+                                    <core:Item key="ZSCHEMA_FIELD_METADATA" text="Field Metadata" />
+                                    <core:Item key="ZSCHEMA_VALUE_HELP_CONFIG" text="Value Help Config" />
+                                    <core:Item key="ZSCHEMA_VALUE_HELP_ALIAS" text="Value Help Aliases" />
+                                    <core:Item key="ZSCHEMA_VALIDATION_RULES" text="Validation Rules" />
+                                    <core:Item key="ZSCHEMA_ROLE_TEMPLATE_DEFINITION" text="Role Template Definitions" />
+                                    <core:Item key="ZSCHEMA_ROLE_TEMPLATE_TABLE_MAP" text="Role Template to Table Mapping" />
+                                    <core:Item key="ZSCHEMA_USER_ROLE_TEMPLATE_ACCESS" text="User to Role Template Access" />
+                                    <core:Item key="ZSCHEMA_USER_TABLE_ACCESS" text="User to Table Access" />
+                                </Select>
+                                <Button icon="sap-icon://add" text="Add Row" type="Accept" press=".onAddConfigRow" enabled="{= !!${view>/selectedConfigTable} }" />
+                                <Button icon="sap-icon://edit" text="Edit Row" type="Emphasized" press=".onEditConfigRow" enabled="{= !!${view>/selectedConfigTable} &amp;&amp; ${view>/selectedConfigCount} === 1 }" />
+                                <Button icon="sap-icon://delete" text="Delete Selected" type="Reject" press=".onDeleteConfigRow" enabled="{= !!${view>/selectedConfigTable} &amp;&amp; ${view>/selectedConfigCount} > 0 }" />
+                                <Button icon="sap-icon://refresh" type="Transparent" press=".onRefreshConfigData" enabled="{= !!${view>/selectedConfigTable} }" />
+                            </FlexBox>
+                        </HBox>
+
+                        <MessageStrip
+                            text="Use the access tables to map role templates to tables, assign BTP users to templates, and grant direct table access. USER_EMAIL now uses the live BTP IdP user list."
+                            type="Information"
+                            showIcon="true"
+                            class="sapUiSmallMarginBottom" />
+
+                        <Table
+                            id="configDataTable"
+                            mode="MultiSelect"
+                            selectionChange=".onConfigSelectionChange"
+                            class="workspaceTable adminDataTable adminConfigTable"
+                            growing="true"
+                            growingScrollToLoad="true"
+                            noDataText="Select a configuration table to view and edit properties." />
+                    </VBox>
                 </VBox>
             </VBox>
         </content>

@@ -1,7 +1,8 @@
 sap.ui.define([
     "ztm/tmapp/controller/BaseController",
-    "sap/ui/model/json/JSONModel"
-], function (BaseController, JSONModel) {
+    "sap/ui/model/json/JSONModel",
+    "sap/ui/Device"
+], function (BaseController, JSONModel, Device) {
     "use strict";
 
     return BaseController.extend("ztm.tmapp.controller.App", {
@@ -9,6 +10,7 @@ sap.ui.define([
             var oViewModel = new JSONModel({
                 busy: false,
                 username: "User",
+                sideNavExpanded: !Device.system.phone,
                 isDisplay: false,
                 isDataSteward: false,
                 isDataEngineer: false,
@@ -17,6 +19,7 @@ sap.ui.define([
                 availableRoleProfiles: [],
                 hasMultipleRoles: false,
                 selectedModule: "DataMaintenance",
+                selectedAdminSection: "roles",
                 activeRoleProfile: "",
                 activeRoleLabel: "No Roles Assigned",
                 activeRoleState: "None"
@@ -151,7 +154,7 @@ sap.ui.define([
                 oViewModel.setProperty("/activeRoleState", "Warning");
 
                 // If currently on AdminConsole, kick out to DataMaintenance
-                if (sCurrentModule === "AdminConsole") {
+                if (String(sCurrentModule || "").indexOf("AdminConsole") === 0) {
                     this.getRouter().navTo("DSTableList");
                 }
             } else if (sProfileKey === "ZTM_DataSteward") {
@@ -164,7 +167,7 @@ sap.ui.define([
                 oViewModel.setProperty("/activeRoleState", "None");
 
                 // If on restricted modules, kick out to DataMaintenance
-                if (sCurrentModule === "AdminConsole" || sCurrentModule === "TableDesigner") {
+                if (String(sCurrentModule || "").indexOf("AdminConsole") === 0 || sCurrentModule === "TableDesigner") {
                     this.getRouter().navTo("DSTableList");
                 }
             } else if (sProfileKey === "ZTM_Display") {
@@ -176,7 +179,7 @@ sap.ui.define([
                 oViewModel.setProperty("/activeRoleLabel", "ZTM Display");
                 oViewModel.setProperty("/activeRoleState", "Information");
 
-                if (sCurrentModule === "AdminConsole" || sCurrentModule === "TableDesigner") {
+                if (String(sCurrentModule || "").indexOf("AdminConsole") === 0 || sCurrentModule === "TableDesigner") {
                     this.getRouter().navTo("DSTableList");
                 }
             } else {
@@ -190,12 +193,6 @@ sap.ui.define([
 
                 // Kick out of restricted modules
                 this.getRouter().navTo("DSTableList");
-            }
-
-            // Ensure sidebar is collapsed when role changes
-            var oSideNavigation = this.byId("sideNavigation");
-            if (oSideNavigation) {
-                oSideNavigation.setExpanded(false);
             }
         },
 
@@ -266,42 +263,54 @@ sap.ui.define([
         },
 
         onSideNavCollapsePress: function () {
-            var oSideNavigation = this.byId("sideNavigation");
-            var bExpanded = oSideNavigation.getExpanded();
-            oSideNavigation.setExpanded(!bExpanded);
+            var oViewModel = this.getModel("view");
+            var bExpanded = oViewModel.getProperty("/sideNavExpanded");
+            oViewModel.setProperty("/sideNavExpanded", !bExpanded);
         },
 
         onModuleSelect: function (oEvent) {
             var oItem = oEvent.getParameter("item");
             var sKey = oItem.getKey();
+            var oViewModel = this.getModel("view");
 
-            this.getModel("view").setProperty("/selectedModule", sKey);
-
-            // Collapse side navigation to save horizontal space
-            var oSideNavigation = this.byId("sideNavigation");
-            if (oSideNavigation) {
-                oSideNavigation.setExpanded(false);
-            }
+            oViewModel.setProperty("/selectedModule", sKey);
 
             if (sKey === "DataMaintenance") {
                 this.getRouter().navTo("DSTableList");
             } else if (sKey === "TableDesigner") {
                 this.getRouter().navTo("TableDesigner");
             } else if (sKey === "AdminConsole") {
-                this.getRouter().navTo("AdminConsole");
+                oViewModel.setProperty("/selectedAdminSection", "roles");
+                this.getRouter().navTo("AdminConsole", {
+                    query: {
+                        section: "roles"
+                    }
+                });
+            } else if (sKey.indexOf("AdminConsole_") === 0) {
+                var sSection = sKey.replace("AdminConsole_", "");
+                oViewModel.setProperty("/selectedAdminSection", sSection);
+                this.getRouter().navTo("AdminConsole", {
+                    query: {
+                        section: sSection
+                    }
+                });
             }
         },
 
         _onRouteMatched: function (oEvent) {
             var sRouteName = oEvent.getParameter("name");
             var oViewModel = this.getModel("view");
+            var oArgs = oEvent.getParameter("arguments") || {};
+            var oQuery = oArgs["?query"] || {};
+            var sAdminSection = oQuery.section || oViewModel.getProperty("/selectedAdminSection") || "roles";
 
             if (sRouteName === "DSTableList" || sRouteName === "PlantLocationObjectPage" || sRouteName === "PlantLocationChangeHistory") {
                 oViewModel.setProperty("/selectedModule", "DataMaintenance");
             } else if (sRouteName === "TableDesigner" || sRouteName === "CreateTable" || sRouteName === "AlterTable") {
                 oViewModel.setProperty("/selectedModule", "TableDesigner");
             } else if (sRouteName === "AdminConsole") {
-                oViewModel.setProperty("/selectedModule", "AdminConsole");
+                oViewModel.setProperty("/selectedAdminSection", sAdminSection);
+                oViewModel.setProperty("/selectedModule", "AdminConsole_" + sAdminSection);
             }
         }
     });

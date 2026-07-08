@@ -15,6 +15,13 @@
       "csrfProtection": false
     },
     {
+      "source": "^/(?:[^/]+/)*api/admin/(.*)$",
+      "target": "/api/admin/$1",
+      "destination": "srv-api",
+      "authenticationType": "xsuaa",
+      "csrfProtection": false
+    },
+    {
       "source": "^/(?:[^/]+/)*odata/v4/ds-table-maintenance/(.*)$",
       "target": "/odata/v4/ds-table-maintenance/$1",
       "destination": "srv-api",

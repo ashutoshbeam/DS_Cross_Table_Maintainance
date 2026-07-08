@@ -6,6 +6,15 @@ const FIELD_METADATA_TABLE = "ZSCHEMA_FIELD_METADATA";
 const VALUE_HELP_CONFIG_TABLE = "ZSCHEMA_VALUE_HELP_CONFIG";
 const VALUE_HELP_ALIAS_TABLE = "ZSCHEMA_VALUE_HELP_ALIAS";
 const VALIDATION_RULES_TABLE = "ZSCHEMA_VALIDATION_RULES";
+const ROLE_TEMPLATE_DEFINITION_TABLE = "ZSCHEMA_ROLE_TEMPLATE_DEFINITION";
+const ROLE_TEMPLATE_TABLE_MAP_TABLE = "ZSCHEMA_ROLE_TEMPLATE_TABLE_MAP";
+const USER_ROLE_TEMPLATE_ACCESS_TABLE = "ZSCHEMA_USER_ROLE_TEMPLATE_ACCESS";
+const USER_TABLE_ACCESS_TABLE = "ZSCHEMA_USER_TABLE_ACCESS";
+const DEFAULT_ROLE_TEMPLATE_DEFINITIONS = [
+    { key: "DEMAND", text: "Demand" },
+    { key: "SUPPLY", text: "Supply" },
+    { key: "BASIC_DATA", text: "Basic Data" }
+];
 let dbPromise;
 
 const MANAGED_FIELD_NAMES = new Set([
@@ -17,6 +26,29 @@ const MANAGED_FIELD_NAMES = new Set([
 ]);
 
 const normalizeColumnName = (name) => String(name || "").toUpperCase();
+const normalizeRoleTemplateKey = (value) => String(value || "").trim().toUpperCase();
+const normalizeUserEmail = (value) => String(value || "").trim().toLowerCase();
+const normalizeAccessTableName = (value) => String(value || "").trim();
+const DEFAULT_TEMPLATE_ROLE_ATTRIBUTE_NAMES = [
+    "ZTM_TEMPLATE_ROLE",
+    "ZTM_TEMPLATE_ROLES",
+    "TEMPLATE_ROLE",
+    "TEMPLATE_ROLES",
+    "ztm_template_role",
+    "ztm_template_roles",
+    "template_role",
+    "template_roles"
+];
+const DEFAULT_TABLE_ACCESS_ATTRIBUTE_NAMES = [
+    "ZTM_TABLE_ACCESS",
+    "ZTM_TABLE_ACCESS_LIST",
+    "TABLE_ACCESS",
+    "TABLE_ACCESS_LIST",
+    "ALLOWED_TABLES",
+    "ztm_table_access",
+    "table_access",
+    "allowed_tables"
+];
 
 const SYSTEM_TIMESTAMPS = new Set(["CREATEDAT", "MODIFIEDAT"]);
 const SYSTEM_USERS = new Set(["CREATEDBY", "MODIFIEDBY"]);
@@ -118,6 +150,81 @@ const normalizeSemanticKey = (value) => String(value || "").toUpperCase().replac
 const getSemanticAliases = (value) => {
     const normalized = normalizeSemanticKey(value);
     return normalized ? [normalized] : [];
+};
+
+const getRequestTokenPayload = (req) => {
+    const headers = req?.headers || req?.http?.req?.headers || {};
+    return decodeJwtPayload(getAuthTokenFromHeaders(headers));
+};
+
+const toAttributeNameList = (envValue, fallback) => {
+    const rawValues = String(envValue || "")
+        .split(",")
+        .map((value) => value.trim())
+        .filter(Boolean);
+
+    return rawValues.length ? rawValues : fallback;
+};
+
+const flattenAttributeValues = (value) => {
+    if (Array.isArray(value)) {
+        return value.flatMap(flattenAttributeValues);
+    }
+    if (value === undefined || value === null) {
+        return [];
+    }
+    if (typeof value === "string") {
+        return value
+            .split(/[,\n;]+/)
+            .map((entry) => entry.trim())
+            .filter(Boolean);
+    }
+    return [String(value).trim()].filter(Boolean);
+};
+
+const expandTableAttributeValues = (values) => {
+    const expanded = new Set();
+
+    (values || []).forEach((value) => {
+        const normalized = normalizeAccessTableName(value);
+        if (!normalized) {
+            return;
+        }
+
+        expanded.add(normalized);
+        if (normalized.includes(".")) {
+            expanded.add(normalized.split(".").pop());
+        }
+    });
+
+    return Array.from(expanded);
+};
+
+const getTokenAttributeBag = (payload) => {
+    if (!payload || typeof payload !== "object") {
+        return {};
+    }
+
+    return payload["xs.user.attributes"]
+        || payload?.xs?.user?.attributes
+        || payload?.user_attributes
+        || payload?.attributes
+        || payload?.az_attr
+        || {};
+};
+
+const getRequestAttributeValues = (req, attributeNames) => {
+    const payload = getRequestTokenPayload(req);
+    const attributeBag = getTokenAttributeBag(payload);
+    const values = [];
+
+    attributeNames.forEach((attributeName) => {
+        if (Object.prototype.hasOwnProperty.call(attributeBag, attributeName)) {
+            values.push(...flattenAttributeValues(attributeBag[attributeName]));
+        }
+    });
+
+    return Array.from(new Set(values));
 };
 
 const getFieldMetadataPayload = (field = {}) => {
@@ -422,6 +529,274 @@ async function ensureValueHelpAliasTable(db, schemaName) {
     )`;
 
     await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+}
+
+async function ensureRoleTemplateDefinitionTable(db, schemaName) {
+    const rows = await executeQuery(db,
+        `SELECT OBJECT_NAME, OBJECT_TYPE
+           FROM SYS.OBJECTS
+          WHERE SCHEMA_NAME = ?
+            AND OBJECT_NAME = ?`,
+        [schemaName, ROLE_TEMPLATE_DEFINITION_TABLE]
+    );
+
+    if (!rows.length) {
+        const sql = `CREATE COLUMN TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(ROLE_TEMPLATE_DEFINITION_TABLE)} (
+            "SCHEMA_NAME" NVARCHAR(256) NOT NULL,
+            "TEMPLATE_ROLE" NVARCHAR(100) NOT NULL,
+            "DISPLAY_TEXT" NVARCHAR(255) NOT NULL,
+            "UPDATED_AT" TIMESTAMP,
+            PRIMARY KEY ("SCHEMA_NAME", "TEMPLATE_ROLE")
+        )`;
+
+        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    }
+
+    for (const entry of DEFAULT_ROLE_TEMPLATE_DEFINITIONS) {
+        await executeStatement(
+            db,
+            `MERGE INTO ${quoteIdentifier(schemaName)}.${quoteIdentifier(ROLE_TEMPLATE_DEFINITION_TABLE)} AS TARGET
+             USING (SELECT ? AS "SCHEMA_NAME", ? AS "TEMPLATE_ROLE", ? AS "DISPLAY_TEXT" FROM DUMMY) AS SOURCE
+                ON TARGET."SCHEMA_NAME" = SOURCE."SCHEMA_NAME"
+               AND TARGET."TEMPLATE_ROLE" = SOURCE."TEMPLATE_ROLE"
+             WHEN NOT MATCHED THEN
+               INSERT ("SCHEMA_NAME", "TEMPLATE_ROLE", "DISPLAY_TEXT", "UPDATED_AT")
+               VALUES (SOURCE."SCHEMA_NAME", SOURCE."TEMPLATE_ROLE", SOURCE."DISPLAY_TEXT", CURRENT_UTCTIMESTAMP)`,
+            [schemaName, entry.key, entry.text]
+        );
+    }
+}
+
+async function getRoleTemplateDefinitions(db, schemaName) {
+    await ensureRoleTemplateDefinitionTable(db, schemaName);
+    const rows = await executeQuery(
+        db,
+        `SELECT TEMPLATE_ROLE, DISPLAY_TEXT
+           FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(ROLE_TEMPLATE_DEFINITION_TABLE)}
+          WHERE SCHEMA_NAME = ?
+          ORDER BY TEMPLATE_ROLE`,
+        [schemaName]
+    );
+
+    return rows.map((row) => ({
+        key: normalizeRoleTemplateKey(row.TEMPLATE_ROLE),
+        text: String(row.DISPLAY_TEXT || row.TEMPLATE_ROLE || "").trim() || normalizeRoleTemplateKey(row.TEMPLATE_ROLE)
+    })).filter((entry) => entry.key);
+}
+
+function getRoleTemplateLabel(templateRole, definitions) {
+    const normalized = normalizeRoleTemplateKey(templateRole);
+    const match = (definitions || []).find((entry) => entry.key === normalized);
+    return match ? match.text : normalized;
+}
+
+async function ensureRoleTemplateTableMapTable(db, schemaName) {
+    const rows = await executeQuery(db,
+        `SELECT OBJECT_NAME, OBJECT_TYPE
+           FROM SYS.OBJECTS
+          WHERE SCHEMA_NAME = ?
+            AND OBJECT_NAME = ?`,
+        [schemaName, ROLE_TEMPLATE_TABLE_MAP_TABLE]
+    );
+
+    if (rows.length) {
+        return;
+    }
+
+    const sql = `CREATE COLUMN TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(ROLE_TEMPLATE_TABLE_MAP_TABLE)} (
+        "SCHEMA_NAME" NVARCHAR(256) NOT NULL,
+        "TEMPLATE_ROLE" NVARCHAR(100) NOT NULL,
+        "TABLE_NAME" NVARCHAR(256) NOT NULL,
+        "UPDATED_AT" TIMESTAMP,
+        PRIMARY KEY ("SCHEMA_NAME", "TEMPLATE_ROLE", "TABLE_NAME")
+    )`;
+
+    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+}
+
+async function ensureUserRoleTemplateAccessTable(db, schemaName) {
+    const rows = await executeQuery(db,
+        `SELECT OBJECT_NAME, OBJECT_TYPE
+           FROM SYS.OBJECTS
+          WHERE SCHEMA_NAME = ?
+            AND OBJECT_NAME = ?`,
+        [schemaName, USER_ROLE_TEMPLATE_ACCESS_TABLE]
+    );
+
+    if (rows.length) {
+        return;
+    }
+
+    const sql = `CREATE COLUMN TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(USER_ROLE_TEMPLATE_ACCESS_TABLE)} (
+        "SCHEMA_NAME" NVARCHAR(256) NOT NULL,
+        "USER_EMAIL" NVARCHAR(320) NOT NULL,
+        "TEMPLATE_ROLE" NVARCHAR(100) NOT NULL,
+        "UPDATED_AT" TIMESTAMP,
+        PRIMARY KEY ("SCHEMA_NAME", "USER_EMAIL", "TEMPLATE_ROLE")
+    )`;
+
+    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+}
+
+async function ensureUserTableAccessTable(db, schemaName) {
+    const rows = await executeQuery(db,
+        `SELECT OBJECT_NAME, OBJECT_TYPE
+           FROM SYS.OBJECTS
+          WHERE SCHEMA_NAME = ?
+            AND OBJECT_NAME = ?`,
+        [schemaName, USER_TABLE_ACCESS_TABLE]
+    );
+
+    if (rows.length) {
+        return;
+    }
+
+    const sql = `CREATE COLUMN TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(USER_TABLE_ACCESS_TABLE)} (
+        "SCHEMA_NAME" NVARCHAR(256) NOT NULL,
+        "USER_EMAIL" NVARCHAR(320) NOT NULL,
+        "TABLE_NAME" NVARCHAR(256) NOT NULL,
+        "UPDATED_AT" TIMESTAMP,
+        PRIMARY KEY ("SCHEMA_NAME", "USER_EMAIL", "TABLE_NAME")
+    )`;
+
+    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+}
+
+async function ensureAccessConfigTables(db, schemaName) {
+    await ensureRoleTemplateDefinitionTable(db, schemaName);
+    await ensureRoleTemplateTableMapTable(db, schemaName);
+    await ensureUserRoleTemplateAccessTable(db, schemaName);
+    await ensureUserTableAccessTable(db, schemaName);
+}
+
+async function getRoleTemplateTableMappings(db, schemaName) {
+    await ensureRoleTemplateTableMapTable(db, schemaName);
+    const rows = await executeQuery(
+        db,
+        `SELECT TEMPLATE_ROLE, TABLE_NAME
+           FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(ROLE_TEMPLATE_TABLE_MAP_TABLE)}
+          WHERE SCHEMA_NAME = ?
+          ORDER BY TEMPLATE_ROLE, TABLE_NAME`,
+        [schemaName]
+    );
+
+    return rows.map((row) => ({
+        templateRole: normalizeRoleTemplateKey(row.TEMPLATE_ROLE),
+        tableName: String(row.TABLE_NAME || "")
+    }));
+}
+
+async function getUserRoleTemplateAssignments(db, schemaName, userEmail) {
+    await ensureUserRoleTemplateAccessTable(db, schemaName);
+    const normalizedUser = normalizeUserEmail(userEmail);
+    if (!normalizedUser) {
+        return [];
+    }
+
+    const rows = await executeQuery(
+        db,
+        `SELECT TEMPLATE_ROLE
+           FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(USER_ROLE_TEMPLATE_ACCESS_TABLE)}
+          WHERE SCHEMA_NAME = ?
+            AND LOWER(USER_EMAIL) = ?
+          ORDER BY TEMPLATE_ROLE`,
+        [schemaName, normalizedUser]
+    );
+
+    return rows.map((row) => normalizeRoleTemplateKey(row.TEMPLATE_ROLE)).filter(Boolean);
+}
+
+async function getUserTableAssignments(db, schemaName, userEmail) {
+    await ensureUserTableAccessTable(db, schemaName);
+    const normalizedUser = normalizeUserEmail(userEmail);
+    if (!normalizedUser) {
+        return [];
+    }
+
+    const rows = await executeQuery(
+        db,
+        `SELECT TABLE_NAME
+           FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(USER_TABLE_ACCESS_TABLE)}
+          WHERE SCHEMA_NAME = ?
+            AND LOWER(USER_EMAIL) = ?
+          ORDER BY TABLE_NAME`,
+        [schemaName, normalizedUser]
+    );
+
+    return rows.map((row) => String(row.TABLE_NAME || "")).filter(Boolean);
+}
+
+async function upsertRoleTemplateTableMapping(db, schemaName, templateRole, tableName) {
+    const normalizedRole = normalizeRoleTemplateKey(templateRole);
+    const normalizedTable = String(tableName || "").trim();
+
+    if (!normalizedRole || !normalizedTable) {
+        return;
+    }
+
+    await ensureRoleTemplateTableMapTable(db, schemaName);
+    await executeStatement(
+        db,
+        `UPSERT ${quoteIdentifier(schemaName)}.${quoteIdentifier(ROLE_TEMPLATE_TABLE_MAP_TABLE)}
+            ("SCHEMA_NAME", "TEMPLATE_ROLE", "TABLE_NAME", "UPDATED_AT")
+         VALUES (?, ?, ?, CURRENT_UTCTIMESTAMP)
+         WITH PRIMARY KEY`,
+        [schemaName, normalizedRole, normalizedTable]
+    );
+}
+
+async function deleteRoleTemplateTableMappings(db, schemaName, tableName) {
+    await ensureRoleTemplateTableMapTable(db, schemaName);
+    await executeStatement(
+        db,
+        `DELETE FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(ROLE_TEMPLATE_TABLE_MAP_TABLE)}
+          WHERE SCHEMA_NAME = ?
+            AND TABLE_NAME = ?`,
+        [schemaName, tableName]
+    );
+}
+
+async function deleteUserTableAssignments(db, schemaName, tableName) {
+    await ensureUserTableAccessTable(db, schemaName);
+    await executeStatement(
+        db,
+        `DELETE FROM ${quoteIdentifier(schemaName)}.${quoteIdentifier(USER_TABLE_ACCESS_TABLE)}
+          WHERE SCHEMA_NAME = ?
+            AND TABLE_NAME = ?`,
+        [schemaName, tableName]
+    );
+}
+
+function buildRoleTemplateTableLookup(mappings) {
+    const lookup = new Map();
+    (mappings || []).forEach((mapping) => {
+        const tableName = String(mapping.tableName || "");
+        if (!tableName) {
+            return;
+        }
+        if (!lookup.has(tableName)) {
+            lookup.set(tableName, []);
+        }
+        const roles = lookup.get(tableName);
+        if (!roles.includes(mapping.templateRole)) {
+            roles.push(mapping.templateRole);
+        }
+    });
+    return lookup;
+}
+
+function buildTemplateRoleLookup(mappings) {
+    const lookup = new Map();
+    (mappings || []).forEach((mapping) => {
+        if (!lookup.has(mapping.templateRole)) {
+            lookup.set(mapping.templateRole, []);
+        }
+        const tables = lookup.get(mapping.templateRole);
+        if (!tables.includes(mapping.tableName)) {
+            tables.push(mapping.tableName);
+        }
+    });
+    return lookup;
 }
 
 async function getFieldMetadataMap(db, schemaName, tableName) {
@@ -733,6 +1108,18 @@ async function getPrimaryKeys(db, schemaName, tableName, columns) {
     if (upperTable === "ZSCHEMA_VALIDATION_RULES") {
         return ["SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME", "RULE_TYPE"];
     }
+    if (upperTable === "ZSCHEMA_ROLE_TEMPLATE_DEFINITION") {
+        return ["SCHEMA_NAME", "TEMPLATE_ROLE"];
+    }
+    if (upperTable === "ZSCHEMA_ROLE_TEMPLATE_TABLE_MAP") {
+        return ["SCHEMA_NAME", "TEMPLATE_ROLE", "TABLE_NAME"];
+    }
+    if (upperTable === "ZSCHEMA_USER_ROLE_TEMPLATE_ACCESS") {
+        return ["SCHEMA_NAME", "USER_EMAIL", "TEMPLATE_ROLE"];
+    }
+    if (upperTable === "ZSCHEMA_USER_TABLE_ACCESS") {
+        return ["SCHEMA_NAME", "USER_EMAIL", "TABLE_NAME"];
+    }
 
     try {
         const rows = await executeQuery(db,
@@ -782,6 +1169,12 @@ async function getTableDefinition(db, schemaName, tableName) {
         await ensureValueHelpConfigTable(db, schemaName);
     } else if (tableName === VALUE_HELP_ALIAS_TABLE) {
         await ensureValueHelpAliasTable(db, schemaName);
+    } else if (tableName === ROLE_TEMPLATE_TABLE_MAP_TABLE) {
+        await ensureRoleTemplateTableMapTable(db, schemaName);
+    } else if (tableName === USER_ROLE_TEMPLATE_ACCESS_TABLE) {
+        await ensureUserRoleTemplateAccessTable(db, schemaName);
+    } else if (tableName === USER_TABLE_ACCESS_TABLE) {
+        await ensureUserTableAccessTable(db, schemaName);
     }
     const tables = await getTables(db, schemaName);
     const table = tables.find((entry) => entry.name === tableName);
@@ -1427,6 +1820,222 @@ const isUserDataSteward = (req) => {
     return false;
 };
 
+async function resolveTableAccessContext(db, schemaName, req) {
+    await ensureAccessConfigTables(db, schemaName);
+
+    const allMappings = await getRoleTemplateTableMappings(db, schemaName);
+    const roleTemplateDefinitions = await getRoleTemplateDefinitions(db, schemaName);
+    const roleLookup = buildTemplateRoleLookup(allMappings);
+    const tableLookup = buildRoleTemplateTableLookup(allMappings);
+    const roleAssignmentsTable = `${quoteIdentifier(schemaName)}.${quoteIdentifier(USER_ROLE_TEMPLATE_ACCESS_TABLE)}`;
+    const tableAssignmentsTable = `${quoteIdentifier(schemaName)}.${quoteIdentifier(USER_TABLE_ACCESS_TABLE)}`;
+    const [roleAssignmentCountRow] = await executeQuery(
+        db,
+        `SELECT COUNT(*) AS "COUNT" FROM ${roleAssignmentsTable}`,
+        []
+    );
+    const [tableAssignmentCountRow] = await executeQuery(
+        db,
+        `SELECT COUNT(*) AS "COUNT" FROM ${tableAssignmentsTable}`,
+        []
+    );
+
+    const accessConfigEnabled = allMappings.length > 0
+        || Number(roleAssignmentCountRow?.COUNT || 0) > 0
+        || Number(tableAssignmentCountRow?.COUNT || 0) > 0;
+    const templateRoleAttributeNames = toAttributeNameList(
+        process.env.ZTM_TEMPLATE_ROLE_ATTRIBUTE_NAMES,
+        DEFAULT_TEMPLATE_ROLE_ATTRIBUTE_NAMES
+    );
+    const tableAccessAttributeNames = toAttributeNameList(
+        process.env.ZTM_TABLE_ACCESS_ATTRIBUTE_NAMES,
+        DEFAULT_TABLE_ACCESS_ATTRIBUTE_NAMES
+    );
+    const attributeTemplateRoles = new Set(
+        getRequestAttributeValues(req, templateRoleAttributeNames).map(normalizeRoleTemplateKey).filter(Boolean)
+    );
+    const attributeDirectTables = new Set(
+        expandTableAttributeValues(getRequestAttributeValues(req, tableAccessAttributeNames))
+            .map(normalizeAccessTableName)
+            .filter(Boolean)
+    );
+    const userEmail = normalizeUserEmail(getRequestUser(req));
+    const assignedTemplateRoles = new Set(
+        (await getUserRoleTemplateAssignments(db, schemaName, userEmail))
+            .map(normalizeRoleTemplateKey)
+            .filter(Boolean)
+    );
+    const directTables = new Set(
+        (await getUserTableAssignments(db, schemaName, userEmail))
+            .map(normalizeAccessTableName)
+            .filter(Boolean)
+    );
+    const accessibleTables = new Set();
+    const accessibleTemplateRoles = new Set();
+    const hasFullAccess = isUserAdmin(req) || isUserDataEngineer(req);
+    const effectiveTemplateRoles = new Set([
+        ...Array.from(attributeTemplateRoles),
+        ...Array.from(assignedTemplateRoles)
+    ]);
+    const effectiveDirectTables = new Set([
+        ...Array.from(attributeDirectTables),
+        ...Array.from(expandTableAttributeValues(Array.from(directTables)))
+    ]);
+
+    if (hasFullAccess) {
+        roleTemplateDefinitions.forEach((entry) => {
+            accessibleTemplateRoles.add(entry.key);
+        });
+        allMappings.forEach((mapping) => {
+            accessibleTables.add(mapping.tableName);
+            accessibleTemplateRoles.add(mapping.templateRole);
+        });
+    }
+
+    effectiveTemplateRoles.forEach((templateRole) => {
+        if (!roleTemplateDefinitions.some((entry) => entry.key === templateRole)) {
+            return;
+        }
+        accessibleTemplateRoles.add(templateRole);
+        (roleLookup.get(templateRole) || []).forEach((tableName) => {
+            accessibleTables.add(tableName);
+        });
+    });
+
+    effectiveDirectTables.forEach((tableName) => {
+        accessibleTables.add(tableName);
+        (tableLookup.get(tableName) || []).forEach((templateRole) => {
+            accessibleTemplateRoles.add(templateRole);
+        });
+    });
+
+    return {
+        userEmail,
+        accessConfigEnabled,
+        hasFullAccess,
+        assignedTemplateRoles: Array.from(effectiveTemplateRoles).sort(),
+        directTables: Array.from(effectiveDirectTables).sort(),
+        accessibleTables,
+        accessibleTemplateRoles: Array.from(accessibleTemplateRoles).sort(),
+        roleTemplateDefinitions,
+        tableRoleLookup: tableLookup,
+        roleTableLookup: roleLookup
+    };
+}
+
+function enrichTablesWithRoleTemplates(tables, tableRoleLookup) {
+    return (tables || []).map((table) => ({
+        ...table,
+        templateRoles: (tableRoleLookup.get(table.name) || []).slice().sort()
+    }));
+}
+
+function filterTablesByAccess(tables, accessContext) {
+    if (!accessContext) {
+        return tables;
+    }
+
+    if (accessContext.hasFullAccess) {
+        return tables;
+    }
+
+    return (tables || []).filter((table) => accessContext.accessibleTables.has(table.name));
+}
+
+async function assertUserCanAccessTable(db, schemaName, tableName, req) {
+    if (isConfigTable(tableName)) {
+        if (isUserDisplayRole(req) || isUserDataSteward(req) || isUserDataEngineer(req) || isUserAdmin(req)) {
+            return;
+        }
+        throw new Error("You are not authorized to access configuration tables.");
+    }
+
+    const accessContext = await resolveTableAccessContext(db, schemaName, req);
+    if (accessContext.hasFullAccess) {
+        return;
+    }
+    if (!accessContext.accessibleTables.has(tableName)) {
+        throw new Error(`You are not authorized to access table ${tableName}.`);
+    }
+}
+
+async function getBtpUsersFromIdp(searchValue = "") {
+    const serviceUrl = String(process.env.BTP_IDP_SCIM_URL || "").trim();
+    const bearerToken = String(process.env.BTP_IDP_SCIM_TOKEN || "").trim();
+    const basicUser = String(process.env.BTP_IDP_SCIM_USERNAME || "").trim();
+    const basicPassword = String(process.env.BTP_IDP_SCIM_PASSWORD || "").trim();
+
+    if (!serviceUrl) {
+        throw new Error("BTP user lookup is not configured. Set BTP_IDP_SCIM_URL for the default identity provider.");
+    }
+
+    if (typeof fetch !== "function") {
+        throw new Error("Global fetch is not available in the current Node.js runtime.");
+    }
+
+    const requestUrl = new URL(serviceUrl);
+    requestUrl.searchParams.set("filter", "active eq true");
+    requestUrl.searchParams.set("count", "200");
+    requestUrl.searchParams.set("startIndex", "1");
+
+    const headers = {
+        Accept: "application/scim+json, application/json"
+    };
+
+    if (bearerToken) {
+        headers.Authorization = `Bearer ${bearerToken}`;
+    } else if (basicUser || basicPassword) {
+        headers.Authorization = `Basic ${Buffer.from(`${basicUser}:${basicPassword}`).toString("base64")}`;
+    } else {
+        throw new Error("BTP user lookup credentials are missing. Set BTP_IDP_SCIM_TOKEN or BTP_IDP_SCIM_USERNAME/BTP_IDP_SCIM_PASSWORD.");
+    }
+
+    const response = await fetch(requestUrl.toString(), {
+        method: "GET",
+        headers
+    });
+
+    if (!response.ok) {
+        const details = await response.text();
+        throw new Error(`BTP user lookup failed with status ${response.status}: ${details}`);
+    }
+
+    const payload = await response.json();
+    const normalizedSearch = String(searchValue || "").trim().toLowerCase();
+    const users = (payload.Resources || [])
+        .map((resource) => {
+            const emails = Array.isArray(resource.emails) ? resource.emails : [];
+            const primaryEmail = emails.find((entry) => entry && entry.primary && entry.value)
+                || emails.find((entry) => entry && entry.value)
+                || null;
+            const email = normalizeUserEmail(primaryEmail?.value || resource.userName || "");
+            const displayName = String(resource.displayName || resource.name?.formatted || resource.userName || email);
+            const userName = String(resource.userName || email);
+            const active = resource.active !== false;
+
+            return {
+                key: email || userName,
+                email: email || userName,
+                userName,
+                displayName,
+                active,
+                text: email && displayName && displayName !== email ? `${email} - ${displayName}` : (email || displayName || userName)
+            };
+        })
+        .filter((entry) => entry.active && entry.key)
+        .filter((entry) => {
+            if (!normalizedSearch) {
+                return true;
+            }
+            return entry.email.includes(normalizedSearch)
+                || entry.userName.toLowerCase().includes(normalizedSearch)
+                || entry.displayName.toLowerCase().includes(normalizedSearch);
+        })
+        .sort((left, right) => left.text.localeCompare(right.text));
+
+    return users;
+}
+
 const formatAuditValue = (value) => {
     if (value === undefined || value === null) {
         return null;
@@ -1656,30 +2265,84 @@ cds.on("bootstrap", (app) => {
 
     app.get("/api/schema-browser/user-info", async (req, res) => {
         try {
-            const username = getRequestUser(req);
-            const isDisplay = isUserDisplayRole(req);
-            const isAdmin = isUserAdmin(req);
-            const isDataEngineer = isUserDataEngineer(req);
-            const isDataSteward = isUserDataSteward(req);
-            
-            const headers = req.headers || {};
-            const tokenPayload = decodeJwtPayload(getAuthTokenFromHeaders(headers));
-            console.log("DEBUG: tokenPayload =", JSON.stringify(tokenPayload));
-            let email = tokenPayload?.email || tokenPayload?.user_name || "";
-            if (!email && username.includes("@")) {
-                email = username;
-            }
-            if (!email) {
-                email = username + "@example.com";
-            }
-            
-            const vcap = JSON.parse(process.env.VCAP_APPLICATION || "{}");
-            const srvUrl = vcap.uris ? "https://" + vcap.uris[0] : "";
-            const logoutRedirectUrl = srvUrl ? srvUrl + "/public/logout" : "/public/logout";
-            
-            res.json({ username, email, isDisplay, isAdmin, isDataEngineer, isDataSteward, logoutRedirectUrl });
+            await withDbClient(async (db) => {
+                const username = getRequestUser(req);
+                const isDisplay = isUserDisplayRole(req);
+                const isAdmin = isUserAdmin(req);
+                const isDataEngineer = isUserDataEngineer(req);
+                const isDataSteward = isUserDataSteward(req);
+                const headers = req.headers || {};
+                const tokenPayload = decodeJwtPayload(getAuthTokenFromHeaders(headers));
+                let email = tokenPayload?.email || tokenPayload?.user_name || "";
+                if (!email && username.includes("@")) {
+                    email = username;
+                }
+                if (!email) {
+                    email = username + "@example.com";
+                }
+
+                const currentSchema = await getCurrentSchema(db);
+                const accessContext = await resolveTableAccessContext(db, currentSchema, req);
+                const roleTemplateDefinitions = accessContext.roleTemplateDefinitions || [];
+                const templateRoleItems = accessContext.accessibleTemplateRoles.map((templateRole) => ({
+                    key: templateRole,
+                    text: getRoleTemplateLabel(templateRole, roleTemplateDefinitions)
+                }));
+                const vcap = JSON.parse(process.env.VCAP_APPLICATION || "{}");
+                const srvUrl = vcap.uris ? "https://" + vcap.uris[0] : "";
+                const logoutRedirectUrl = srvUrl ? srvUrl + "/public/logout" : "/public/logout";
+
+                res.json({
+                    username,
+                    email,
+                    isDisplay,
+                    isAdmin,
+                    isDataEngineer,
+                    isDataSteward,
+                    logoutRedirectUrl,
+                    accessConfigEnabled: accessContext.accessConfigEnabled,
+                    accessibleTemplateRoles: accessContext.accessibleTemplateRoles,
+                    roleTemplateDefinitions,
+                    templateRoleItems
+                });
+            });
         } catch (error) {
             console.error("user-info failed:", error);
+            res.status(500).json({ error: error.message });
+        }
+    });
+
+    app.get("/api/admin/btp-users", async (req, res) => {
+        try {
+            if (!isUserAdmin(req) && !isUserDataEngineer(req)) {
+                return res.status(403).json({ error: "Only administrators and data engineers can search BTP users." });
+            }
+
+            const users = await getBtpUsersFromIdp(req.query.search || "");
+            res.json({ users, configured: true });
+        } catch (error) {
+            console.error("btp-users lookup failed:", error);
+            res.status(500).json({ error: error.message, configured: false });
+        }
+    });
+
+    app.get("/api/schema-browser/template-roles", async (req, res) => {
+        try {
+            await withDbClient(async (db) => {
+                const requestedSchema = req.query.schemaName;
+                const schemaName = requestedSchema || await getCurrentSchema(db);
+                const accessContext = await resolveTableAccessContext(db, schemaName, req);
+                const roleTemplateDefinitions = accessContext.roleTemplateDefinitions || [];
+                const templateRoles = accessContext.hasFullAccess
+                    ? roleTemplateDefinitions
+                    : roleTemplateDefinitions.filter((entry) => accessContext.accessibleTemplateRoles.includes(entry.key));
+                res.json({
+                    schemaName,
+                    templateRoles
+                });
+            });
+        } catch (error) {
+            console.error("template-roles failed:", error);
             res.status(500).json({ error: error.message });
         }
     });
@@ -1716,11 +2379,17 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
-                const tables = await getTables(db, schemaName);
+                const accessContext = await resolveTableAccessContext(db, schemaName, req);
+                const tables = filterTablesByAccess(
+                    enrichTablesWithRoleTemplates(await getTables(db, schemaName), accessContext.tableRoleLookup),
+                    accessContext
+                );
 
                 res.json({
                     schemaName,
-                    tables
+                    tables,
+                    accessConfigEnabled: accessContext.accessConfigEnabled,
+                    accessibleTemplateRoles: accessContext.accessibleTemplateRoles
                 });
             });
         } catch (error) {
@@ -1762,7 +2431,7 @@ cds.on("bootstrap", (app) => {
             if (!isUserDataEngineer(req)) {
                 return res.status(403).json({ error: "Only administrators and data engineers can perform table structure modifications." });
             }
-            const { tableName, tableType, tableComment, fields, includeCuid, includeManaged, includeTemporal, includeCodeList, validationRules } = req.body;
+            const { tableName, tableType, tableComment, templateRole, fields, includeCuid, includeManaged, includeTemporal, includeCodeList, validationRules } = req.body;
             if (!tableName || ((!fields || !fields.length) && !includeCuid && !includeManaged && !includeTemporal && !includeCodeList)) {
                 return res.status(400).json({ error: "Missing tableName or fields" });
             }
@@ -1843,6 +2512,7 @@ cds.on("bootstrap", (app) => {
                 await replaceFieldMetadata(db, schemaName, tableName, processedFields);
                 await upsertSchemaValueHelpConfig(db, schemaName, processedFields);
                 await upsertSchemaValueHelpAliases(db, schemaName, processedFields);
+                await upsertRoleTemplateTableMapping(db, schemaName, templateRole, tableName);
 
                 // Save validation rules
                 await ensureValidationRulesTable(db, schemaName);
@@ -1894,6 +2564,8 @@ cds.on("bootstrap", (app) => {
                 const sql = `DROP TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}`;
                 await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
                 await deleteFieldMetadata(db, schemaName, tableName);
+                await deleteRoleTemplateTableMappings(db, schemaName, tableName);
+                await deleteUserTableAssignments(db, schemaName, tableName);
             });
             res.json({ success: true, message: "Table dropped successfully" });
         } catch (err) {
@@ -1932,6 +2604,7 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
+                await assertUserCanAccessTable(db, schemaName, req.params.table, req);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
 
                 res.json(definition);
@@ -1962,6 +2635,7 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
+                await assertUserCanAccessTable(db, schemaName, req.params.table, req);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
                 const column = (definition.columns || []).find((entry) => normalizeColumnName(entry.name) === normalizeColumnName(req.params.column));
 
@@ -2007,6 +2681,7 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
+                await assertUserCanAccessTable(db, schemaName, req.params.table, req);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
                 const result = await readRows(db, definition, req.query.search);
 
@@ -2032,6 +2707,7 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
+                await assertUserCanAccessTable(db, schemaName, req.params.table, req);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
                 await insertRow(db, definition, req.body.data || {}, req);
             });
@@ -2054,6 +2730,7 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
+                await assertUserCanAccessTable(db, schemaName, req.params.table, req);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
                 await updateRow(db, definition, req.body.keys || {}, req.body.data || {}, req);
             });
@@ -2076,6 +2753,7 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
+                await assertUserCanAccessTable(db, schemaName, req.params.table, req);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
                 await deleteRow(db, definition, req.body.keys || {}, req);
             });
@@ -2101,6 +2779,7 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
+                await assertUserCanAccessTable(db, schemaName, req.params.table, req);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
 
                 for (const keys of rows) {
@@ -2128,6 +2807,7 @@ cds.on("bootstrap", (app) => {
             await withDbClient(async (db) => {
                 const requestedSchema = req.query.schemaName || req.body.schemaName;
                 const schemaName = requestedSchema || await getCurrentSchema(db);
+                await assertUserCanAccessTable(db, schemaName, req.params.table, req);
                 const definition = await getTableDefinition(db, schemaName, req.params.table);
 
                 for (const row of rows) {
@@ -2353,9 +3033,12 @@ module.exports = cds.service.impl(function () {
             if (!isUserDataEngineer(req)) {
                 return req.reject(403, "Only administrators and data engineers can perform table structure modifications.");
             }
-            const { tableName, tableType, tableComment, fields, includeCuid, includeManaged, includeTemporal, includeCodeList } = req.data;
+            const { tableName, tableType, tableComment, templateRole, fields, includeCuid, includeManaged, includeTemporal, includeCodeList } = req.data;
             if (!tableName || ((!fields || !fields.length) && !includeCuid && !includeManaged && !includeTemporal && !includeCodeList)) {
                 return req.reject(400, "Missing tableName or fields");
+            }
+            if (!templateRole) {
+                return req.reject(400, "Missing templateRole");
             }
 
             const processedFields = normalizePrimaryKeyFields([...(fields || [])]);
@@ -2428,6 +3111,11 @@ module.exports = cds.service.impl(function () {
                         await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [`COMMENT ON COLUMN ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}.${quoteIdentifier(f.name)} IS '${String(f.comment).replace(/'/g, "''")}'`]);
                     }
                 }
+
+                await replaceFieldMetadata(db, schemaName, tableName, processedFields);
+                await upsertSchemaValueHelpConfig(db, schemaName, processedFields);
+                await upsertSchemaValueHelpAliases(db, schemaName, processedFields);
+                await upsertRoleTemplateTableMapping(db, schemaName, templateRole, tableName);
             });
 
             return { success: true, message: "Table created successfully" };
@@ -2450,6 +3138,9 @@ module.exports = cds.service.impl(function () {
                 const schemaName = requestedSchema || await getCurrentSchema(db);
                 const sql = `DROP TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(tableName)}`;
                 await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+                await deleteFieldMetadata(db, schemaName, tableName);
+                await deleteRoleTemplateTableMappings(db, schemaName, tableName);
+                await deleteUserTableAssignments(db, schemaName, tableName);
             });
             return { success: true, message: "Table dropped successfully" };
         } catch (err) {

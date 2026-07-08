@@ -21,6 +21,10 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
     min-height: calc(100vh - 3.25rem);
 }
 
+.cockpitPage .sapMPageEnableScrolling {
+    padding: 0 !important;
+}
+
 .heroPanel,
 .controlCard,
 .tableCard {
@@ -509,6 +513,11 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
     background-color: #f2f5f9 !important;
 }
 
+.cockpitShellPage {
+    --ztm-side-nav-width: 17.25rem;
+    --ztm-side-nav-collapsed-width: 4.5rem;
+}
+
 .sapTntToolHeader {
     background: rgba(14, 41, 72, 0.88) !important;
     backdrop-filter: blur(20px) !important;
@@ -551,12 +560,31 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
     text-shadow: none !important;
 }
 
+.cockpitShellPage .sapTntToolPageAside {
+    background: #ffffff !important;
+    border-right: 1px solid rgba(203, 213, 225, 0.88) !important;
+    box-shadow: 0.35rem 0 1.4rem rgba(15, 23, 42, 0.04) !important;
+}
+
+.cockpitShellPage .sapTntToolPageAsideContent {
+    background: #ffffff !important;
+}
+
 .sapTntSideNavigation {
-    background: rgba(255, 255, 255, 0.8) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    border-right: 1px solid rgba(148, 173, 214, 0.15) !important;
-    box-shadow: 0.25rem 0 1rem rgba(21, 42, 77, 0.02) !important;
+    background: #ffffff !important;
+    border-right: 1px solid rgba(203, 213, 225, 0.7) !important;
+    box-shadow: none !important;
+}
+
+.cockpitSideNavigation {
+    width: var(--ztm-side-nav-width) !important;
+    min-width: var(--ztm-side-nav-width) !important;
+    border-right: 0 !important;
+}
+
+.cockpitSideNavigation.sapTntSideNavigationNotExpandedWidth {
+    width: var(--ztm-side-nav-collapsed-width) !important;
+    min-width: var(--ztm-side-nav-collapsed-width) !important;
 }
 
 /* Active Role Badge in Header */
@@ -632,28 +660,118 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
 
 .sapTntNavL {
     background-color: transparent !important;
-    padding-top: 0.5rem !important;
+    padding: 0.5rem 0 !important;
+}
+
+.cockpitNavList.sapTntNavL {
+    padding: 0.9rem 0.6rem !important;
 }
 
 .sapTntNavLItem {
-    border-radius: 0.5rem !important;
-    margin: 0.3rem 0.4rem !important;
+    border-radius: 0.75rem !important;
+    margin: 0.18rem 0.35rem !important;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .sapTntNavLItem:hover {
-    background-color: rgba(31, 79, 130, 0.06) !important;
+    background-color: rgba(37, 99, 235, 0.06) !important;
 }
 
 .sapTntNavLItem.sapTntNavLItemSelected {
-    background: linear-gradient(90deg, rgba(31, 79, 130, 0.08) 0%, rgba(31, 79, 130, 0.03) 100%) !important;
-    border-left: 4.5px solid #1f4f82 !important;
+    background: #edf4ff !important;
+    border-left: 4px solid #2563eb !important;
 }
 
 .sapTntNavLItem.sapTntNavLItemSelected .sapTntNavLItemIcon,
 .sapTntNavLItem.sapTntNavLItemSelected .sapTntNavLItemText {
     color: #0e2947 !important;
     font-weight: 700 !important;
+}
+
+.cockpitSideNavigation .sapTntNavLI {
+    padding: 0 !important;
+}
+
+.cockpitSideNavigation .sapTntNavLItem {
+    margin: 0.2rem 0 !important;
+    min-height: 3rem !important;
+    border-radius: 0.85rem !important;
+    border-left: 0 !important;
+    background: transparent !important;
+}
+
+.cockpitSideNavigation .sapTntNavLItem .sapTntNavLItemAnchor {
+    min-height: 3rem !important;
+    border-radius: 0.85rem !important;
+    padding: 0.2rem 0.95rem !important;
+    gap: 0.85rem !important;
+}
+
+.cockpitSideNavigation .sapTntNavLItem:hover {
+    background: transparent !important;
+}
+
+.cockpitSideNavigation .sapTntNavLItem:hover .sapTntNavLItemAnchor {
+    background: #f4f8fd !important;
+}
+
+.cockpitSideNavigation .sapTntNavLItem.sapTntNavLItemSelected {
+    background: transparent !important;
+}
+
+.cockpitSideNavigation .sapTntNavLItem.sapTntNavLItemSelected .sapTntNavLItemAnchor {
+    background: #edf4ff !important;
+    box-shadow: inset 0.2rem 0 0 #2563eb !important;
+}
+
+.cockpitSideNavigation .sapTntNavLItemIcon {
+    color: #304866 !important;
+    font-size: 1rem !important;
+}
+
+.cockpitSideNavigation .sapTntNavLItemText {
+    color: #243b53 !important;
+    font-size: 0.96rem !important;
+    font-weight: 600 !important;
+}
+
+.cockpitSideNavigation .sapTntNavLItem.sapTntNavLItemSelected .sapTntNavLItemIcon,
+.cockpitSideNavigation .sapTntNavLItem.sapTntNavLItemSelected .sapTntNavLItemText {
+    color: #0e2947 !important;
+    font-weight: 700 !important;
+}
+
+.cockpitSideNavigation .sapTntNavLIGroup {
+    margin-top: 0.25rem !important;
+}
+
+.cockpitSideNavigation .sapTntNavLIGroupItems {
+    padding: 0.2rem 0 0.45rem 0.7rem !important;
+}
+
+.cockpitSideNavigation .sapTntNavLIGroupItems .sapTntNavLItem .sapTntNavLItemAnchor {
+    min-height: 2.55rem !important;
+    padding: 0.15rem 0.85rem !important;
+}
+
+.cockpitSideNavigation .sapTntNavLIGroupItems .sapTntNavLItemText {
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: #486581 !important;
+}
+
+.cockpitSideNavigation .sapTntNavLIGroupItems .sapTntNavLItem.sapTntNavLItemSelected .sapTntNavLItemText {
+    color: #0e2947 !important;
+    font-weight: 700 !important;
+}
+
+.cockpitSideNavigation .sapTntNavLItem:focus-within .sapTntNavLItemAnchor {
+    outline: 2px solid rgba(37, 99, 235, 0.22) !important;
+    outline-offset: 1px !important;
+}
+
+.cockpitShellPage .sapTntToolPageMain {
+    background: #f4f7fb !important;
 }
 
 /* Master-Detail Splitter Enhancements */
@@ -756,16 +874,87 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
 }
 
 .adminConsoleShell {
-    gap: 0.85rem;
+    gap: 0.7rem;
+    padding-top: 0.7rem;
 }
 
-.adminHeroPanel {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+.cockpitContextBar {
+    gap: 1rem;
+    padding: 0.8rem 1rem 0.85rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(203, 213, 225, 0.75);
+    box-shadow: 0 0.35rem 1rem rgba(15, 23, 42, 0.04);
+}
+
+.cockpitContextBarCompact {
+    gap: 0.45rem;
+    padding: 0.2rem 0.15rem 0.05rem;
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.cockpitContextCopy {
+    gap: 0.15rem;
+}
+
+.cockpitBreadcrumbRow {
+    gap: 0.45rem;
+}
+
+.cockpitBreadcrumbText,
+.cockpitBreadcrumbDivider {
+    color: #5f728a;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.cockpitPageTitle.sapMTitle {
+    color: #102a43;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.cockpitContextBarCompact .cockpitPageTitle.sapMTitle {
+    font-size: 0.98rem;
+    line-height: 1.3;
+}
+
+.cockpitContextSubtitle {
+    color: #6b7c93;
+    font-size: 0.9rem;
+}
+
+.cockpitContextMeta {
+    gap: 0.55rem;
+}
+
+.cockpitMetaChip {
+    min-width: 8.5rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.85rem;
+    background: #f8fbff;
+    border: 1px solid rgba(191, 219, 254, 0.9);
+}
+
+.cockpitMetaLabel {
+    color: #6b7c93;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.cockpitMetaValue {
+    color: #16324d;
+    font-size: 0.92rem;
+    font-weight: 700;
 }
 
 .adminConsoleCard {
-    padding: 0.75rem 0.9rem 0.9rem;
+    padding: 0.55rem 0.85rem 0.85rem;
+    border-radius: 1rem;
 }
 
 .adminConsoleTabs {
@@ -773,43 +962,44 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
 }
 
 .adminConsoleTabs .sapMITBHead {
-    padding: 0.5rem 0 !important;
-    gap: 0.8rem !important;
+    padding: 0.1rem 0 0.35rem !important;
+    gap: 0.55rem !important;
     display: flex !important;
     flex-wrap: wrap !important;
 }
 
 .adminConsoleTabs .sapMITBHeadContainer {
-    border-bottom: none !important;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.95) !important;
 }
 
 .adminConsoleTabs .sapMITBFilter {
-    background: rgba(255, 255, 255, 0.7) !important;
-    border: 1px solid rgba(148, 173, 214, 0.25) !important;
-    border-radius: 0.75rem !important;
-    padding: 0.8rem 1.4rem !important;
+    background: #f8fbff !important;
+    border: 1px solid rgba(191, 219, 254, 0.9) !important;
+    border-radius: 999px !important;
+    padding: 0.55rem 1rem !important;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    box-shadow: 0 4px 12px rgba(21, 42, 77, 0.02) !important;
-    min-width: 9.5rem !important;
+    box-shadow: none !important;
+    min-width: 8.2rem !important;
     text-align: center !important;
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: row !important;
     align-items: center !important;
     justify-content: center !important;
+    gap: 0.5rem !important;
     cursor: pointer !important;
 }
 
 .adminConsoleTabs .sapMITBFilter:hover {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border-color: rgba(31, 79, 130, 0.4) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 24px rgba(21, 42, 77, 0.06) !important;
+    background: #ffffff !important;
+    border-color: rgba(59, 130, 246, 0.6) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 0.35rem 0.85rem rgba(37, 99, 235, 0.08) !important;
 }
 
 .adminConsoleTabs .sapMITBFilter.sapMITBSelected {
-    background: linear-gradient(135deg, #1f4f82 0%, #0e2947 100%) !important;
-    border-color: #0e2947 !important;
-    box-shadow: 0 8px 20px rgba(14, 41, 71, 0.18) !important;
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+    box-shadow: 0 0.45rem 1rem rgba(37, 99, 235, 0.18) !important;
 }
 
 .adminConsoleTabs .sapMITBFilterDefault {
@@ -837,9 +1027,9 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
 }
 
 .adminConsoleTabs .sapMITBFilter .sapUiIcon {
-    font-size: 1.6rem !important;
-    color: #4b6f9f !important;
-    margin-bottom: 0.4rem !important;
+    font-size: 1.1rem !important;
+    color: #335c88 !important;
+    margin-bottom: 0 !important;
     transition: color 0.2s ease !important;
 }
 
@@ -848,9 +1038,9 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
 }
 
 .adminConsoleTabs .sapMITBText {
-    font-size: 0.9rem !important;
+    font-size: 0.88rem !important;
     font-weight: 700 !important;
-    color: #35506e !important;
+    color: #28496d !important;
     white-space: nowrap !important;
     overflow: visible !important;
     transition: color 0.2s ease !important;
@@ -861,12 +1051,12 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
 }
 
 .adminConsoleTabs .sapMITBContent {
-    padding-top: 0.65rem !important;
+    padding-top: 0.45rem !important;
 }
 
 .adminTabContent {
-    gap: 0.8rem;
-    padding: 0.15rem;
+    gap: 0.7rem;
+    padding: 0.05rem;
 }
 
 .adminTabContentStretch {
@@ -875,7 +1065,7 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
 
 .adminSectionHeader {
     gap: 0.8rem;
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.1rem;
 }
 
 .adminHeaderActions {
@@ -898,6 +1088,20 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
 
 .adminDataTable {
     min-height: 32rem;
+}
+
+.adminConsoleCard .sapMMessageStrip {
+    border-radius: 0.8rem;
+}
+
+@media (min-width: 1100px) {
+    .adminConsoleShell {
+        padding-right: 0.7rem;
+    }
+
+    .adminConsoleCard {
+        min-height: calc(100vh - 11.2rem);
+    }
 }
 
 .adminAuditTable .sapMListTblCell,
@@ -1037,6 +1241,10 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
     min-height: 34rem;
 }
 
+.designerMetadataTableWide {
+    min-width: 76rem;
+}
+
 .designerMetadataTable .sapMObjStatus {
     font-weight: 600;
 }
@@ -1081,6 +1289,15 @@ body, .sapUiBody, .sapMText, .sapMTitle, .sapMLabel, .sapMBtnContent, .sapMSltLa
 }
 
 @media (max-width: 768px) {
+    .cockpitShellPage {
+        --ztm-side-nav-width: 4.5rem;
+    }
+
+    .cockpitSideNavigation {
+        width: var(--ztm-side-nav-collapsed-width) !important;
+        min-width: var(--ztm-side-nav-collapsed-width) !important;
+    }
+
     .adminHeaderActions,
     .adminFilterGrid {
         width: 100%;

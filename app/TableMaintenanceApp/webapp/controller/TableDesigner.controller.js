@@ -180,6 +180,7 @@ sap.ui.define([
         onCreateTablePress: function () {
             var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
             this.getOwnerComponent()._sSelectedTemplateRole = "BASIC_DATA"; // Default
+            this.getOwnerComponent()._sSelectedSchema = sSelectedSchema;
             this.getRouter().navTo("CreateTable");
         },
 
@@ -243,6 +244,11 @@ sap.ui.define([
             var oViewModel = this.getModel("view");
             var sSchema = oViewModel.getProperty("/selectedSchema");
             var aColumns = oViewModel.getProperty("/columns") || [];
+            var aTables = oViewModel.getProperty("/tables") || [];
+            var oSourceTableConfig = aTables.find(function (oTable) {
+                return oTable.name === sSourceTable;
+            }) || {};
+            var aTemplateRoles = oSourceTableConfig.templateRoles || [];
 
             var aFields = aColumns.map(function (col) {
                 return {
@@ -264,6 +270,7 @@ sap.ui.define([
                 schemaName: sSchema,
                 tableName: sNewTable,
                 tableType: "COLUMN",
+                templateRole: aTemplateRoles[0] || "BASIC_DATA",
                 tableComment: "Duplicate of " + sSourceTable,
                 fields: aFields,
                 includeCuid: false,

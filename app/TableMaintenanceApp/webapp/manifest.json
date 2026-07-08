@@ -103,7 +103,7 @@
           "target": "TableDesigner"
         },
         {
-          "pattern": "admin-console",
+          "pattern": "admin-console:?query:",
           "name": "AdminConsole",
           "target": "AdminConsole"
         },

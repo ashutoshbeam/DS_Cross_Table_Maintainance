@@ -11,11 +11,8 @@ sap.ui.define([
             var oViewModel = new JSONModel({
                 semanticTypeSuggestions: [],
                 semanticTypeConfigMap: {},
-                templateRoles: [
-                    { key: "DEMAND", text: "Demand" },
-                    { key: "SUPPLY", text: "Supply" },
-                    { key: "BASIC_DATA", text: "Basic Data" }
-                ]
+                selectedSchema: "",
+                templateRoles: []
             });
             this.getView().setModel(oViewModel, "view");
 
@@ -25,6 +22,7 @@ sap.ui.define([
         _onObjectMatched: function () {
             var oViewModel = this.getModel("view");
             var sTemplateRole = this.getOwnerComponent()._sSelectedTemplateRole || "";
+            var sSelectedSchema = this.getOwnerComponent()._sSelectedSchema || "";
             
             oViewModel.setProperty("/createTable", {
                 tableName: "",
@@ -38,8 +36,39 @@ sap.ui.define([
                 fields: [],
                 validationRules: []
             });
+            oViewModel.setProperty("/selectedSchema", sSelectedSchema);
 
-            this._loadSemanticTypeConfig();
+            return Promise.all([
+                this._loadTemplateRoles(),
+                this._loadSemanticTypeConfig()
+            ]).then(function () {
+                var aTemplateRoles = oViewModel.getProperty("/templateRoles") || [];
+                var bRoleExists = aTemplateRoles.some(function (oRole) {
+                    return oRole.key === sTemplateRole;
+                });
+
+                if (!bRoleExists) {
+                    oViewModel.setProperty("/createTable/templateRole", aTemplateRoles.length ? aTemplateRoles[0].key : "");
+                }
+            });
+        },
+
+        _loadTemplateRoles: function () {
+            var oViewModel = this.getModel("view");
+            var sSchema = oViewModel.getProperty("/selectedSchema");
+            var sUrl = "api/schema-browser/template-roles";
+
+            if (sSchema) {
+                sUrl += "?schemaName=" + encodeURIComponent(sSchema);
+            }
+
+            return this._request(sUrl)
+                .then(function (oResult) {
+                    oViewModel.setProperty("/templateRoles", oResult.templateRoles || []);
+                })
+                .catch(function () {
+                    oViewModel.setProperty("/templateRoles", []);
+                });
         },
 
         onNavBack: function () {

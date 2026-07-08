@@ -26,18 +26,13 @@ sap.ui.define([
                         { key: "", text: this.getText("tableSelectPlaceholder") }
                     ],
                     filteredTables: [],
-                    templateRoles: [
-                        { key: "DEMAND", text: "Demand" },
-                        { key: "SUPPLY", text: "Supply" },
-                        { key: "BASIC_DATA", text: "Basic Data" }
-                    ],
+                    templateRoles: [],
                     templateRoleItems: [
-                        { key: "", text: this.getText("templateRoleSelectPlaceholder") },
-                        { key: "DEMAND", text: "Demand" },
-                        { key: "SUPPLY", text: "Supply" },
-                        { key: "BASIC_DATA", text: "Basic Data" }
+                        { key: "", text: this.getText("templateRoleSelectPlaceholder") }
                     ],
                     selectedTemplateRole: "",
+                    selectedTemplateRoleText: "",
+                    accessConfigEnabled: false,
                     selectedSchema: "",
                     schemaSelectItems: [],
                     selectedTable: "",
@@ -117,6 +112,43 @@ sap.ui.define([
             if (oViewModel.getProperty("/selectedTemplateRole")) {
                 this.onTableValueHelp();
             }
+        },
+
+        onTemplateRoleValueHelp: function () {
+            this._resetSelectDialog("templateRoleSelectDialog");
+            this.byId("templateRoleSelectDialog").open();
+        },
+
+        onTemplateRoleSelectSearch: function (oEvent) {
+            var sValue = oEvent.getParameter("value");
+            var oFilter = new Filter({
+                filters: [
+                    new Filter("text", FilterOperator.Contains, sValue),
+                    new Filter("key", FilterOperator.Contains, sValue)
+                ],
+                and: false
+            });
+            var oBinding = oEvent.getParameter("itemsBinding");
+            oBinding.filter(sValue ? [oFilter] : []);
+        },
+
+        onTemplateRoleSelectConfirm: function (oEvent) {
+            var oSelectedItem = oEvent.getParameter("selectedItem");
+            var oViewModel = this.getModel("view");
+
+            this._resetSelectDialog("templateRoleSelectDialog");
+
+            if (!oSelectedItem) {
+                return;
+            }
+
+            oViewModel.setProperty("/selectedTemplateRole", oSelectedItem.getDescription() || "");
+            oViewModel.setProperty("/selectedTemplateRoleText", oSelectedItem.getTitle() || "");
+            this.onTemplateRoleChange();
+        },
+
+        onTemplateRoleSelectCancel: function () {
+            this._resetSelectDialog("templateRoleSelectDialog");
         },
 
         onTableChange: function () {
@@ -363,7 +395,9 @@ sap.ui.define([
 
         onCreateTableOpen: function () {
             var sSelectedRole = this.getModel("view").getProperty("/selectedTemplateRole");
+            var sSelectedSchema = this.getModel("view").getProperty("/selectedSchema");
             this.getOwnerComponent()._sSelectedTemplateRole = sSelectedRole;
+            this.getOwnerComponent()._sSelectedSchema = sSelectedSchema;
             this.getOwnerComponent().getRouter().navTo("CreateTable");
         },
 
@@ -1037,6 +1071,9 @@ sap.ui.define([
 
                     oViewModel.setProperty("/tables", aTables);
                     oViewModel.setProperty("/schemaName", oResult.schemaName || "");
+                    if (typeof oResult.accessConfigEnabled === "boolean") {
+                        oViewModel.setProperty("/accessConfigEnabled", oResult.accessConfigEnabled);
+                    }
                     this._applyTemplateRoleFilter();
 
                     this._setTableState({
@@ -1057,11 +1094,14 @@ sap.ui.define([
             var oViewModel = this.getModel("view"),
                 aTables = oViewModel.getProperty("/tables") || [],
                 sSelectedTemplateRole = oViewModel.getProperty("/selectedTemplateRole"),
-                // When a role is selected, filter out ZSCHEMA_ system tables.
-                // When no role is selected, show ALL tables.
+                bAccessConfigEnabled = oViewModel.getProperty("/accessConfigEnabled") === true,
                 aFilteredTables = sSelectedTemplateRole
                     ? aTables.filter(function (oTable) {
-                        return !String(oTable.name || "").toUpperCase().startsWith("ZSCHEMA_");
+                        var aTemplateRoles = oTable.templateRoles || [];
+                        if (!bAccessConfigEnabled || !aTemplateRoles.length) {
+                            return !String(oTable.name || "").toUpperCase().startsWith("ZSCHEMA_");
+                        }
+                        return aTemplateRoles.indexOf(sSelectedTemplateRole) > -1;
                     })
                     : aTables,
                 aTableSelectItems = [{
@@ -1087,7 +1127,11 @@ sap.ui.define([
         },
 
         _resetTableSelectDialog: function () {
-            var oDialog = this.byId("tableSelectDialog"),
+            this._resetSelectDialog("tableSelectDialog");
+        },
+
+        _resetSelectDialog: function (sDialogId) {
+            var oDialog = this.byId(sDialogId),
                 oBinding,
                 oSearchField;
 
@@ -1981,7 +2025,12 @@ sap.ui.define([
                     || oUserInfo.isDataEngineer === true
                     || oUserInfo.isDataSteward === true,
                 bIsDisplayOnly = oUserInfo.isDisplay === true && !bCanMaintain,
-                sRoleLabel = this.getText("workspaceRoleUnknown");
+                sRoleLabel = this.getText("workspaceRoleUnknown"),
+                aTemplateRoleItems = [{
+                    key: "",
+                    text: this.getText("templateRoleSelectPlaceholder")
+                }].concat(oUserInfo.templateRoleItems || []),
+                aTemplateRoles = oUserInfo.templateRoleItems || [];
 
             if (oUserInfo.isAdmin === true) {
                 sRoleLabel = this.getText("workspaceRoleAdmin");
@@ -1995,6 +2044,22 @@ sap.ui.define([
 
             oViewModel.setProperty("/username", oUserInfo.username || "anonymous");
             oViewModel.setProperty("/isAdmin", oUserInfo.isAdmin === true);
+            oViewModel.setProperty("/accessConfigEnabled", oUserInfo.accessConfigEnabled === true);
+            oViewModel.setProperty("/templateRoles", aTemplateRoles);
+            oViewModel.setProperty("/templateRoleItems", aTemplateRoleItems);
+            if (oViewModel.getProperty("/selectedTemplateRole")
+                && !aTemplateRoles.some(function (oRole) { return oRole.key === oViewModel.getProperty("/selectedTemplateRole"); })) {
+                oViewModel.setProperty("/selectedTemplateRole", "");
+                oViewModel.setProperty("/selectedTemplateRoleText", "");
+            }
+            if (oViewModel.getProperty("/selectedTemplateRole")) {
+                var oSelectedTemplateRole = aTemplateRoles.find(function (oRole) {
+                    return oRole.key === oViewModel.getProperty("/selectedTemplateRole");
+                });
+                oViewModel.setProperty("/selectedTemplateRoleText", oSelectedTemplateRole ? oSelectedTemplateRole.text : oViewModel.getProperty("/selectedTemplateRole"));
+            } else {
+                oViewModel.setProperty("/selectedTemplateRoleText", "");
+            }
             oViewModel.setProperty("/canMaintain", bCanMaintain);
             oViewModel.setProperty("/isReadOnlyRole", bIsDisplayOnly);
             oViewModel.setProperty("/accessRoleLabel", sRoleLabel);

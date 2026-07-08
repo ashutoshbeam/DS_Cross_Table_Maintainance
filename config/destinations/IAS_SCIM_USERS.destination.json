@@ -1,0 +1,16 @@
+{
+  "Name": "IAS_SCIM_USERS",
+  "Type": "HTTP",
+  "Description": "IAS SCIM Users API for ZTableMaintenance testing",
+  "ProxyType": "Internet",
+  "Authentication": "BasicAuthentication",
+  "User": "amith.vandana.incture@beamsuntory.com",
+  "Password": "CHANGE_ME",
+  "URL": "https://aaj1np4y0.accounts.ondemand.com",
+  "WebIDEEnabled": false,
+  "HTML5.DynamicDestination": false,
+  "TrustAll": false,
+  "Timeout": 30000,
+  "URL.headers.Accept": "application/scim+json",
+  "URL.queries.defaultUsersPath": "/service/scim/Users"
+}

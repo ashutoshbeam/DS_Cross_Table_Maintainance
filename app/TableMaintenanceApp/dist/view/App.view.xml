@@ -4,7 +4,7 @@
     xmlns:tnt="sap.tnt"
     xmlns="sap.m"
     xmlns:core="sap.ui.core">
-    <tnt:ToolPage id="toolPage">
+    <tnt:ToolPage id="toolPage" class="cockpitShellPage">
         <tnt:header>
             <tnt:ToolHeader>
                 <Button
@@ -41,11 +41,22 @@
             </tnt:ToolHeader>
         </tnt:header>
         <tnt:sideContent>
-            <tnt:SideNavigation id="sideNavigation" expanded="false" selectedKey="{view>/selectedModule}">
-                <tnt:NavigationList itemSelect=".onModuleSelect">
+            <tnt:SideNavigation
+                id="sideNavigation"
+                class="cockpitSideNavigation"
+                expanded="{view>/sideNavExpanded}"
+                selectedKey="{view>/selectedModule}">
+                <tnt:NavigationList class="cockpitNavList" itemSelect=".onModuleSelect">
                     <tnt:NavigationListItem text="Table Data Maintenance" icon="sap-icon://table-view" key="DataMaintenance" visible="{view>/hasAppAccess}" />
                     <tnt:NavigationListItem text="Table Designer" icon="sap-icon://excel-attachment" key="TableDesigner" visible="{view>/isDataEngineer}" />
-                    <tnt:NavigationListItem text="Admin Console" icon="sap-icon://key-user-settings" key="AdminConsole" visible="{view>/isAdmin}" />
+                    <tnt:NavigationListItem text="Admin Console" icon="sap-icon://key-user-settings" key="AdminConsole" expanded="true" visible="{view>/isAdmin}">
+                        <tnt:items>
+                            <tnt:NavigationListItem text="Roles" key="AdminConsole_roles" visible="{view>/isAdmin}" />
+                            <tnt:NavigationListItem text="Validations" key="AdminConsole_validations" visible="{view>/isAdmin}" />
+                            <tnt:NavigationListItem text="Audit Logs" key="AdminConsole_logs" visible="{view>/isAdmin}" />
+                            <tnt:NavigationListItem text="Config Tables" key="AdminConsole_configTables" visible="{view>/isAdmin}" />
+                        </tnt:items>
+                    </tnt:NavigationListItem>
                 </tnt:NavigationList>
             </tnt:SideNavigation>
         </tnt:sideContent>

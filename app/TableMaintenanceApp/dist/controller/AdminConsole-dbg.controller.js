@@ -49,6 +49,10 @@ sap.ui.define([
                 selectedLogUser: "",
                 logTableItems: [],
                 logUserItems: [],
+                roleTemplateOptions: [],
+                btpUsers: [],
+                btpUsersConfigured: false,
+                selectedAdminTab: "roles",
 
                 selectedConfigTable: "",
                 selectedConfigCount: 0,
@@ -62,9 +66,54 @@ sap.ui.define([
             this.getRouter().getRoute("AdminConsole").attachPatternMatched(this._onObjectMatched, this);
         },
 
-        _onObjectMatched: function () {
+        _onObjectMatched: function (oEvent) {
+            var oArgs = oEvent.getParameter("arguments") || {};
+            var oQuery = oArgs["?query"] || {};
+            var sSection = oQuery.section || "roles";
+            var oViewModel = this.getModel("view");
+
+            oViewModel.setProperty("/selectedAdminTab", sSection);
+
             this._loadSchemas();
+            this._loadRoleTemplateOptions();
             this._loadAuditLogs();
+            this._loadBtpUsers();
+        },
+
+        _loadRoleTemplateOptions: function () {
+            var oViewModel = this.getModel("view");
+            var sSchema = oViewModel.getProperty("/selectedSchema");
+            var sUrl = "api/schema-browser/template-roles";
+
+            if (sSchema) {
+                sUrl += "?schemaName=" + encodeURIComponent(sSchema);
+            }
+
+            return this._request(sUrl)
+                .then(function (oResult) {
+                    oViewModel.setProperty("/roleTemplateOptions", oResult.templateRoles || []);
+                })
+                .catch(function (oError) {
+                    oViewModel.setProperty("/roleTemplateOptions", []);
+                    console.warn("Failed to load template roles:", oError);
+                });
+        },
+
+        onAdminTabSelect: function (oEvent) {
+            var sKey = oEvent.getParameter("key") || "roles";
+            this.getModel("view").setProperty("/selectedAdminTab", sKey);
+
+            var oShellModel = this.getOwnerComponent().getModel("shell");
+            if (oShellModel) {
+                oShellModel.setProperty("/selectedAdminSection", sKey);
+                oShellModel.setProperty("/selectedModule", "AdminConsole_" + sKey);
+            }
+
+            this.getRouter().navTo("AdminConsole", {
+                query: {
+                    section: sKey
+                }
+            }, true);
         },
 
 
@@ -88,6 +137,7 @@ sap.ui.define([
                     );
                     oViewModel.setProperty("/logSchemaItems", aSchemaItems);
 
+                    this._loadRoleTemplateOptions();
                     this._loadTables();
                 }.bind(this))
                 .catch(this._handleActionError.bind(this, "schemasLoadFailed"))
@@ -112,9 +162,29 @@ sap.ui.define([
                 });
         },
 
+        _loadBtpUsers: function (sSearch) {
+            var oViewModel = this.getModel("view");
+            var sUrl = "api/admin/btp-users";
+            if (sSearch) {
+                sUrl += "?search=" + encodeURIComponent(sSearch);
+            }
+
+            return this._request(sUrl)
+                .then(function (oResult) {
+                    oViewModel.setProperty("/btpUsers", oResult.users || []);
+                    oViewModel.setProperty("/btpUsersConfigured", oResult.configured === true);
+                })
+                .catch(function (oError) {
+                    oViewModel.setProperty("/btpUsers", []);
+                    oViewModel.setProperty("/btpUsersConfigured", false);
+                    console.warn("Failed to load BTP users:", oError);
+                });
+        },
+
         onSchemaChange: function () {
             MessageToast.show("Technical schema context changed.");
             this._loadTables();
+            this._loadRoleTemplateOptions();
             this._loadConfigTableData();
         },
 
@@ -503,6 +573,8 @@ sap.ui.define([
         _createConfigControl: function (col, sDefaultValue, bEditable, oSimpleForm, oInputMap) {
             var oControl;
             var sColName = col.name;
+            var sSelectedConfigTable = this.getModel("view").getProperty("/selectedConfigTable");
+            var bIsRoleTemplateDefinition = sSelectedConfigTable === "ZSCHEMA_ROLE_TEMPLATE_DEFINITION";
 
             if (sColName === "TABLE_NAME" || sColName === "REFERENCE_TABLE") {
                 oControl = new sap.m.ComboBox({
@@ -547,6 +619,28 @@ sap.ui.define([
                         new Item({ key: "Sales Org", text: "Sales Org" }),
                         new Item({ key: "Currency", text: "Currency" })
                     ]
+                });
+            } else if (sColName === "TEMPLATE_ROLE" && !bIsRoleTemplateDefinition) {
+                oControl = new sap.m.ComboBox({
+                    width: "100%",
+                    value: sDefaultValue,
+                    editable: bEditable,
+                    placeholder: "Select Template Role",
+                    items: {
+                        path: "view>/roleTemplateOptions",
+                        template: new Item({ key: "{view>key}", text: "{view>text}" })
+                    }
+                });
+            } else if (sColName === "USER_EMAIL") {
+                oControl = new sap.m.ComboBox({
+                    width: "100%",
+                    value: sDefaultValue,
+                    editable: bEditable,
+                    placeholder: "Select BTP User",
+                    items: {
+                        path: "view>/btpUsers",
+                        template: new Item({ key: "{view>email}", text: "{view>text}" })
+                    }
                 });
             } else if (sColName === "VALUE_HELP_REQUIRED") {
                 var sKeyVal = (sDefaultValue === "true" || sDefaultValue === true || sDefaultValue === "TRUE" || sDefaultValue === "") ? "true" : "false";
@@ -637,65 +731,67 @@ sap.ui.define([
             var sTable = oViewModel.getProperty("/selectedConfigTable");
             var aColumns = oViewModel.getProperty("/configColumns") || [];
             var aKeys = oViewModel.getProperty("/configKeyColumns") || [];
-            
-            var oSimpleForm = new SimpleForm({
-                editable: true,
-                layout: "ResponsiveGridLayout"
-            });
 
-            var oInputMap = {};
-            this._buildConfigForm(oSimpleForm, aColumns, aKeys, null, oInputMap);
+            this._loadBtpUsers().finally(function () {
+                var oSimpleForm = new SimpleForm({
+                    editable: true,
+                    layout: "ResponsiveGridLayout"
+                });
 
-            var oDialog = new Dialog({
-                title: "Add Row to " + sTable,
-                contentWidth: "450px",
-                content: [oSimpleForm],
-                beginButton: new Button({
-                    text: "Save",
-                    type: "Emphasized",
-                    press: function () {
-                        var oData = {};
-                        var bHasMissingKey = false;
-                        
-                        aColumns.forEach(function (col) {
-                            var oCtrl = oInputMap[col.name];
-                            var sVal = "";
-                            if (oCtrl.getSelectedKey) {
-                                sVal = oCtrl.getSelectedKey();
-                            }
-                            if (!sVal && oCtrl.getValue) {
-                                sVal = oCtrl.getValue();
-                            }
-                            oData[col.name] = sVal;
-                            
-                            var bIsKey = col.key || aKeys.includes(col.name);
-                            if (bIsKey && !sVal) {
-                                bHasMissingKey = true;
-                            }
-                        });
+                var oInputMap = {};
+                this._buildConfigForm(oSimpleForm, aColumns, aKeys, null, oInputMap);
 
-                        if (bHasMissingKey) {
-                            MessageBox.error("Please fill in all primary key fields.");
-                            return;
+                var oDialog = new Dialog({
+                    title: "Add Row to " + sTable,
+                    contentWidth: "450px",
+                    content: [oSimpleForm],
+                    beginButton: new Button({
+                        text: "Save",
+                        type: "Emphasized",
+                        press: function () {
+                            var oData = {};
+                            var bHasMissingKey = false;
+
+                            aColumns.forEach(function (col) {
+                                var oCtrl = oInputMap[col.name];
+                                var sVal = "";
+                                if (oCtrl.getSelectedKey) {
+                                    sVal = oCtrl.getSelectedKey();
+                                }
+                                if (!sVal && oCtrl.getValue) {
+                                    sVal = oCtrl.getValue();
+                                }
+                                oData[col.name] = sVal;
+
+                                var bIsKey = col.key || aKeys.includes(col.name);
+                                if (bIsKey && !sVal) {
+                                    bHasMissingKey = true;
+                                }
+                            });
+
+                            if (bHasMissingKey) {
+                                MessageBox.error("Please fill in all primary key fields.");
+                                return;
+                            }
+
+                            oDialog.close();
+                            this._saveConfigRow(sTable, oData);
+                        }.bind(this)
+                    }),
+                    endButton: new Button({
+                        text: "Cancel",
+                        press: function () {
+                            oDialog.close();
                         }
-
-                        oDialog.close();
-                        this._saveConfigRow(sTable, oData);
-                    }.bind(this)
-                }),
-                endButton: new Button({
-                    text: "Cancel",
-                    press: function () {
-                        oDialog.close();
+                    }),
+                    afterClose: function () {
+                        oDialog.destroy();
                     }
-                }),
-                afterClose: function () {
-                    oDialog.destroy();
-                }
-            });
+                });
 
-            this.getView().addDependent(oDialog);
-            oDialog.open();
+                this.getView().addDependent(oDialog);
+                oDialog.open();
+            }.bind(this));
         },
 
         _saveConfigRow: function (sTable, oData) {
@@ -712,7 +808,10 @@ sap.ui.define([
             })
                 .then(function () {
                     MessageToast.show("Config row inserted successfully.");
-                    this._loadConfigTableData();
+                    return Promise.all([
+                        this._loadConfigTableData(),
+                        this._loadRoleTemplateOptions()
+                    ]);
                 }.bind(this))
                 .catch(this._handleActionError.bind(this, "createFailed"))
                 .finally(function () {
@@ -733,59 +832,61 @@ sap.ui.define([
             }
             var oSelectedData = aContexts[0].getObject();
 
-            var oSimpleForm = new SimpleForm({
-                editable: true,
-                layout: "ResponsiveGridLayout"
-            });
+            this._loadBtpUsers().finally(function () {
+                var oSimpleForm = new SimpleForm({
+                    editable: true,
+                    layout: "ResponsiveGridLayout"
+                });
 
-            var oInputMap = {};
-            this._buildConfigForm(oSimpleForm, aColumns, aKeys, oSelectedData, oInputMap);
+                var oInputMap = {};
+                this._buildConfigForm(oSimpleForm, aColumns, aKeys, oSelectedData, oInputMap);
 
-            var oDialog = new Dialog({
-                title: "Edit Row in " + sTable,
-                contentWidth: "450px",
-                content: [oSimpleForm],
-                beginButton: new Button({
-                    text: "Save",
-                    type: "Emphasized",
-                    press: function () {
-                        var oData = {};
-                        var oKeysPayload = {};
-                        
-                        aColumns.forEach(function (col) {
-                            var oCtrl = oInputMap[col.name];
-                            var sVal = "";
-                            if (oCtrl.getSelectedKey) {
-                                sVal = oCtrl.getSelectedKey();
-                            }
-                            if (!sVal && oCtrl.getValue) {
-                                sVal = oCtrl.getValue();
-                            }
-                            oData[col.name] = sVal;
-                            
-                            var bIsKey = col.key || aKeys.includes(col.name);
-                            if (bIsKey) {
-                                oKeysPayload[col.name] = oSelectedData[col.name];
-                            }
-                        });
+                var oDialog = new Dialog({
+                    title: "Edit Row in " + sTable,
+                    contentWidth: "450px",
+                    content: [oSimpleForm],
+                    beginButton: new Button({
+                        text: "Save",
+                        type: "Emphasized",
+                        press: function () {
+                            var oData = {};
+                            var oKeysPayload = {};
 
-                        oDialog.close();
-                        this._updateConfigRow(sTable, oKeysPayload, oData);
-                    }.bind(this)
-                }),
-                endButton: new Button({
-                    text: "Cancel",
-                    press: function () {
-                        oDialog.close();
+                            aColumns.forEach(function (col) {
+                                var oCtrl = oInputMap[col.name];
+                                var sVal = "";
+                                if (oCtrl.getSelectedKey) {
+                                    sVal = oCtrl.getSelectedKey();
+                                }
+                                if (!sVal && oCtrl.getValue) {
+                                    sVal = oCtrl.getValue();
+                                }
+                                oData[col.name] = sVal;
+
+                                var bIsKey = col.key || aKeys.includes(col.name);
+                                if (bIsKey) {
+                                    oKeysPayload[col.name] = oSelectedData[col.name];
+                                }
+                            });
+
+                            oDialog.close();
+                            this._updateConfigRow(sTable, oKeysPayload, oData);
+                        }.bind(this)
+                    }),
+                    endButton: new Button({
+                        text: "Cancel",
+                        press: function () {
+                            oDialog.close();
+                        }
+                    }),
+                    afterClose: function () {
+                        oDialog.destroy();
                     }
-                }),
-                afterClose: function () {
-                    oDialog.destroy();
-                }
-            });
+                });
 
-            this.getView().addDependent(oDialog);
-            oDialog.open();
+                this.getView().addDependent(oDialog);
+                oDialog.open();
+            }.bind(this));
         },
 
         _updateConfigRow: function (sTable, oKeys, oData) {
@@ -802,7 +903,10 @@ sap.ui.define([
             })
                 .then(function () {
                     MessageToast.show("Config row updated successfully.");
-                    this._loadConfigTableData();
+                    return Promise.all([
+                        this._loadConfigTableData(),
+                        this._loadRoleTemplateOptions()
+                    ]);
                 }.bind(this))
                 .catch(this._handleActionError.bind(this, "updateFailed"))
                 .finally(function () {
@@ -854,7 +958,10 @@ sap.ui.define([
             Promise.all(aPromises)
                 .then(function () {
                     MessageToast.show("Deleted " + aPromises.length + " configuration row(s).");
-                    this._loadConfigTableData();
+                    return Promise.all([
+                        this._loadConfigTableData(),
+                        this._loadRoleTemplateOptions()
+                    ]);
                 }.bind(this))
                 .catch(this._handleActionError.bind(this, "deleteFailed"))
                 .finally(function () {

@@ -17,14 +17,14 @@
                     <FlexBox wrap="Wrap" class="workspaceControlGrid">
                         <VBox class="workspaceFilterBlock">
                             <Label text="{i18n>templateRoleSelectLabel}" />
-                            <Select
+                            <Input
                                 width="100%"
-                                forceSelection="false"
-                                selectedKey="{view>/selectedTemplateRole}"
-                                change=".onTemplateRoleChange"
-                                items="{view>/templateRoleItems}">
-                                <core:Item key="{view>key}" text="{view>text}" />
-                            </Select>
+                                value="{view>/selectedTemplateRoleText}"
+                                enabled="true"
+                                showValueHelp="true"
+                                valueHelpOnly="true"
+                                valueHelpRequest=".onTemplateRoleValueHelp"
+                                placeholder="{i18n>templateRoleSelectPlaceholder}" />
                         </VBox>
                         <VBox class="workspaceFilterBlock">
                             <Label text="{i18n>schemaSelectLabel}" />
@@ -160,6 +160,7 @@
         </content>
 
         <dependents>
+            <core:Fragment fragmentName="ztm.tmapp.fragment.TemplateRoleSelectDialog" type="XML" />
             <core:Fragment fragmentName="ztm.tmapp.fragment.TableSelectDialog" type="XML" />
             <core:Fragment fragmentName="ztm.tmapp.fragment.CreateEditDialog" type="XML" />
             <core:Fragment fragmentName="ztm.tmapp.fragment.MultiUpdateDialog" type="XML" />
