@@ -1,5 +1,5 @@
 {
-  "xsappname": "ZTableMaintenance",
+  "xsappname": "ZTableMaintenance-tm",
   "tenant-mode": "dedicated",
   "description": "Security profile of called application",
   "attributes": [

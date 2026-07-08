@@ -96,11 +96,7 @@ resources:
 - name: training-hdi
   type: org.cloudfoundry.existing-service
   parameters:
-    config:
-      database_id: 116a3240-595d-4460-a2f9-f3ac166852f0
-      schema: Training
-    service: hana
-    service-plan: hdi-shared
+    service-name: table-maintenance-hdi
   properties:
     hdi-container-name: ${service-name}
 - name: ups-btp-dwc-service

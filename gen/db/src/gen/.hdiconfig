@@ -12,6 +12,15 @@
     "hdbindex": {
       "plugin_name": "com.sap.hana.di.index"
     },
+    "hdbprocedure": {
+      "plugin_name": "com.sap.hana.di.procedure"
+    },
+    "hdbrole": {
+      "plugin_name": "com.sap.hana.di.role"
+    },
+    "hdbsynonym": {
+      "plugin_name": "com.sap.hana.di.synonym"
+    },
     "hdbtable": {
       "plugin_name": "com.sap.hana.di.table"
     },

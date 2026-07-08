@@ -1,5 +1,12 @@
 [
   "src/gen/**/*.hdbview",
   "src/gen/**/*.hdbindex",
-  "src/gen/**/*.hdbconstraint"
+  "src/gen/**/*.hdbconstraint",
+  "src/DWC_CONSUMPTION_ROLE.hdbrole",
+  "src/DWC_CONSUMPTION_ROLE#.hdbrole",
+  "src/DWC_WRITE_ROLE.hdbrole",
+  "src/DWC_WRITE_ROLE#.hdbrole",
+  "src/DWC_ACCESS.hdbgrants",
+  "src/DWC_ACCESS.hdbsynonym",
+  "src/EXECUTE_DDL.hdbprocedure"
 ]

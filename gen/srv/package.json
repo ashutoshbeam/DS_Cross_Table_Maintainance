@@ -30,7 +30,7 @@
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
   },
   "engines": {
-    "node": "^20.00"
+    "node": ">=20.0.0"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
