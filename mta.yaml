@@ -7,7 +7,7 @@ modules:
   type: nodejs
   path: gen/srv
   requires:
-  - name: training-hdi
+  - name: table-maintenance-hdi
   - name: ups-btp-dwc-service
   - name: ZTableMaintenance-auth
   provides:
@@ -18,11 +18,11 @@ modules:
     buildpack: nodejs_buildpack
   build-parameters:
     builder: npm-ci
-- name: training-hdi-deployer
+- name: table-maintenance-hdi-deployer
   type: hdb
   path: gen/db
   requires:
-  - name: training-hdi
+  - name: table-maintenance-hdi
   - name: ups-btp-dwc-service
   parameters:
     buildpack: nodejs_buildpack
@@ -93,7 +93,7 @@ modules:
     - npm run build:cf
 
 resources:
-- name: training-hdi
+- name: table-maintenance-hdi
   type: org.cloudfoundry.existing-service
   parameters:
     service-name: table-maintenance-hdi

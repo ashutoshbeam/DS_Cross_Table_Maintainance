@@ -1,2 +1,0 @@
-sap.ui.define(["sap/ui/core/UIComponent","sap/ui/Device"],function(t,i){"use strict";return t.extend("dwcmission.plantlocationapp.Component",{metadata:{manifest:"json"},init:function(){t.prototype.init.apply(this,arguments);this.getRouter().initialize()},getContentDensityClass:function(){if(this._sContentDensityClass===undefined){this._sContentDensityClass=i.support.touch?"sapUiSizeCozy":"sapUiSizeCompact"}return this._sContentDensityClass}})});
-//# sourceMappingURL=Component.js.map
