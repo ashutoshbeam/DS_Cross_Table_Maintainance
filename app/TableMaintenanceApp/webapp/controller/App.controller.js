@@ -39,13 +39,17 @@ sap.ui.define([
             var oViewModel = this.getModel("view");
             oViewModel.setProperty("/busy", true);
 
-            this._request("api/schema-browser/user-info")
+            var oComponent = this.getOwnerComponent();
+            if (!oComponent._oUserInfoPromise) {
+                oComponent._oUserInfoPromise = this._request("api/schema-browser/user-info");
+            }
+
+            oComponent._oUserInfoPromise
                 .then(function (oUserInfo) {
                     var sUser = oUserInfo.username || "anonymous";
                     oViewModel.setProperty("/username", sUser);
                     var sEmail = oUserInfo.email || (sUser.includes("@") ? sUser : sUser + "@example.com");
-                    var bSeedDisplayUser = this._isSeedDisplayUser(sUser, sEmail);
-                    var bHasDisplayRole = oUserInfo.isDisplay === true || bSeedDisplayUser;
+                    var bHasDisplayRole = oUserInfo.isDisplay === true;
                     oViewModel.setProperty("/userEmail", sEmail);
                     oViewModel.setProperty("/displayName", this._getFriendlyName(sEmail));
                     oViewModel.setProperty("/logoutRedirectUrl", oUserInfo.logoutRedirectUrl || "");
@@ -112,20 +116,6 @@ sap.ui.define([
             });
         },
 
-        _isSeedDisplayUser: function (sUser, sEmail) {
-            var aValues = [sUser, sEmail].map(function (sValue) {
-                return String(sValue || "").toLowerCase();
-            });
-
-            return aValues.some(function (sValue) {
-                return sValue === "amith.vandana.incture@beamsuntory.com"
-                    || sValue === "ashutosh.shukla@beamsuntory.com"
-                    || sValue === "amith.vandana.incture"
-                    || sValue === "ashutosh.shukla"
-                    || sValue.indexOf("amith.vandana.incture") > -1
-                    || sValue.indexOf("ashutosh.shukla") > -1;
-            });
-        },
 
         onRoleProfileChange: function (oEvent) {
             var sKey = oEvent.getParameter("selectedItem").getKey();

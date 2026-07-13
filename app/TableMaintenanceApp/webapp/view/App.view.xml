@@ -14,7 +14,7 @@
                     press=".onSideNavCollapsePress"
                     tooltip="Toggle Menu" />
                 <Image src="images/suntory_logo.jpg" height="24px" class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiHideOnPhone" />
-                <Title text="DS Table Maintenance" level="H1" class="sapUiHideOnPhone" />
+                <Title text="DS Cross Table Maintenance" level="H1" class="sapUiHideOnPhone" />
                 <ToolbarSpacer />
                 
                 <Label text="Simulate BTP Role:" class="sapUiTinyMarginEnd" visible="{view>/hasMultipleRoles}" />

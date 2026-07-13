@@ -1032,7 +1032,11 @@ sap.ui.define([
 
         _loadSchemas: function () {
             this._setBusy(true);
-            return this._request("api/schema-browser/user-info")
+            var oComponent = this.getOwnerComponent();
+            if (!oComponent._oUserInfoPromise) {
+                oComponent._oUserInfoPromise = this._request("api/schema-browser/user-info");
+            }
+            return oComponent._oUserInfoPromise
                 .then(function (oUserInfo) {
                     this._applyUserPermissions(oUserInfo);
                 }.bind(this))
@@ -1098,7 +1102,7 @@ sap.ui.define([
                 aFilteredTables = sSelectedTemplateRole
                     ? aTables.filter(function (oTable) {
                         var aTemplateRoles = oTable.templateRoles || [];
-                        if (!bAccessConfigEnabled || !aTemplateRoles.length) {
+                        if (!bAccessConfigEnabled) {
                             return !String(oTable.name || "").toUpperCase().startsWith("ZSCHEMA_");
                         }
                         return aTemplateRoles.indexOf(sSelectedTemplateRole) > -1;

@@ -1,0 +1,544 @@
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:43:52.760502] Updated app with guid 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 ({"lifecycle"=>{"data"=>{"buildpacks"=>["nodejs_buildpack"]}, "type"=>"buildpack"}}) (STDOUT, API)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:43:52.863765] Updating process: "web" (STDOUT, API)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:01.208500] Uploading app package for app with guid 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 (STDOUT, API)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:01.501735] Updated app with guid 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 ({"environment_variables"=>"[PRIVATE DATA HIDDEN]"}) (STDOUT, API)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:11.598477] Creating build for app with guid 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 (STDOUT, API)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:12.037475] Downloading nodejs_buildpack... (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:12.108651] Downloaded nodejs_buildpack (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:12.108707] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 creating container for instance 09b50543-303e-4b38-919f-3d3e16772ca8 (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:12.499809] Security group rules were updated (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:12.568608] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 successfully created container for instance 09b50543-303e-4b38-919f-3d3e16772ca8 (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.101933] Downloading app package... (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.102005] Downloading build artifacts cache... (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.169387] Downloaded build artifacts cache (221B) (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.392048] Downloaded app package (2.3M) (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.462454] -----> Nodejs Buildpack version 1.9.2 (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.557471] -----> Bootstrapping python (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.557488] -----> Installing python 3.13.13 (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.557641] Copy [/tmp/buildpacks/53be456f713ea929/dependencies/268a5e3743d51a14b86ea9da64439307/python_3.13.13_linux_x64_cflinuxfs4_8311abbf.tgz] (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:16.880048] -----> Installing binaries (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:16.880087] engines.node (package.json): >=18 (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:16.880090] engines.npm (package.json): unspecified (use default) (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:16.880176] [31;1m**WARNING**[0m Dangerous semver range (>) in engines.node. See: http://docs.cloudfoundry.org/buildpacks/node/node-tips.html (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:16.880186] -----> Installing node 24.15.0 (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:16.880318] Copy [/tmp/buildpacks/53be456f713ea929/dependencies/6441e97e6386f47ec4c16cfdf8db0a17/node_24.15.0_linux_x64_cflinuxfs4_1a62d98b.tgz] (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:18.819988] Using default npm version: 11.12.1 (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:18.820010] -----> Installing yarn 1.22.22 (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:18.820050] Copy [/tmp/buildpacks/53be456f713ea929/dependencies/e4fe26756e9984a665478d350474fa2e/yarn_1.22.22_linux_noarch_any-stack_b6132b86.tgz] (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.108504] Installed yarn 1.22.22 (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.108524] -----> Creating runtime environment (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.109959] NODE_ENV=production (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.109973] NODE_HOME=/tmp/contents2966414576/deps/0/node (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.109976] NODE_MODULES_CACHE=true (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.109982] NODE_VERBOSE=false (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.109984] NPM_CONFIG_LOGLEVEL=error (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.109986] NPM_CONFIG_PRODUCTION=true (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.110051] -----> Building dependencies (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.110071] Prebuild detected (node_modules already exists) (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.110088] Rebuilding any native modules (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.531868] rebuilt dependencies successfully (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.583833] Installing any new modules (package.json + package-lock.json) (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.937015] up to date in 287ms (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.937236] 4 packages are looking for funding (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.937287] run `npm fund` for details (STDOUT, STG)#
+#2026 07 08 06:44:21.275#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6235#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:20.377089] Contrast Security no credentials found. Will not write environment files. (STDOUT, STG)#
+#2026 07 08 06:44:31.431#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6237#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:28.712743] Exit status 0 (STDOUT, STG)#
+#2026 07 08 06:44:31.431#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6237#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:28.712790] Uploading droplet, build artifacts cache... (STDOUT, STG)#
+#2026 07 08 06:44:31.431#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6237#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:28.712822] Uploading droplet... (STDOUT, STG)#
+#2026 07 08 06:44:31.431#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6237#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:28.712834] Uploading build artifacts cache... (STDOUT, STG)#
+#2026 07 08 06:44:31.431#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6237#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:28.735630] Uploaded build artifacts cache (223B) (STDOUT, STG)#
+#2026 07 08 06:44:31.431#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6237#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:29.319817] Creating droplet for app with guid 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 (STDOUT, API)#
+#2026 07 08 06:44:31.431#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6237#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:30.441004] Uploaded droplet (58.6M) (STDOUT, STG)#
+#2026 07 08 06:44:31.431#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6237#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:30.456364] Uploading complete (STDOUT, STG)#
+#2026 07 08 06:44:41.505#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6245#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:31.315646] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 stopping instance 09b50543-303e-4b38-919f-3d3e16772ca8 (STDOUT, STG)#
+#2026 07 08 06:44:41.505#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6245#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:31.315672] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 destroying container for instance 09b50543-303e-4b38-919f-3d3e16772ca8 (STDOUT, STG)#
+#2026 07 08 06:44:41.505#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6245#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:31.340783] Staging complete for build 09b50543-303e-4b38-919f-3d3e16772ca8 (STDOUT, API)#
+#2026 07 08 06:44:41.505#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6245#
+[PollStageAppStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:33.219778] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 successfully destroyed container for instance 09b50543-303e-4b38-919f-3d3e16772ca8 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:43:52.760502] Updated app with guid 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 ({"lifecycle"=>{"data"=>{"buildpacks"=>["nodejs_buildpack"]}, "type"=>"buildpack"}}) (STDOUT, API)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:43:52.863765] Updating process: "web" (STDOUT, API)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:01.208500] Uploading app package for app with guid 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 (STDOUT, API)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:01.501735] Updated app with guid 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 ({"environment_variables"=>"[PRIVATE DATA HIDDEN]"}) (STDOUT, API)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:11.598477] Creating build for app with guid 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 (STDOUT, API)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:12.037475] Downloading nodejs_buildpack... (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:12.108651] Downloaded nodejs_buildpack (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:12.108707] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 creating container for instance 09b50543-303e-4b38-919f-3d3e16772ca8 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:12.499809] Security group rules were updated (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:12.568608] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 successfully created container for instance 09b50543-303e-4b38-919f-3d3e16772ca8 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.101933] Downloading app package... (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.102005] Downloading build artifacts cache... (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.169387] Downloaded build artifacts cache (221B) (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.392048] Downloaded app package (2.3M) (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.462454] -----> Nodejs Buildpack version 1.9.2 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.557471] -----> Bootstrapping python (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.557488] -----> Installing python 3.13.13 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:13.557641] Copy [/tmp/buildpacks/53be456f713ea929/dependencies/268a5e3743d51a14b86ea9da64439307/python_3.13.13_linux_x64_cflinuxfs4_8311abbf.tgz] (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:16.880048] -----> Installing binaries (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:16.880087] engines.node (package.json): >=18 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:16.880090] engines.npm (package.json): unspecified (use default) (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:16.880176] [31;1m**WARNING**[0m Dangerous semver range (>) in engines.node. See: http://docs.cloudfoundry.org/buildpacks/node/node-tips.html (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:16.880186] -----> Installing node 24.15.0 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:16.880318] Copy [/tmp/buildpacks/53be456f713ea929/dependencies/6441e97e6386f47ec4c16cfdf8db0a17/node_24.15.0_linux_x64_cflinuxfs4_1a62d98b.tgz] (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:18.819988] Using default npm version: 11.12.1 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:18.820010] -----> Installing yarn 1.22.22 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:18.820050] Copy [/tmp/buildpacks/53be456f713ea929/dependencies/e4fe26756e9984a665478d350474fa2e/yarn_1.22.22_linux_noarch_any-stack_b6132b86.tgz] (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.108504] Installed yarn 1.22.22 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.108524] -----> Creating runtime environment (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.109959] NODE_ENV=production (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.109973] NODE_HOME=/tmp/contents2966414576/deps/0/node (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.109976] NODE_MODULES_CACHE=true (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.109982] NODE_VERBOSE=false (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.109984] NPM_CONFIG_LOGLEVEL=error (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.109986] NPM_CONFIG_PRODUCTION=true (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.110051] -----> Building dependencies (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.110071] Prebuild detected (node_modules already exists) (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.110088] Rebuilding any native modules (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.531868] rebuilt dependencies successfully (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.583833] Installing any new modules (package.json + package-lock.json) (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.937015] up to date in 287ms (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.937236] 4 packages are looking for funding (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:19.937287] run `npm fund` for details (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:20.377089] Contrast Security no credentials found. Will not write environment files. (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:28.712743] Exit status 0 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:28.712790] Uploading droplet, build artifacts cache... (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:28.712822] Uploading droplet... (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:28.712834] Uploading build artifacts cache... (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:28.735630] Uploaded build artifacts cache (223B) (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:29.319817] Creating droplet for app with guid 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 (STDOUT, API)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:30.441004] Uploaded droplet (58.6M) (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:30.456364] Uploading complete (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:31.315646] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 stopping instance 09b50543-303e-4b38-919f-3d3e16772ca8 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:31.315672] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 destroying container for instance 09b50543-303e-4b38-919f-3d3e16772ca8 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:31.340783] Staging complete for build 09b50543-303e-4b38-919f-3d3e16772ca8 (STDOUT, API)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:33.219778] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 successfully destroyed container for instance 09b50543-303e-4b38-919f-3d3e16772ca8 (STDOUT, STG)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:41.619333] Updated app with guid 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 ({:droplet_guid=>"6599a576-2b97-42fd-8f8d-9a34b9f38415"}) (STDOUT, API)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:42.248237] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 creating container for instance 70114296-20f3-4d18-a8e9-9f09f39bfbb4 (STDOUT, CELL)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:42.664073] Security group rules were updated (STDOUT, CELL)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:42.722907] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 successfully created container for instance 70114296-20f3-4d18-a8e9-9f09f39bfbb4 (STDOUT, CELL)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.313476] Invoking pre-start scripts. (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.462779] Invoking start command. (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.807976] > start (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.807999] > node node_modules/@sap/hdi-deploy/deploy.js --use-hdb --parameter com.sap.hana.di.table/try_fast_table_migration=true (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.918797] VCAP_SERVICES: (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919331] { (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919347] "hana": [ (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919350] { (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919354] "name": "table-maintenance-hdi", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919357] "label": "hana", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919359] "plan": "hdi-shared", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919361] "credentials": { (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919382] "schema": "TBL_MNT_HDI", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919385] "database_id": "116a3240-595d-4460-a2f9-f3ac166852f0", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919389] "user": "TBL_MNT_HDI_AB5LALGIXO3SSNKDVC0KYWVYZ_RT", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919392] "hdi_user": "TBL_MNT_HDI_AB5LALGIXO3SSNKDVC0KYWVYZ_DT" (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919396] }, (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919398] "tags": [ (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919400] "hana", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919402] "database", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919403] "relational" (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919405] ] (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919406] } (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919408] ], (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919410] "user-provided": [ (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919411] { (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919413] "name": "DS_INTEGRATION", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919414] "label": "user-provided", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919418] "credentials": { (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919420] "schema": "IT_TBL_MNT", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919423] "user": "IT_TBL_MNT#INTEGRATION_USER", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919424] "tags": [ (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919426] "hana" (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919427] ] (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919429] }, (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919430] "tags": [] (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919433] } (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919436] ] (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:46.919438] } (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.362986] @sap/hdi-deploy, version 5.7.0 (mode default), server version 4.00.000.00.1774948521 (4.0.0.0), cloud version 2026.2.7, node version 24.15.0, HDI version 1016, container API version 1007 (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.363015] Deployment started at 2026-07-08 06:44:47 (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.363243] Using hdb@2.29.5 for connection (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.378219] No ignore file at /home/vcap/app/.hdiignore. (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.378528] Collecting files... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.381288] Collecting files... ok (0s 3ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.381306] 3 directories collected (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.381344] 15 files collected (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.381359] 0 reusable modules collected (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.381417] Target service: table-maintenance-hdi (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.680400] Previous build with request ID 3726 finished at 2026-07-08T06:04:03.652 with status Rolled back and message: Starting make in the container "TBL_MNT_HDI" with 0 files to deploy, 0 files to undeploy... ok. (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.680458] Processing revoke files... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.680531] Processing revoke files... ok (0s 0ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.680720] Processing grants files... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.680751] Processing "src/dwc/DWC_ACCESS.hdbgrants"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.681173] Processing "src/dwc/DWC_ACCESS.hdbgrants"... ok (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.681193] Processing grants files... ok (0s 1ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.683063] Preprocessing files... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.683235] Preprocessing files... ok (0s 0ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.683302] Connecting to the container "TBL_MNT_HDI"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.740139] Connecting to the container "TBL_MNT_HDI"... ok (0s 57ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.740160] Locking the container "TBL_MNT_HDI"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.952066] Locking the container "TBL_MNT_HDI"... ok (0s 212ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:47.952088] Synchronizing files with the container "TBL_MNT_HDI"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.309271] Deleting files... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.532064] Deleting files... ok (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.532084] Writing files... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.532247] Writing 3 items (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.765682] Writing files... ok (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.765704] Synchronizing files with the container "TBL_MNT_HDI"... ok (0s 814ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.766003] added files: [] (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.766025] modified files: [] (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.766211] Undeploy allowlist file "undeploy.json" found; deleted files will be filtered by the allowlist (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.766364] 4 deleted files are scheduled for undeploy before filtering it by undeploy allowlist (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.766377] deleted files before filtering it by the undeploy allowlist: [ (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.766381] "src/gen/DSTableMaintenanceService.PlantLocation.hdbview", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.766384] "src/gen/DSTableMaintenanceService.TankVolumes.hdbview", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.766388] "src/gen/ztablemaintenance.farm.TankVolumes_M.hdbtable", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.766390] "src/gen/ztablemaintenance.farm.ZPLANT_LOCATION.hdbtable" (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.766394] ] (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.769859] deleted files: [ (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.769866] "src/gen/DSTableMaintenanceService.PlantLocation.hdbview", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.769869] "src/gen/DSTableMaintenanceService.TankVolumes.hdbview" (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.769873] ] (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.769986] WARNING: deleted files not in undeploy.json: [ (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.770008] "src/gen/ztablemaintenance.farm.TankVolumes_M.hdbtable", (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.770010] "src/gen/ztablemaintenance.farm.ZPLANT_LOCATION.hdbtable" (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.770013] ] (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.770092] 0 modified or added files are scheduled for deploy based on delta detection (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.770311] 2 deleted files are scheduled for undeploy based on delta detection (filtered by undeploy allowlist) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.770370] 0 files are scheduled for deploy based on explicit specification (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.770378] 0 files are scheduled for undeploy based on explicit specification (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:48.770483] Deploying to the container "TBL_MNT_HDI"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:49.387844] Polling messages for request id: 3732 (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:49.413585] Starting make in the container "TBL_MNT_HDI" with 0 files to deploy, 2 files to undeploy... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:49.413604] Disabling table replication for the container schema "TBL_MNT_HDI"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:49.413613] Disabling table replication for the container schema "TBL_MNT_HDI"... ok (0s 9ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:49.413616] Migrating libraries... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:49.413644] Migrating libraries... ok (0s 19ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:49.413647] Making... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:49.413649] Preparing... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:49.413651] Preparing the make transaction... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419348] Preparing the make transaction... ok (0s 461ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419370] Adding "src/gen/DSTableMaintenanceService.PlantLocation.hdbview" for undeploy... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419386] Adding "src/gen/DSTableMaintenanceService.PlantLocation.hdbview" for undeploy... ok (0s 0ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419388] Adding "src/gen/DSTableMaintenanceService.TankVolumes.hdbview" for undeploy... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419391] Adding "src/gen/DSTableMaintenanceService.TankVolumes.hdbview" for undeploy... ok (0s 0ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419393] Preparing... ok (0s 530ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419398] Calculating dependencies... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419406] Expanding... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419409] Expanding... ok (0s 7ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419422] Precompiling... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419424] Precompiling... ok (0s 0ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419539] Merging... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419552] Merging... ok (0s 0ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419555] Calculating dependencies... ok (0s 7ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419557] Processing work list... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419560] Undeploying "src/gen/DSTableMaintenanceService.PlantLocation.hdbview"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419563] Undeploying "src/gen/DSTableMaintenanceService.PlantLocation.hdbview"... ok (0s 35ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419565] Undeploying "src/gen/DSTableMaintenanceService.TankVolumes.hdbview"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419567] Undeploying "src/gen/DSTableMaintenanceService.TankVolumes.hdbview"... ok (0s 4ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419570] Processing work list... ok (0s 52ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419571] Postprocessing deployed files... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419574] Postprocessing "src/dwc/DWC_ACCESS.hdbsynonym"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419576] Postprocessing "src/dwc/DWC_ACCESS.hdbsynonym"... ok (0s 0ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:44:51.564#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6257#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:50.419580] Postprocessing "src/dwc/DWC_CONSUMPTION_ROLE.hdbrole"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630854] Postprocessing "src/dwc/DWC_CONSUMPTION_ROLE.hdbrole"... ok (1s 666ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630880] Postprocessing "src/dwc/DWC_CONSUMPTION_ROLE_WITH_GRANT.hdbrole"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630884] Postprocessing "src/dwc/DWC_CONSUMPTION_ROLE_WITH_GRANT.hdbrole"... ok (0s 18ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630887] Postprocessing "src/dwc/DWC_WRITE_ROLE.hdbrole"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630891] Postprocessing "src/dwc/DWC_WRITE_ROLE.hdbrole"... ok (0s 16ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630893] Postprocessing "src/dwc/DWC_WRITE_ROLE_WITH_GRANT.hdbrole"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630896] Postprocessing "src/dwc/DWC_WRITE_ROLE_WITH_GRANT.hdbrole"... ok (0s 19ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630899] Postprocessing deployed files... ok (1s 734ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630902] Finalizing... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630905] Finalizing... ok (0s 45ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630908] Make succeeded (0 warnings): 0 files deployed (effective 0), 2 files undeployed (effective 2), 0 dependent files redeployed (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630910] Making... ok (2s 557ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630917] Enabling table replication for the container schema "TBL_MNT_HDI"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630919] Enabling table replication for the container schema "TBL_MNT_HDI"... ok (0s 9ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630925] Starting make in the container "TBL_MNT_HDI" with 0 files to deploy, 2 files to undeploy... ok (2s 621ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.630944] Deploying to the container "TBL_MNT_HDI"... ok (2s 860ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.631197] No default-access-role handling needed; global role "TBL_MNT_HDI::access_role" will not be adapted (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.631238] Unlocking the container "TBL_MNT_HDI"... (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.631558] Unlocking the container "TBL_MNT_HDI"... ok (0s 0ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.631649] Deployment to container TBL_MNT_HDI done [Deployment ID: none]. (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.632032] Deployment ended at 2026-07-08 06:44:51 (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.632247] (4s 790ms) (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.641792] npm notice (STDERR, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.641808] npm notice New minor version of npm available! 11.12.1 -> 11.18.0 (STDERR, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.641811] npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.18.0 (STDERR, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.641813] npm notice To update run: npm install -g npm@11.18.0 (STDERR, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.641815] npm notice (STDERR, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:51.698850] Exit status 0 (STDOUT, APP/TASK/deploy)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:52.272608] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 stopping instance 70114296-20f3-4d18-a8e9-9f09f39bfbb4 (STDOUT, CELL)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:52.272642] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 destroying container for instance 70114296-20f3-4d18-a8e9-9f09f39bfbb4 (STDOUT, CELL)#
+#2026 07 08 06:45:01.633#Z#DEBUG#59eda506-7a98-11f1-9ad9-eeee0a874551.table-maintenance-hdi-deployer#flowable-async-job-executor-thread-6262#
+[PollExecuteTaskStatusExecution] 06b4d8e6-d8ca-41ee-8c8a-e24c6c4f2287 [2026-07-08T06:44:53.914654] Cell 042c8d77-4b89-440b-950e-f2f55b0f5be3 successfully destroyed container for instance 70114296-20f3-4d18-a8e9-9f09f39bfbb4 (STDOUT, CELL)#

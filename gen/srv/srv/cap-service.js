@@ -361,12 +361,13 @@ async function getCurrentSchema(db) {
 }
 
 async function ensureFieldMetadataTable(db, schemaName) {
+    const upperSchema = String(schemaName || "").toUpperCase();
     const rows = await executeQuery(db,
-        `SELECT TABLE_NAME
-           FROM SYS.TABLES
+        `SELECT OBJECT_NAME
+           FROM SYS.OBJECTS
           WHERE SCHEMA_NAME = ?
-            AND TABLE_NAME = ?`,
-        [schemaName, FIELD_METADATA_TABLE]
+            AND OBJECT_NAME = ?`,
+        [upperSchema, FIELD_METADATA_TABLE]
     );
 
     if (rows.length) {
@@ -377,15 +378,22 @@ async function ensureFieldMetadataTable(db, schemaName) {
               WHERE SCHEMA_NAME = ?
                 AND TABLE_NAME = ?
                 AND COLUMN_NAME = 'IS_PRIMARY_KEY'`,
-            [schemaName, FIELD_METADATA_TABLE]
+            [upperSchema, FIELD_METADATA_TABLE]
         );
 
         if (!primaryKeyColumn.length) {
-            await executeStatement(
-                db,
-                `CALL "EXECUTE_DDL"(?)`,
-                [`ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(FIELD_METADATA_TABLE)} ADD ("IS_PRIMARY_KEY" BOOLEAN DEFAULT FALSE NOT NULL)`]
-            );
+            try {
+                await executeStatement(
+                    db,
+                    `CALL "EXECUTE_DDL"(?)`,
+                    [`ALTER TABLE ${quoteIdentifier(schemaName)}.${quoteIdentifier(FIELD_METADATA_TABLE)} ADD ("IS_PRIMARY_KEY" BOOLEAN DEFAULT FALSE NOT NULL)`]
+                );
+            } catch (err) {
+                // Ignore errors like "duplicate column name" if already altered
+                if (!/duplicate column name|already exists/i.test(err.message)) {
+                    throw err;
+                }
+            }
         }
         return;
     }
@@ -403,16 +411,23 @@ async function ensureFieldMetadataTable(db, schemaName) {
         PRIMARY KEY ("SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME")
     )`;
 
-    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    try {
+        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    } catch (err) {
+        if (!/duplicate table name|already exists|duplicate object/i.test(err.message)) {
+            throw err;
+        }
+    }
 }
 
 async function ensureValidationRulesTable(db, schemaName) {
+    const upperSchema = String(schemaName || "").toUpperCase();
     const rows = await executeQuery(db,
-        `SELECT TABLE_NAME
-           FROM SYS.TABLES
+        `SELECT OBJECT_NAME
+           FROM SYS.OBJECTS
           WHERE SCHEMA_NAME = ?
-            AND TABLE_NAME = ?`,
-        [schemaName, VALIDATION_RULES_TABLE]
+            AND OBJECT_NAME = ?`,
+        [upperSchema, VALIDATION_RULES_TABLE]
     );
 
     if (rows.length) {
@@ -430,7 +445,13 @@ async function ensureValidationRulesTable(db, schemaName) {
         PRIMARY KEY ("SCHEMA_NAME", "TABLE_NAME", "COLUMN_NAME", "RULE_TYPE")
     )`;
 
-    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    try {
+        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    } catch (err) {
+        if (!/duplicate table name|already exists|duplicate object/i.test(err.message)) {
+            throw err;
+        }
+    }
 }
 
 async function validateCustomRules(db, schemaName, tableName, row) {
@@ -483,12 +504,13 @@ async function validateCustomRules(db, schemaName, tableName, row) {
 }
 
 async function ensureValueHelpConfigTable(db, schemaName) {
+    const upperSchema = String(schemaName || "").toUpperCase();
     const rows = await executeQuery(db,
-        `SELECT TABLE_NAME
-           FROM SYS.TABLES
+        `SELECT OBJECT_NAME
+           FROM SYS.OBJECTS
           WHERE SCHEMA_NAME = ?
-            AND TABLE_NAME = ?`,
-        [schemaName, VALUE_HELP_CONFIG_TABLE]
+            AND OBJECT_NAME = ?`,
+        [upperSchema, VALUE_HELP_CONFIG_TABLE]
     );
 
     if (rows.length) {
@@ -504,16 +526,23 @@ async function ensureValueHelpConfigTable(db, schemaName) {
         PRIMARY KEY ("SCHEMA_NAME", "SEMANTIC_TYPE")
     )`;
 
-    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    try {
+        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    } catch (err) {
+        if (!/duplicate table name|already exists|duplicate object/i.test(err.message)) {
+            throw err;
+        }
+    }
 }
 
 async function ensureValueHelpAliasTable(db, schemaName) {
+    const upperSchema = String(schemaName || "").toUpperCase();
     const rows = await executeQuery(db,
-        `SELECT TABLE_NAME
-           FROM SYS.TABLES
+        `SELECT OBJECT_NAME
+           FROM SYS.OBJECTS
           WHERE SCHEMA_NAME = ?
-            AND TABLE_NAME = ?`,
-        [schemaName, VALUE_HELP_ALIAS_TABLE]
+            AND OBJECT_NAME = ?`,
+        [upperSchema, VALUE_HELP_ALIAS_TABLE]
     );
 
     if (rows.length) {
@@ -528,16 +557,23 @@ async function ensureValueHelpAliasTable(db, schemaName) {
         PRIMARY KEY ("SCHEMA_NAME", "SEMANTIC_TYPE", "ALIAS_NAME")
     )`;
 
-    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    try {
+        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    } catch (err) {
+        if (!/duplicate table name|already exists|duplicate object/i.test(err.message)) {
+            throw err;
+        }
+    }
 }
 
 async function ensureRoleTemplateDefinitionTable(db, schemaName) {
+    const upperSchema = String(schemaName || "").toUpperCase();
     const rows = await executeQuery(db,
         `SELECT OBJECT_NAME, OBJECT_TYPE
            FROM SYS.OBJECTS
           WHERE SCHEMA_NAME = ?
             AND OBJECT_NAME = ?`,
-        [schemaName, ROLE_TEMPLATE_DEFINITION_TABLE]
+        [upperSchema, ROLE_TEMPLATE_DEFINITION_TABLE]
     );
 
     if (!rows.length) {
@@ -549,7 +585,13 @@ async function ensureRoleTemplateDefinitionTable(db, schemaName) {
             PRIMARY KEY ("SCHEMA_NAME", "TEMPLATE_ROLE")
         )`;
 
-        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+        try {
+            await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+        } catch (err) {
+            if (!/duplicate table name|already exists|duplicate object/i.test(err.message)) {
+                throw err;
+            }
+        }
     }
 
     for (const entry of DEFAULT_ROLE_TEMPLATE_DEFINITIONS) {
@@ -591,12 +633,13 @@ function getRoleTemplateLabel(templateRole, definitions) {
 }
 
 async function ensureRoleTemplateTableMapTable(db, schemaName) {
+    const upperSchema = String(schemaName || "").toUpperCase();
     const rows = await executeQuery(db,
         `SELECT OBJECT_NAME, OBJECT_TYPE
            FROM SYS.OBJECTS
           WHERE SCHEMA_NAME = ?
             AND OBJECT_NAME = ?`,
-        [schemaName, ROLE_TEMPLATE_TABLE_MAP_TABLE]
+        [upperSchema, ROLE_TEMPLATE_TABLE_MAP_TABLE]
     );
 
     if (rows.length) {
@@ -611,16 +654,23 @@ async function ensureRoleTemplateTableMapTable(db, schemaName) {
         PRIMARY KEY ("SCHEMA_NAME", "TEMPLATE_ROLE", "TABLE_NAME")
     )`;
 
-    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    try {
+        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    } catch (err) {
+        if (!/duplicate table name|already exists|duplicate object/i.test(err.message)) {
+            throw err;
+        }
+    }
 }
 
 async function ensureUserRoleTemplateAccessTable(db, schemaName) {
+    const upperSchema = String(schemaName || "").toUpperCase();
     const rows = await executeQuery(db,
         `SELECT OBJECT_NAME, OBJECT_TYPE
            FROM SYS.OBJECTS
           WHERE SCHEMA_NAME = ?
             AND OBJECT_NAME = ?`,
-        [schemaName, USER_ROLE_TEMPLATE_ACCESS_TABLE]
+        [upperSchema, USER_ROLE_TEMPLATE_ACCESS_TABLE]
     );
 
     if (rows.length) {
@@ -635,16 +685,23 @@ async function ensureUserRoleTemplateAccessTable(db, schemaName) {
         PRIMARY KEY ("SCHEMA_NAME", "USER_EMAIL", "TEMPLATE_ROLE")
     )`;
 
-    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    try {
+        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    } catch (err) {
+        if (!/duplicate table name|already exists|duplicate object/i.test(err.message)) {
+            throw err;
+        }
+    }
 }
 
 async function ensureUserTableAccessTable(db, schemaName) {
+    const upperSchema = String(schemaName || "").toUpperCase();
     const rows = await executeQuery(db,
         `SELECT OBJECT_NAME, OBJECT_TYPE
            FROM SYS.OBJECTS
           WHERE SCHEMA_NAME = ?
             AND OBJECT_NAME = ?`,
-        [schemaName, USER_TABLE_ACCESS_TABLE]
+        [upperSchema, USER_TABLE_ACCESS_TABLE]
     );
 
     if (rows.length) {
@@ -659,7 +716,13 @@ async function ensureUserTableAccessTable(db, schemaName) {
         PRIMARY KEY ("SCHEMA_NAME", "USER_EMAIL", "TABLE_NAME")
     )`;
 
-    await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    try {
+        await executeStatement(db, `CALL "EXECUTE_DDL"(?)`, [sql]);
+    } catch (err) {
+        if (!/duplicate table name|already exists|duplicate object/i.test(err.message)) {
+            throw err;
+        }
+    }
 }
 
 async function ensureAccessConfigTables(db, schemaName) {
@@ -1034,15 +1097,25 @@ async function deleteFieldMetadata(db, schemaName, tableName) {
     );
 }
 
-async function getTables(db, schemaName) {
+async function getTables(db, schemaName, includeConfigTables = false) {
+    const filter = includeConfigTables ? "" : "AND TABLE_NAME NOT LIKE 'ZSCHEMA_%'";
+    const viewFilter = includeConfigTables ? "" : "AND VIEW_NAME NOT LIKE 'ZSCHEMA_%'";
     const rows = await executeQuery(db,
         `SELECT TABLE_NAME
            FROM SYS.TABLES
           WHERE SCHEMA_NAME = ?
+            ${filter}
+            AND TABLE_NAME NOT LIKE 'SAP_CHANGELOG_%'
+            AND TABLE_NAME NOT LIKE 'CDS_%'
+            AND TABLE_NAME NOT LIKE '%SERVICE_%'
          UNION ALL
          SELECT VIEW_NAME AS TABLE_NAME
            FROM SYS.VIEWS
           WHERE SCHEMA_NAME = ?
+            ${viewFilter}
+            AND VIEW_NAME NOT LIKE 'SAP_CHANGELOG_%'
+            AND VIEW_NAME NOT LIKE 'CDS_%'
+            AND VIEW_NAME NOT LIKE '%SERVICE_%'
           ORDER BY TABLE_NAME`,
         [schemaName, schemaName]
     );
@@ -1176,7 +1249,7 @@ async function getTableDefinition(db, schemaName, tableName) {
     } else if (tableName === USER_TABLE_ACCESS_TABLE) {
         await ensureUserTableAccessTable(db, schemaName);
     }
-    const tables = await getTables(db, schemaName);
+    const tables = await getTables(db, schemaName, true);
     const table = tables.find((entry) => entry.name === tableName);
 
     if (!table) {
@@ -1694,6 +1767,20 @@ const getRequestUser = (req) => {
 
 // isConfigTable is defined at the top
 
+const hasUserScope = (payload, suffix) => {
+    const scopes = payload?.scope || payload?.scopes || payload?.xs?.scopes || [];
+    const upperSuffix = suffix.toUpperCase();
+    if (scopes.some(scope => {
+        const upperScope = scope.toUpperCase();
+        return upperScope.endsWith("." + upperSuffix) || upperScope === upperSuffix;
+    })) {
+        return true;
+    }
+    const sysAttrs = payload?.["xs.system.attributes"] || {};
+    const roleCollections = sysAttrs["xs.rolecollections"] || [];
+    return roleCollections.some(rc => rc.toUpperCase() === upperSuffix);
+};
+
 const isUserAdmin = (req) => {
     if (req?.user && typeof req.user.is === "function" && req.user.is("ZTM_Admin")) {
         return true;
@@ -1705,20 +1792,11 @@ const isUserAdmin = (req) => {
     const token = getAuthTokenFromHeaders(headers);
     if (token) {
         const payload = decodeJwtPayload(token);
-        if (payload && payload.xs && payload.xs.scopes) {
-            return payload.xs.scopes.some(scope => scope.endsWith(".ZTM_Admin") || scope === "ZTM_Admin");
-        }
-        if (payload && payload.scopes) {
-            return payload.scopes.some(scope => scope.endsWith(".ZTM_Admin") || scope === "ZTM_Admin");
+        if (hasUserScope(payload, "ZTM_Admin")) {
+            return true;
         }
     }
     const user = String(getRequestUser(req) || "").toLowerCase();
-    if (user === "amith.vandana.incture@beamsuntory.com" ||
-        user === "ashutosh.shukla@beamsuntory.com" ||
-        user === "amith.vandana.incture" ||
-        user === "ashutosh.shukla") {
-        return true;
-    }
     if (process.env.NODE_ENV !== "production") {
         if (user === "alice" || user === "admin" || user === "developer") {
             return true;
@@ -1738,20 +1816,11 @@ const isUserDisplayRole = (req) => {
     const token = getAuthTokenFromHeaders(headers);
     if (token) {
         const payload = decodeJwtPayload(token);
-        if (payload && payload.xs && payload.xs.scopes) {
-            return payload.xs.scopes.some(scope => scope.endsWith(".ZTM_Display") || scope === "ZTM_Display");
-        }
-        if (payload && payload.scopes) {
-            return payload.scopes.some(scope => scope.endsWith(".ZTM_Display") || scope === "ZTM_Display");
+        if (hasUserScope(payload, "ZTM_Display")) {
+            return true;
         }
     }
     const user = String(getRequestUser(req) || "").toLowerCase();
-    if (user === "amith.vandana.incture@beamsuntory.com" ||
-        user === "ashutosh.shukla@beamsuntory.com" ||
-        user === "amith.vandana.incture" ||
-        user === "ashutosh.shukla") {
-        return true;
-    }
     if (process.env.NODE_ENV !== "production") {
         if (user === "viewer" || user === "display") {
             return true;
@@ -1774,11 +1843,8 @@ const isUserDataEngineer = (req) => {
     const token = getAuthTokenFromHeaders(headers);
     if (token) {
         const payload = decodeJwtPayload(token);
-        if (payload && payload.xs && payload.xs.scopes) {
-            return payload.xs.scopes.some(scope => scope.endsWith(".ZTM_DataEngineer") || scope === "ZTM_DataEngineer");
-        }
-        if (payload && payload.scopes) {
-            return payload.scopes.some(scope => scope.endsWith(".ZTM_DataEngineer") || scope === "ZTM_DataEngineer");
+        if (hasUserScope(payload, "ZTM_DataEngineer")) {
+            return true;
         }
     }
     if (process.env.NODE_ENV !== "production") {
@@ -1804,11 +1870,8 @@ const isUserDataSteward = (req) => {
     const token = getAuthTokenFromHeaders(headers);
     if (token) {
         const payload = decodeJwtPayload(token);
-        if (payload && payload.xs && payload.xs.scopes) {
-            return payload.xs.scopes.some(scope => scope.endsWith(".ZTM_DataSteward") || scope === "ZTM_DataSteward");
-        }
-        if (payload && payload.scopes) {
-            return payload.scopes.some(scope => scope.endsWith(".ZTM_DataSteward") || scope === "ZTM_DataSteward");
+        if (hasUserScope(payload, "ZTM_DataSteward")) {
+            return true;
         }
     }
     if (process.env.NODE_ENV !== "production") {
@@ -2273,6 +2336,20 @@ cds.on("bootstrap", (app) => {
                 const isDataSteward = isUserDataSteward(req);
                 const headers = req.headers || {};
                 const tokenPayload = decodeJwtPayload(getAuthTokenFromHeaders(headers));
+                
+                console.log(`[USER-INFO-DEBUG] Username: ${username}`);
+                console.log(`[USER-INFO-DEBUG] Evaluated Roles: isAdmin=${isAdmin}, isDisplay=${isDisplay}, isDataEngineer=${isDataEngineer}, isDataSteward=${isDataSteward}`);
+                if (tokenPayload) {
+                    console.log(`[USER-INFO-DEBUG] Client ID: ${tokenPayload.client_id}`);
+                    console.log(`[USER-INFO-DEBUG] Token Scopes: ${JSON.stringify(tokenPayload.scope || tokenPayload.scopes || [])}`);
+                    console.log(`[USER-INFO-DEBUG] Full JWT Payload: ${JSON.stringify(tokenPayload)}`);
+                    const sysAttrs = tokenPayload["xs.system.attributes"] || {};
+                    const roleCollections = sysAttrs["xs.rolecollections"] || [];
+                    console.log(`[USER-INFO-DEBUG] Role Collections: ${JSON.stringify(roleCollections)}`);
+                } else {
+                    console.log(`[USER-INFO-DEBUG] No JWT Token found in authorization headers.`);
+                }
+
                 let email = tokenPayload?.email || tokenPayload?.user_name || "";
                 if (!email && username.includes("@")) {
                     email = username;
@@ -2356,6 +2433,7 @@ cds.on("bootstrap", (app) => {
                     WHERE SCHEMA_NAME NOT LIKE '\\_SYS\\_%' ESCAPE '\\' 
                       AND SCHEMA_NAME NOT LIKE 'SYS%' 
                       AND SCHEMA_NAME NOT LIKE 'SAP%' 
+                      AND SCHEMA_NAME NOT LIKE 'DWC%' 
                     ORDER BY SCHEMA_NAME
                 `);
                 
@@ -2903,27 +2981,6 @@ cds.on("bootstrap", (app) => {
 });
 
 module.exports = cds.service.impl(function () {
-    const { PlantLocation, TankVolumes } = this.entities;
-
-    this.before("*", (req) => {
-        if (req.user) {
-            const user = String(getRequestUser(req) || "").toLowerCase();
-            if (user === "amith.vandana.incture@beamsuntory.com" || 
-                user === "ashutosh.shukla@beamsuntory.com" ||
-                user === "amith.vandana.incture" || 
-                user === "ashutosh.shukla") {
-                
-                const origIs = req.user.is;
-                req.user.is = function(role) {
-                    if (["ZTM_Admin", "ZTM_DataEngineer", "ZTM_DataSteward", "ZTM_Display", "ZTM_Access"].includes(role)) {
-                        return true;
-                    }
-                    return typeof origIs === "function" ? origIs.call(req.user, role) : false;
-                };
-            }
-        }
-    });
-
     const stampManagedFields = (req) => {
         const user = getRequestUser(req);
         const now = new Date().toISOString();
@@ -2942,14 +2999,6 @@ module.exports = cds.service.impl(function () {
         data.modifiedAt = now;
     };
 
-    if (PlantLocation) {
-        this.before(["CREATE", "UPDATE"], PlantLocation, stampManagedFields);
-    }
-
-    if (TankVolumes) {
-        this.before(["CREATE", "UPDATE"], TankVolumes, stampManagedFields);
-    }
-
     // OData V4 handlers for SchemaBrowserService
     this.on('getSchemas', async (req) => {
         try {
@@ -2960,6 +3009,7 @@ module.exports = cds.service.impl(function () {
                     WHERE SCHEMA_NAME NOT LIKE '\\_SYS\\_%' ESCAPE '\\' 
                       AND SCHEMA_NAME NOT LIKE 'SYS%' 
                       AND SCHEMA_NAME NOT LIKE 'SAP%' 
+                      AND SCHEMA_NAME NOT LIKE 'DWC%' 
                     ORDER BY SCHEMA_NAME
                 `);
                 

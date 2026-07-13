@@ -16,7 +16,6 @@ sap.ui.define([
 
             this.getRouter().getRoute("PlantLocationObjectPage").attachPatternMatched(this.onObjectMatched, this);
             this._bindShellRoleState();
-            this._loadPermissions();
         },
 
         onObjectMatched: function (oEvent) {
@@ -165,22 +164,7 @@ sap.ui.define([
             return Promise.resolve();
         },
 
-        _loadPermissions: function () {
-            return this._request("api/schema-browser/user-info")
-                .then(function (oUserInfo) {
-                    var bCanMaintain = oUserInfo.isAdmin === true
-                        || oUserInfo.isDataEngineer === true
-                        || oUserInfo.isDataSteward === true;
 
-                    this.getModel("view").setProperty("/canMaintain", bCanMaintain);
-                    this.getModel("view").setProperty("/isReadOnlyRole", oUserInfo.isDisplay === true && !bCanMaintain);
-                    this._syncShellRoleState();
-                }.bind(this))
-                .catch(function () {
-                    this.getModel("view").setProperty("/canMaintain", false);
-                    this.getModel("view").setProperty("/isReadOnlyRole", false);
-                }.bind(this));
-        },
 
         _bindShellRoleState: function () {
             var oShellModel = this.getOwnerComponent().getModel("shell");

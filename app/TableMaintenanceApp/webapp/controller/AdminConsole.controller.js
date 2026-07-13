@@ -227,9 +227,11 @@ sap.ui.define([
                     oViewModel.setProperty("/logUserItems", aUserItems);
                     oViewModel.setProperty("/auditLogs", aLogs);
 
-                    // Rebuild and filter table dropdown
-                    this._updateLogTableDropdown();
-                    this._applyLogsFilter();
+                    // Rebuild and filter table dropdown after loading schema tables
+                    this._loadLogTables().finally(function () {
+                        this._updateLogTableDropdown();
+                        this._applyLogsFilter();
+                    }.bind(this));
                 }.bind(this))
                 .catch(function (oError) {
                     console.warn("Failed to load global audit logs:", oError);
@@ -254,9 +256,13 @@ sap.ui.define([
         onLogFilterChange: function (oEvent) {
             var oSource = oEvent ? oEvent.getSource() : null;
             if (oSource && oSource.getId().indexOf("logSchemaFilterCombo") > -1) {
-                this._updateLogTableDropdown();
+                this._loadLogTables().finally(function () {
+                    this._updateLogTableDropdown();
+                    this._applyLogsFilter();
+                }.bind(this));
+            } else {
+                this._applyLogsFilter();
             }
-            this._applyLogsFilter();
         },
 
         onClearLogFilters: function () {
@@ -269,12 +275,39 @@ sap.ui.define([
             this._applyLogsFilter();
         },
 
+        _loadLogTables: function () {
+            var oViewModel = this.getModel("view");
+            var sSchema = oViewModel.getProperty("/selectedLogSchema");
+            if (!sSchema) {
+                oViewModel.setProperty("/logTables", []);
+                return Promise.resolve();
+            }
+            var sUrl = "api/schema-browser/tables?schemaName=" + encodeURIComponent(sSchema);
+            return this._request(sUrl)
+                .then(function (oResult) {
+                    oViewModel.setProperty("/logTables", oResult.tables || []);
+                })
+                .catch(function () {
+                    oViewModel.setProperty("/logTables", []);
+                });
+        },
+
         _updateLogTableDropdown: function () {
             var oViewModel = this.getModel("view");
             var aLogs = oViewModel.getProperty("/auditLogs") || [];
             var sSchema = oViewModel.getProperty("/selectedLogSchema");
+            var aLogTables = oViewModel.getProperty("/logTables") || [];
 
             var oUniqueTables = {};
+
+            // 1. Add all schema tables
+            aLogTables.forEach(function (table) {
+                if (table.name) {
+                    oUniqueTables[table.name] = table.name;
+                }
+            });
+
+            // 2. Add log-specific paths
             aLogs.forEach(function (log) {
                 if (log.logTablePath && (!sSchema || log.logSchema === sSchema)) {
                     oUniqueTables[log.logTablePath] = log.logTablePath;
